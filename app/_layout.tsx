@@ -1,12 +1,29 @@
 import { Stack } from "expo-router";
-import { NativeBaseProvider } from "native-base";
+import { NativeBaseProvider, Button } from "native-base";
+import { auth } from "../firebaseConfig";
+import { Link, useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
+
+
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
   initialRouteName: "index",
 };
 
+
+
 export default function Layout() {
+  const router = useRouter();
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      router.replace('/') //Redirects to the login page
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <NativeBaseProvider>
       <Stack
@@ -31,6 +48,11 @@ export default function Layout() {
           name="(tabs)"
           options={{
             title: "BiteBuddies",
+            headerRight: () => (
+              <Button colorScheme="danger" onPress={handleLogout} marginRight="10px">
+                Log Out
+              </Button>
+            ),
           }}
         />
         <Stack.Screen
