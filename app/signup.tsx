@@ -49,7 +49,7 @@ const Signup: React.FC = () => {
       // If successful, redirect to home page
       if (userCredentials) {
         alert("Account created successfully");
-        router.replace("/tabs");
+        router.replace("(tabs)");
       }
     } catch (error: any) {
       switch (error.code) {
