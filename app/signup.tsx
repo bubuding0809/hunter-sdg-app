@@ -1,3 +1,4 @@
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import {
   Box,
   Center,
@@ -10,16 +11,61 @@ import {
 } from "native-base";
 import { useState } from "react";
 import { Platform } from "react-native";
+import { auth } from "../firebaseConfig";
+import { useRouter } from "expo-router";
 
 const Signup: React.FC = () => {
+  const router = useRouter();
   const [signUpform, setSignUpForm] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
 
-  const handleSignUp = () => {
-    console.log(signUpform);
+  const handleSignUp = async () => {
+    // Check that all fields are filled
+    if (
+      signUpform.email === "" ||
+      signUpform.password === "" ||
+      signUpform.confirmPassword === ""
+    ) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    if (signUpform.password !== signUpform.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    // call firebase to create a new user
+    try {
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        signUpform.email,
+        signUpform.password
+      );
+
+      // If successful, redirect to home page
+      if (userCredentials) {
+        alert("Account created successfully");
+        router.replace("/tabs");
+      }
+    } catch (error: any) {
+      switch (error.code) {
+        case "auth/invalid-email":
+          alert("Invalid email address");
+          break;
+        case "auth/weak-password":
+          alert("Password is too weak");
+          break;
+        case "auth/email-already-in-use":
+          alert("That email address is already in use!");
+          break;
+        default:
+          alert("Something went wrong");
+      }
+    }
   };
   return (
     <KeyboardAvoidingView
@@ -92,7 +138,7 @@ const Signup: React.FC = () => {
                 value={signUpform.confirmPassword}
               />
             </FormControl>
-            <Button mt="2" colorScheme="indigo">
+            <Button mt="2" colorScheme="indigo" onPress={handleSignUp}>
               Sign up
             </Button>
           </VStack>

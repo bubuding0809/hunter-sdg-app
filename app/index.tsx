@@ -15,15 +15,19 @@ import {
   KeyboardAvoidingView,
 } from "native-base";
 import { Platform } from "react-native";
-import { Image } from "react-native";
 import { auth, db } from "../firebaseConfig";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 // * Login Page
 const Login: React.FC = () => {
-  const [isReady, setReady] = useState(false);
   const router = useRouter();
+  const [isReady, setReady] = useState(false);
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // Get test data from firestore
   useEffect(() => {
     // Get data from firestore
     const users = collection(db, "testcollection");
@@ -34,12 +38,40 @@ const Login: React.FC = () => {
     });
   }, []);
 
+  // Check if user is already logged in
+  useEffect(() => {
+    // Check if user is already logged in
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      console.log("loaded user auth changed");
+      if (user) {
+        router.replace("(tabs)");
+        console.log(user);
+      }
+    });
+
+    // Clean up the state observer
+    return unsubscribe;
+  }, []);
+
   useEffect(() => {
     // Perform some sort of async data or asset fetching.
     setTimeout(() => {
       setReady(true);
     }, 1000);
   }, []);
+
+  const handleSignin = async () => {
+    // Handle signin using firebase authentication
+    try {
+      const user = await signInWithEmailAndPassword(auth, email, password);
+      alert("Logged in successfully");
+      if (user) {
+        router.replace("/(tabs)");
+      }
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
 
   return (
     <>
@@ -80,11 +112,14 @@ const Login: React.FC = () => {
             <VStack space={3} mt="5">
               <FormControl>
                 <FormControl.Label>Email ID</FormControl.Label>
-                <Input />
+                <Input onChangeText={text => setEmail(text)} />
               </FormControl>
               <FormControl>
                 <FormControl.Label>Password</FormControl.Label>
-                <Input type="password" />
+                <Input
+                  type="password"
+                  onChangeText={text => setPassword(text)}
+                />
                 <NativeLink
                   _text={{
                     fontSize: "xs",
@@ -97,11 +132,7 @@ const Login: React.FC = () => {
                   Forget Password?
                 </NativeLink>
               </FormControl>
-              <Button
-                mt="2"
-                colorScheme="indigo"
-                onPress={() => router.push("/(tabs)")}
-              >
+              <Button mt="2" colorScheme="indigo" onPress={handleSignin}>
                 Sign in
               </Button>
               <HStack mt="6" justifyContent="center">
