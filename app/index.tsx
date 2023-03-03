@@ -19,17 +19,8 @@ import { Image } from "react-native";
 import { auth, db } from "../firebaseConfig";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 
-const LogoTitle: React.FC = () => {
-  return (
-    <Image
-      style={{ width: 30, height: 30 }}
-      source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
-    />
-  );
-};
-
 // * Login Page
-export default function App() {
+const Login: React.FC = () => {
   const [isReady, setReady] = useState(false);
   const router = useRouter();
 
@@ -123,10 +114,7 @@ export default function App() {
                 >
                   I'm a new user.{" "}
                 </Text>
-                <Link
-                  href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&themeRefresh=1"
-                  asChild
-                >
+                <Link href="/signup" asChild>
                   <NativeLink
                     _text={{
                       color: "indigo.500",
@@ -144,4 +132,6 @@ export default function App() {
       </KeyboardAvoidingView>
     </>
   );
-}
+};
+
+export default Login;
