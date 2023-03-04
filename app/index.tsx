@@ -51,11 +51,10 @@ const Login: React.FC = () => {
     return <SplashScreen />;
   }
 
+  // Handle signin using firebase authentication
   const handleSignin = async () => {
-    // Handle signin using firebase authentication
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
-      alert("Logged in successfully");
       if (user) {
         router.replace("/(tabs)");
       }
