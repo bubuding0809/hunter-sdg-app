@@ -2,10 +2,11 @@ import { View, Text, Image, Button } from "react-native";
 import React from "react";
 import { Center } from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
+import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 
 export default function Home() {
   const router = useRouter();
-  const [count, setCount] = React.useState(0);
+
   return (
     <Center
       style={{

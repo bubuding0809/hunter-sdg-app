@@ -16,55 +16,50 @@ import {
 } from "native-base";
 import { Platform } from "react-native";
 import { auth, db } from "../firebaseConfig";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useFirebaseSession } from "../context/FirebaseAuthContext";
 
 // * Login Page
 const Login: React.FC = () => {
-  const router = useRouter();
-  const [isReady, setReady] = useState(false);
+  // Get session data from context
+  const { data: sessionData, isLoading } = useFirebaseSession();
 
+  // Get router
+  const router = useRouter();
+
+  // State variables for login form
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // Get test data from firestore
   useEffect(() => {
+<<<<<<< HEAD
     // Get data from firestore
     const users = collection(db, "test");
+=======
+    const users = collection(db, "testcollection");
+>>>>>>> 55ba87ba0fab61d42842168d424e93681325b442
     getDocs(users).then(querySnapshot => {
       querySnapshot.forEach(doc => {
-        console.log(doc.data());
+        console.log("firestore test data: ", doc.data());
       });
     });
   }, []);
 
-  // Check if user is already logged in
+  // Redirect to home page if user is already logged in
   useEffect(() => {
-    // Check if user is already logged in
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      console.log("loaded user auth changed");
-      if (user) {
-        router.replace("(tabs)");
-        console.log(user);
-      }
-    });
+    sessionData && router.replace("/(tabs)");
+  }, [sessionData]);
 
-    // Clean up the state observer
-    return unsubscribe;
-  }, []);
+  if (isLoading) {
+    return <SplashScreen />;
+  }
 
-  useEffect(() => {
-    // Perform some sort of async data or asset fetching.
-    setTimeout(() => {
-      setReady(true);
-    }, 1000);
-  }, []);
-
+  // Handle signin using firebase authentication
   const handleSignin = async () => {
-    // Handle signin using firebase authentication
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
-      alert("Logged in successfully");
       if (user) {
         router.replace("/(tabs)");
       }
@@ -76,7 +71,6 @@ const Login: React.FC = () => {
   return (
     <>
       <Stack.Screen options={{ title: "Login" }} />
-      {!isReady && <SplashScreen />}
       <KeyboardAvoidingView
         w="full"
         h={{
