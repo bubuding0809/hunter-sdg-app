@@ -16,7 +16,7 @@ import {
 } from "native-base";
 import { Platform } from "react-native";
 import { auth, db } from "../firebaseConfig";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useFirebaseSession } from "../context/FirebaseAuthContext";
 
