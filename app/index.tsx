@@ -22,16 +22,18 @@ import { useFirebaseSession } from "../context/FirebaseAuthContext";
 
 // * Login Page
 const Login: React.FC = () => {
+  // Get session data from context
   const { data: sessionData, isLoading } = useFirebaseSession();
-  const router = useRouter();
-  const [isReady, setReady] = useState(false);
 
+  // Get router
+  const router = useRouter();
+
+  // State variables for login form
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // Get test data from firestore
   useEffect(() => {
-    // Get data from firestore
     const users = collection(db, "testcollection");
     getDocs(users).then(querySnapshot => {
       querySnapshot.forEach(doc => {
@@ -45,15 +47,8 @@ const Login: React.FC = () => {
     sessionData && router.replace("/(tabs)");
   }, [sessionData]);
 
-  useEffect(() => {
-    // Perform some sort of async data or asset fetching.
-    setTimeout(() => {
-      setReady(true);
-    }, 1000);
-  }, []);
-
   if (isLoading) {
-    return <Text>Loading</Text>;
+    return <SplashScreen />;
   }
 
   const handleSignin = async () => {
@@ -72,7 +67,6 @@ const Login: React.FC = () => {
   return (
     <>
       <Stack.Screen options={{ title: "Login" }} />
-      {!isReady && <SplashScreen />}
       <KeyboardAvoidingView
         w="full"
         h={{
