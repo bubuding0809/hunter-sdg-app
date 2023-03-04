@@ -18,9 +18,11 @@ import { Platform } from "react-native";
 import { auth, db } from "../firebaseConfig";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useFirebaseSession } from "../context/FirebaseAuthContext";
 
 // * Login Page
 const Login: React.FC = () => {
+  const { data: sessionData, isLoading } = useFirebaseSession();
   const router = useRouter();
   const [isReady, setReady] = useState(false);
 
@@ -33,25 +35,15 @@ const Login: React.FC = () => {
     const users = collection(db, "testcollection");
     getDocs(users).then(querySnapshot => {
       querySnapshot.forEach(doc => {
-        console.log(doc.data());
+        console.log("firestore test data: ", doc.data());
       });
     });
   }, []);
 
-  // Check if user is already logged in
+  // Redirect to home page if user is already logged in
   useEffect(() => {
-    // Check if user is already logged in
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      console.log("loaded user auth changed");
-      if (user) {
-        router.replace("(tabs)");
-        console.log(user);
-      }
-    });
-
-    // Clean up the state observer
-    return unsubscribe;
-  }, []);
+    sessionData && router.replace("/(tabs)");
+  }, [sessionData]);
 
   useEffect(() => {
     // Perform some sort of async data or asset fetching.
@@ -59,6 +51,10 @@ const Login: React.FC = () => {
       setReady(true);
     }, 1000);
   }, []);
+
+  if (isLoading) {
+    return <Text>Loading</Text>;
+  }
 
   const handleSignin = async () => {
     // Handle signin using firebase authentication
