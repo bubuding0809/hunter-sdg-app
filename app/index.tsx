@@ -34,7 +34,8 @@ const Login: React.FC = () => {
 
   // Get test data from firestore
   useEffect(() => {
-    const users = collection(db, "testcollection");
+    // Get data from firestore
+    const users = collection(db, "test");
     getDocs(users).then(querySnapshot => {
       querySnapshot.forEach(doc => {
         console.log("firestore test data: ", doc.data());
