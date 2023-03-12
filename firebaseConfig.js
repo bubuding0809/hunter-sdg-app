@@ -7,6 +7,7 @@ import { getFirestore } from "firebase/firestore";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 import { FIREBASE_API_KEY, FIREBASE_APP_ID } from "@env";
+import { GOOGLE_MAPS_APIKEY} from "@env";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
