@@ -15,12 +15,6 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const { data: sessionData, isLoading: sessionLoading } = useFirebaseSession();
-  // Printing session data to termainl for debugging
-  console.log(
-    sessionLoading ? "session is loading" : "loaded",
-    "sessionData",
-    sessionData
-  );
 
   return (
     <Tabs>
@@ -31,14 +25,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           // Do not show header for this route
           header: () => null,
-        }}
-      />
-      <Tabs.Screen
-        name="map"
-        options={{
-          header: () => null,
-          title: "Map",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
       <Tabs.Screen

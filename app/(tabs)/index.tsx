@@ -14,9 +14,10 @@ export default function Home() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        padding: 10,
       }}
     >
-      <Link href="/modal">Present modal</Link>
+      <Text>List of relevant bounties here</Text>
     </Center>
   );
 }

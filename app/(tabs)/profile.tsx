@@ -1,6 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
-import { Center, Link } from "native-base";
+import { Button, Center, Link as NativeLink } from "native-base";
+import { Link } from "expo-router";
 
 export default function profile() {
   return (
@@ -10,9 +11,14 @@ export default function profile() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        padding: 10,
+        gap: 10,
       }}
     >
       <Text>Profile goes here</Text>
+      <Button>
+        <Link href="NewBountyForm">Create bounty</Link>
+      </Button>
     </Center>
   );
 }

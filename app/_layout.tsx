@@ -5,7 +5,6 @@ import { Link, useNavigation } from "expo-router";
 import { useRouter } from "expo-router";
 import { FirebaseAuthProvider } from "../context/FirebaseAuthContext";
 
-
 export const unstable_settings = {
   // Ensure any route can link back to `/`
   initialRouteName: "index",
@@ -60,7 +59,7 @@ export default function Layout() {
             }}
           />
           <Stack.Screen
-            name="modal"
+            name="MapSelectModal"
             options={{
               // Set the presentation mode to modal for our modal route.
               presentation: "modal",
