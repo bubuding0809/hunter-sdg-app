@@ -19,8 +19,7 @@ import MapViewDirections from "react-native-maps-directions";
 // https://www.npmjs.com/package/react-native-maps-directions
 
 const { width, height } = Dimensions.get("window");
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
-console.log(GOOGLE_API_KEY)
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY!;
 
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.02;
@@ -54,7 +53,7 @@ function InputAutocomplete({
           onPlaceSelected(details);
         }}
         query={{
-          key: GOOGLE_API_KEY,
+          key: GOOGLE_MAPS_API_KEY,
           language: "pt-BR",
         }}
       />
@@ -129,7 +128,7 @@ export default function App() {
           <MapViewDirections
             origin={origin}
             destination={destination}
-            apikey={GOOGLE_API_KEY}
+            apikey={GOOGLE_MAPS_API_KEY}
             strokeColor="#6644ff"
             strokeWidth={4}
             onReady={traceRouteOnReady}
@@ -139,13 +138,13 @@ export default function App() {
       <View style={styles.searchContainer}>
         <InputAutocomplete
           label="Origin"
-          onPlaceSelected={(details) => {
+          onPlaceSelected={details => {
             onPlaceSelected(details, "origin");
           }}
         />
         <InputAutocomplete
           label="Destination"
-          onPlaceSelected={(details) => {
+          onPlaceSelected={details => {
             onPlaceSelected(details, "destination");
           }}
         />

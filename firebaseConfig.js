@@ -6,19 +6,26 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-import { FIREBASE_API_KEY, FIREBASE_APP_ID } from "@env";
-import { GOOGLE_MAPS_APIKEY} from "@env";
+import {
+  FIREBASE_API_KEY,
+  FIREBASE_APP_ID,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_MEASUREMENT_ID,
+  FIREBASE_PROJECT_BUCKET,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_PROJECT_SENDER_ID,
+} from "@env";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
-  authDomain: "bitebuddies-38265.firebaseapp.com",
-  projectId: "bitebuddies-38265",
-  storageBucket: "bitebuddies-38265.appspot.com",
-  messagingSenderId: "593368800511",
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_PROJECT_BUCKET,
+  messagingSenderId: FIREBASE_PROJECT_SENDER_ID,
   appId: FIREBASE_APP_ID,
-  measurementId: "G-NXWW1QT3WY",
+  measurementId: FIREBASE_MEASUREMENT_ID,
 };
 
 let app;
