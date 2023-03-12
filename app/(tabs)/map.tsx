@@ -10,7 +10,6 @@ import {
   GooglePlaceDetail,
   GooglePlacesAutocomplete,
 } from "react-native-google-places-autocomplete";
-// Need to fix this issue: import { GOOGLE_API_KEY } from "./environments";
 import Constants from "expo-constants";
 import { useRef, useState } from "react";
 import MapViewDirections from "react-native-maps-directions";
@@ -20,7 +19,8 @@ import MapViewDirections from "react-native-maps-directions";
 // https://www.npmjs.com/package/react-native-maps-directions
 
 const { width, height } = Dimensions.get("window");
-const GOOGLE_API_KEY = "AIzaSyCj0N27dGNQ8-dYXDnPBMs27PaUjxaNDBs"
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
+console.log(GOOGLE_API_KEY)
 
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.02;
