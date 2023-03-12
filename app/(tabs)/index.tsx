@@ -87,8 +87,12 @@ export default function Home() {
           data = {DATA}
           renderItem = {({item}) => 
             <VStack space = {10}>
+              
                 <Container style = {styles.bountyBox}>
-                <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
+                  <View style = {{margin: 10}}>
+                    <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
+                  </View>
+                
                   <Pressable onPress ={openBounty} style = {styles.pressable}>
                     <View style = {{flexDirection: "row"}}>
                         <Text style={styles.name_text}>{item.fullName}</Text>
@@ -106,6 +110,8 @@ export default function Home() {
                     
                   </Pressable>
                 </Container>
+              
+                
               
             </VStack>
           
@@ -156,19 +162,20 @@ const styles = StyleSheet.create({
     height: 100,
     flexDirection: "row", 
     margin: 10,
-    borderBottomWidth: 3,
+    //borderBottomWidth: 3,
     backgroundColor: "white",
   },
   avatar: {
     width: 60,
     height: "100%",
-    marginBottom: 0,
+    marginBottom: 10
   },
   pressable: {
-    backgroundColor: "red",
+    borderBottomWidth: 1,
+    borderColor: "grey",
     width: "100%",
     height: "100%",
-    margin:5,
+    padding:5,
     paddingLeft: 15
 
   },
