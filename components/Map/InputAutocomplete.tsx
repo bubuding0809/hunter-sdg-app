@@ -27,7 +27,8 @@ const InputAutocomplete: React.FC<InputAutocompleteProps> = ({
         }}
         query={{
           key: process.env.GOOGLE_MAPS_API_KEY!,
-          language: "pt-BR",
+          language: "en",
+          components: 'country:sg',
         }}
       />
     </>

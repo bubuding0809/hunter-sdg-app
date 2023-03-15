@@ -6,7 +6,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
-      ]
+      ],
+      ["expo-image-picker"]
     ],
     "name": "google-sdg-app",
     "slug": "google-sdg-app",

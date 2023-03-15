@@ -30,7 +30,7 @@ const MapSelectModal: React.FC<MapSelectModalProps> = ({
       {!isPresented && <Link href="../">Dismiss</Link>}
 
       {/* Native modals have dark backgrounds on iOS, set the status bar to light content. */}
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <MapSelect
         setOpen={setOpen}
         setLocation={setLocation}
