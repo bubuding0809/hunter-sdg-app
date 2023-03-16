@@ -17,8 +17,8 @@ export default function Layout() {
     try {
       await auth.signOut();
       router.replace("/"); //Redirects to the login page
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   };
 
