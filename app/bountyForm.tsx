@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { Button, Center } from "native-base";
 import { Link } from "expo-router";
-import MapSelectModal from "./MapSelectModal";
+import MapSelectModal from "../components/Map/MapSelect";
 
 interface NewBountyFormProps {}
 
@@ -57,9 +57,6 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
             setRadius={setRadius}
           />
         )}
-        <Text>Latitude: {location.latitude}</Text>
-        <Text>Longitude: {location.longitude}</Text>
-        <Text>Radius: {radius}</Text>
       </Center>
     </View>
   );

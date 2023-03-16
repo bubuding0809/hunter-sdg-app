@@ -58,13 +58,6 @@ export default function Layout() {
               ),
             }}
           />
-          <Stack.Screen
-            name="MapSelectModal"
-            options={{
-              // Set the presentation mode to modal for our modal route.
-              presentation: "modal",
-            }}
-          />
         </Stack>
       </FirebaseAuthProvider>
     </NativeBaseProvider>
