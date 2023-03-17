@@ -8,11 +8,12 @@ import {
   Input,
   Button,
   KeyboardAvoidingView,
+  Checkbox,
 } from "native-base";
 import { useState } from "react";
 import { Platform } from "react-native";
 import { auth } from "../firebaseConfig";
-import { useRouter } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 
 const Signup: React.FC = () => {
   const router = useRouter();
@@ -67,84 +68,155 @@ const Signup: React.FC = () => {
       }
     }
   };
+
   return (
-    <KeyboardAvoidingView
-      w="full"
-      h={{
-        base: "400px",
-        lg: "auto",
-      }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <Center w="100%">
-        <Box safeArea p="2" w="90%" maxW="290" py="8">
-          <Heading
-            size="lg"
-            color="coolGray.800"
-            _dark={{
-              color: "warmGray.50",
-            }}
-            fontWeight="semibold"
-          >
-            Welcome
-          </Heading>
-          <Heading
-            mt="1"
-            color="coolGray.600"
-            _dark={{
-              color: "warmGray.200",
-            }}
-            fontWeight="medium"
-            size="xs"
-          >
-            Sign up to continue!
-          </Heading>
-          <VStack space={3} mt="5">
-            <FormControl>
-              <FormControl.Label>Email</FormControl.Label>
-              <Input
-                onChangeText={text =>
-                  setSignUpForm(prev => ({
-                    ...prev,
-                    email: text,
-                  }))
-                }
-                value={signUpform.email}
-              />
-            </FormControl>
-            <FormControl>
-              <FormControl.Label>Password</FormControl.Label>
-              <Input
-                type="password"
-                onChangeText={text =>
-                  setSignUpForm(prev => ({
-                    ...prev,
-                    password: text,
-                  }))
-                }
-                value={signUpform.password}
-              />
-            </FormControl>
-            <FormControl>
-              <FormControl.Label>Confirm Password</FormControl.Label>
-              <Input
-                type="password"
-                onChangeText={text =>
-                  setSignUpForm(prev => ({
-                    ...prev,
-                    confirmPassword: text,
-                  }))
-                }
-                value={signUpform.confirmPassword}
-              />
-            </FormControl>
-            <Button mt="2" colorScheme="indigo" onPress={handleSignUp}>
-              Sign up
-            </Button>
-          </VStack>
-        </Box>
-      </Center>
-    </KeyboardAvoidingView>
+    <>
+      <Stack.Screen
+        options={{
+          title: "Sign Up",
+          headerRight: () => (
+            // Sign up link
+            <Link href="/signin" asChild>
+              <Button
+                backgroundColor="transparent"
+                _text={{
+                  color: "#FD7366",
+                  fontWeight: "medium",
+                  fontSize: "md",
+                  textDecoration: "none",
+                }}
+              >
+                Login
+              </Button>
+            </Link>
+          ),
+        }}
+      />
+      <KeyboardAvoidingView
+        w="full"
+        h="full"
+        bgColor="#fff"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <Center w="100%">
+          <Box safeArea p="2" w="90%" maxW="290" py="8">
+            <Heading
+              size="lg"
+              fontWeight="600"
+              color="coolGray.800"
+              _dark={{
+                color: "warmGray.50",
+              }}
+            >
+              Hello there 👋
+            </Heading>
+            <Heading
+              mt="1"
+              _dark={{
+                color: "warmGray.200",
+              }}
+              color="coolGray.600"
+              fontWeight="medium"
+              size="xs"
+            >
+              Make an account now to be a hunter.
+            </Heading>
+            <VStack space={3} mt="5">
+              <FormControl>
+                {/* <FormControl.Label>Email</FormControl.Label> */}
+                <Input
+                  onChangeText={text =>
+                    setSignUpForm(prev => ({
+                      ...prev,
+                      email: text,
+                    }))
+                  }
+                  value={signUpform.email}
+                  height={10}
+                  borderLeftRadius="8px"
+                  fontSize={14}
+                  placeholder="Email"
+                />
+              </FormControl>
+              <FormControl>
+                {/* <FormControl.Label>Password</FormControl.Label> */}
+                <Input
+                  type="password"
+                  onChangeText={text =>
+                    setSignUpForm(prev => ({
+                      ...prev,
+                      password: text,
+                    }))
+                  }
+                  value={signUpform.password}
+                  height={10}
+                  borderLeftRadius="8px"
+                  fontSize={14}
+                  placeholder="Password"
+                />
+              </FormControl>
+              <FormControl>
+                {/* <FormControl.Label>Confirm Password</FormControl.Label> */}
+                <Input
+                  type="password"
+                  onChangeText={text =>
+                    setSignUpForm(prev => ({
+                      ...prev,
+                      confirmPassword: text,
+                    }))
+                  }
+                  value={signUpform.confirmPassword}
+                  height={10}
+                  borderLeftRadius="8px"
+                  fontSize={14}
+                  placeholder="Confirm Password"
+                />
+              </FormControl>
+              {/* Check box to opt in newsletter */}
+              <FormControl
+                display="flex"
+                flexDirection="row"
+                alignItems="start"
+                justifyContent="space-between"
+              >
+                <Checkbox
+                  value="newsletter"
+                  id="newsletter-checkbox"
+                  aria-label="
+                  I would like to receive your newsletter and other promotional information
+                "
+                />
+                <FormControl.Label
+                  _text={{
+                    fontSize: "xs",
+                    color: "muted.700",
+                    fontWeight: 500,
+                  }}
+                  htmlFor="newsletter-checkbox"
+                  margin={0}
+                >
+                  I would like to receive your newsletter and other promotional
+                  information.
+                </FormControl.Label>
+              </FormControl>
+
+              <Button
+                mt="20"
+                colorScheme="indigo"
+                onPress={handleSignUp}
+                bgColor="black"
+                borderRadius="full"
+                _text={{
+                  fontWeight: "semibold",
+                }}
+              >
+                Sign up
+              </Button>
+            </VStack>
+          </Box>
+        </Center>
+      </KeyboardAvoidingView>
+    </>
   );
 };
 

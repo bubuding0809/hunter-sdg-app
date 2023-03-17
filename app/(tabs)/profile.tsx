@@ -13,6 +13,8 @@ export default function profile() {
         alignItems: "center",
         padding: 10,
         gap: 10,
+        backgroundColor: "#fff",
+        height: "100%",
       }}
     >
       <Text>Profile goes here</Text>
