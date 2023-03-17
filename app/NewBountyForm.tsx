@@ -64,6 +64,10 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     }
   };
 
+  //a 
+
+
+  
   return (
     <View
       style={{
@@ -85,7 +89,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
           flexDirection:"column"
           }}>
           {bountyForm.image && (
-            <Image source={{ uri: bountyForm.image }} alt="Bounty Image" size="2xl" resizeMode="contain" />
+            <Image source={{ uri: bountyForm.image }} alt="Bounty Image" size="lg" resizeMode="contain" />
           )}
           <Button onPress={handleImageUpload} style={{ marginBottom: 10 }}>Upload Image</Button>
           <Button onPress={() => setShowMapSelect(true)} style ={{marginBottom:10}}>Select Location</Button>
