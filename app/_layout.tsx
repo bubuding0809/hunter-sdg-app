@@ -62,9 +62,8 @@ export default function Layout() {
             <Stack.Screen
               name="(tabs)"
               options={{
-                title: pathNames[pathname],
                 // set title to current tab
-
+                title: pathNames[pathname],
                 headerRight: () => (
                   <Button colorScheme="danger" onPress={handleLogout} p={1}>
                     Log Out
