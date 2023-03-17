@@ -21,15 +21,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           // Do not show header for this route
           header: () => null,
+          title: "Home",
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
+          // Do not show header for this route
           header: () => null,
           title: "Profile",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
