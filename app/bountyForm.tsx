@@ -8,6 +8,7 @@ import { ImagePickerResult, ImagePickerSuccessResult } from 'expo-image-picker';
 
 
 // Edit this file
+import MapSelect from "../components/Map/MapSelect";
 
 interface NewBountyFormProps {}
 
@@ -95,7 +96,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
           <Button onPress={() => setShowMapSelect(true)} style ={{marginBottom:10}}>Select Location</Button>
         </View>
         {showMapSelect && (
-          <MapSelectModal
+          <MapSelect
             setOpen={setShowMapSelect}
             setLocation={setLocation}
             setRadius={setRadius}
@@ -106,6 +107,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
         <Text>Radius: {radius}</Text>
 
         <Button onPress={()=> setBountyForm(true)} style = {{marginTop:10}}> Input Description </Button>
+        )}
       </Center>
     </View>
   );

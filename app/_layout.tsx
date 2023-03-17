@@ -17,8 +17,8 @@ export default function Layout() {
     try {
       await auth.signOut();
       router.replace("/"); //Redirects to the login page
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -56,13 +56,6 @@ export default function Layout() {
                   Log Out
                 </Button>
               ),
-            }}
-          />
-          <Stack.Screen
-            name="MapSelectModal"
-            options={{
-              // Set the presentation mode to modal for our modal route.
-              presentation: "modal",
             }}
           />
         </Stack>

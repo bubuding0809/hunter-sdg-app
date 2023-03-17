@@ -4,18 +4,10 @@ import MapView, {
   PROVIDER_GOOGLE,
   MapCircle,
 } from "react-native-maps";
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  Text,
-  TouchableOpacity,
-} from "react-native";
-import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
-import Constants from "expo-constants";
+import { StyleSheet, View, Dimensions, Text } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import InputAutocomplete from "./InputAutocomplete";
-import { Button, Slider } from "native-base";
+import { Button, Heading, HStack, Slider, Spinner } from "native-base";
 
 import * as Location from "expo-location";
 
@@ -34,14 +26,14 @@ interface MapSelectProps {
   setRadius: React.Dispatch<React.SetStateAction<number>>;
 }
 
+// Initialize map settings
 const { width, height } = Dimensions.get("window");
-
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.02;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const INITIAL_POSITION = {
-  latitude: 40.76711,
-  longitude: -73.979704,
+  latitude: 40.76711, // Some US location
+  longitude: -73.979704, // Some US location
   latitudeDelta: LATITUDE_DELTA,
   longitudeDelta: LONGITUDE_DELTA,
 };
@@ -52,39 +44,55 @@ const MapSelect: React.FC<MapSelectProps> = ({
   setRadius,
 }) => {
   const [origin, setOrigin] = useState<LatLng | null>(null);
-  const [destination, setDestination] = useState<LatLng | null>(null);
-  const [showDirections, setShowDirections] = useState(false);
-  const [distance, setDistance] = useState(0);
-  const [duration, setDuration] = useState(0);
   const mapRef = useRef<MapView>(null);
 
   const [onChangeValue, setOnChangeValue] = useState(200);
-  const [onChangeEndValue, setOnChangeEndValue] = useState(200);
+  const [decodedAddress, setDecodedAddress] = useState<string | null>(null);
 
-  const [location, setUserLocation] = useState<{
+  const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [loadingUserLocation, setLoadingUserLocation] = useState(false);
 
+  // Effect to get user location
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+    const getLocationPermission = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
+      // Show loading indicator for user location
+      setLoadingUserLocation(true);
+
+      // Get user location
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      // Hide loading indicator for user location
+      setLoadingUserLocation(false);
+
+      // If location is found, move to it
+      location &&
+        moveTo({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+
       setUserLocation({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       });
-    })();
+    };
+
+    getLocationPermission();
   }, []);
 
-  console.log("location", location);
-
+  // Callback to move map to a location
   const moveTo = async (position: LatLng) => {
     const camera = await mapRef.current?.getCamera();
     if (camera) {
@@ -93,129 +101,157 @@ const MapSelect: React.FC<MapSelectProps> = ({
     }
   };
 
-  const edgePaddingValue = 70;
-
-  const edgePadding = {
-    top: edgePaddingValue,
-    right: edgePaddingValue,
-    bottom: edgePaddingValue,
-    left: edgePaddingValue,
+  // Callback to handle place selected action from map or autocomplete
+  const handlePlaceSelected = (position: LatLng | null) => {
+    // setOrigin location and move to it
+    setOrigin(position);
+    position && moveTo(position);
   };
 
-  const traceRouteOnReady = (args: { distance: number; duration: number }) => {
-    if (args) {
-      // args.distance
-      setDistance(args.distance);
-      // args.duration
-      setDuration(args.duration);
-    }
-  };
-
-  const traceRoute = () => {
-    if (origin && destination) {
-      setShowDirections(true);
-      mapRef.current?.fitToCoordinates([origin, destination], { edgePadding });
-    }
-  };
-
-  const onPlaceSelected = (
-    details: GooglePlaceDetail | null,
-    flag: "origin" | "destination"
-  ) => {
-    const set = flag === "origin" ? setOrigin : setDestination;
-    const position = {
-      latitude: details?.geometry.location.lat || 0,
-      longitude: details?.geometry.location.lng || 0,
-    };
-    set(position);
-    moveTo(position);
+  // Reverse geocode to get address
+  const reverseGeocode = async (position: LatLng) => {
+    return await Location.reverseGeocodeAsync(position);
   };
 
   return (
-    <View style={styles.container}>
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        provider={PROVIDER_GOOGLE}
-        initialRegion={INITIAL_POSITION}
-      >
-        {origin && <Marker coordinate={origin} />}
-        {destination && <Marker coordinate={destination} />}
-        <MapCircle
-          center={{
-            latitude: origin?.latitude ?? 0,
-            longitude: origin?.longitude ?? 0,
-          }}
-          radius={onChangeValue}
-          fillColor="rgba(255, 0, 0, 0.2)"
-          strokeColor="rgba(255, 0, 0, 0.5)"
-        />
-      </MapView>
-      <View style={styles.searchContainer}>
-        <InputAutocomplete
-          label="Origin"
-          onPlaceSelected={details => {
-            setLocation({
-              latitude: details?.geometry.location.lat ?? 0,
-              longitude: details?.geometry.location.lng ?? 0,
-            });
-            onPlaceSelected(details, "origin");
-          }}
-        />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
+    <>
+      <View style={styles.container}>
+        {/* Mapview */}
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          provider={PROVIDER_GOOGLE}
+          initialRegion={INITIAL_POSITION}
+          onLongPress={({ nativeEvent }) => {
+            // Set origin location and move to it
+            setLocation(nativeEvent.coordinate);
+            handlePlaceSelected(nativeEvent.coordinate);
+
+            // Reverse geocode to get address
+            let geoDecodedAddress: undefined | Location.LocationGeocodedAddress;
+            reverseGeocode(nativeEvent.coordinate)
+              .then(address => {
+                // Set Decoded address
+                geoDecodedAddress = address[0];
+
+                // if decoding is successful, set decoded address
+                geoDecodedAddress && setDecodedAddress(geoDecodedAddress.name);
+              })
+              .catch(err => {
+                console.log(err);
+              });
           }}
         >
-          <Button
-            width="70%"
-            onPress={() => {
-              setOpen(false);
+          {/* Display target location if selected */}
+          {origin && <Marker coordinate={origin} pinColor="green" />}
+
+          {/* Display current location if able to get from user */}
+          {userLocation && <Marker coordinate={userLocation} />}
+
+          {/* Display radius circle */}
+          <MapCircle
+            center={{
+              latitude: origin?.latitude ?? 0,
+              longitude: origin?.longitude ?? 0,
+            }}
+            radius={onChangeValue}
+            fillColor="rgba(255, 0, 0, 0.2)"
+            strokeColor="rgba(255, 0, 0, 0.5)"
+          />
+        </MapView>
+
+        {/* Location search container */}
+        <View style={styles.searchContainer}>
+          {/* Google Maps Search Autocomplete input */}
+          <InputAutocomplete
+            label="Location"
+            placeholder="Search for a location"
+            onPlaceSelected={details => {
+              setLocation({
+                latitude: details?.geometry.location.lat ?? 0,
+                longitude: details?.geometry.location.lng ?? 0,
+              });
+              handlePlaceSelected({
+                latitude: details?.geometry.location.lat ?? 0,
+                longitude: details?.geometry.location.lng ?? 0,
+              });
+            }}
+            decodedAddress={decodedAddress}
+          />
+
+          {/* Action buttons */}
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
           >
-            Select Location
-          </Button>
-          <Button
-            width="28%"
-            opacity={0.8}
-            colorScheme="secondary"
-            onPress={() => {
-              setOpen(false);
+            <Button
+              width="70%"
+              onPress={() => {
+                setOpen(false);
+              }}
+            >
+              Select Location
+            </Button>
+            <Button
+              width="28%"
+              opacity={0.8}
+              colorScheme="secondary"
+              onPress={() => {
+                setOpen(false);
+              }}
+            >
+              Cancel
+            </Button>
+          </View>
+
+          {/* Radius slider */}
+          <View
+            style={{
+              marginTop: 10,
             }}
           >
-            Cancel
-          </Button>
-        </View>
-        <View
-          style={{
-            marginTop: 10,
-          }}
-        >
-          <Text>{onChangeValue / 1000} km</Text>
-          <View></View>
-          <Slider
-            w="100%"
-            defaultValue={200}
-            minValue={0}
-            maxValue={2000}
-            accessibilityLabel="Radius slider"
-            step={100}
-            onChange={value => setOnChangeValue(value)}
-            onChangeEnd={value => {
-              setOnChangeEndValue(value);
-              setRadius(value);
-            }}
-          >
-            <Slider.Track>
-              <Slider.FilledTrack />
-            </Slider.Track>
-            <Slider.Thumb />
-          </Slider>
+            <Text>Radius: {onChangeValue / 1000} km</Text>
+            <Slider
+              w="100%"
+              defaultValue={200}
+              minValue={0}
+              maxValue={2000}
+              accessibilityLabel="Radius slider"
+              step={100}
+              onChange={value => setOnChangeValue(value)}
+              onChangeEnd={value => {
+                setRadius(value);
+              }}
+            >
+              <Slider.Track>
+                <Slider.FilledTrack />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider>
+          </View>
+
+          {/* Loading indicator */}
+          {loadingUserLocation && (
+            <HStack space={2} justifyContent="center" p={2}>
+              <Spinner accessibilityLabel="Loading posts" />
+              <Heading color="primary.500" fontSize="md">
+                Loading current location
+              </Heading>
+            </HStack>
+          )}
+
+          {/* Error message */}
+          {errorMsg && (
+            <Text style={{ color: "red" }}>
+              Error getting current location: {errorMsg}
+            </Text>
+          )}
         </View>
       </View>
-    </View>
+    </>
   );
 };
 
@@ -243,7 +279,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     padding: 8,
     borderRadius: 8,
-    top: Constants.statusBarHeight,
+    top: 0,
   },
   input: {
     borderColor: "#888",

@@ -17,7 +17,7 @@ export default function profile() {
     >
       <Text>Profile goes here</Text>
       <Button>
-        <Link href="NewBountyForm">Create bounty</Link>
+        <Link href="bountyForm">Create bounty</Link>
       </Button>
     </Center>
   );
