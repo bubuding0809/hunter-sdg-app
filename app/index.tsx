@@ -32,17 +32,6 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Get test data from firestore
-  useEffect(() => {
-    // Get data from firestore
-    const users = collection(db, "test");
-    getDocs(users).then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        console.log("firestore test data: ", doc.data());
-      });
-    });
-  }, []);
-
   // Redirect to home page if user is already logged in
   useEffect(() => {
     sessionData && router.replace("/(tabs)");
