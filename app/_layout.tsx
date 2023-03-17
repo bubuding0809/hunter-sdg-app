@@ -45,7 +45,8 @@ export default function Layout() {
               headerStyle: {
                 backgroundColor: "#fff",
               },
-              headerTintColor: "#fff",
+              headerTintColor: "#252525",
+              headerBackTitleVisible: false,
               headerTitleStyle: {
                 fontWeight: "bold",
                 color: "#000",
@@ -54,18 +55,18 @@ export default function Layout() {
             }}
           >
             <Stack.Screen
-              name="index"
-              options={{
-                title: "Home",
-              }}
-            />
-            <Stack.Screen
               name="(tabs)"
               options={{
                 // set title to current tab
                 title: pathNames[pathname],
+                headerBackVisible: false,
                 headerRight: () => (
-                  <Button colorScheme="danger" onPress={handleLogout} p={1}>
+                  <Button
+                    onPress={handleLogout}
+                    p={1}
+                    backgroundColor="transparent"
+                    _text={{ color: "black" }}
+                  >
                     Log Out
                   </Button>
                 ),
