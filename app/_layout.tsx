@@ -39,8 +39,6 @@ export default function Layout() {
   const pathname = usePathname();
   const queryClient = new QueryClient();
 
-  console.log("pathname", pathname);
-
   const handleLogout = async () => {
     try {
       await auth.signOut();
