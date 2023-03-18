@@ -191,6 +191,7 @@ const Signup: React.FC = () => {
                   id="newsletter-checkbox"
                   aria-label="I would like to receive your newsletter and other promotional information"
                   mr={2}
+                  colorScheme="gray"
                 />
                 <FormControl.Label
                   _text={{
