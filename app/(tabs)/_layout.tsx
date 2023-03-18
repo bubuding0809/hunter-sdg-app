@@ -44,7 +44,7 @@ export default function TabLayout() {
           title: "Feed",
           tabBarIcon: () => {
             const color = pathName === "/" ? "#FD7366" : "#252525";
-            return <TabBarIcon name="map-o" color={color} size={24} />;
+            return <TabBarIcon name="map" color={color} size={24} />;
           },
           // style tab bar title
           tabBarLabelStyle: {
