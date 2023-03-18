@@ -16,11 +16,6 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const { data: sessionData, isLoading: sessionLoading } = useFirebaseSession();
   // Printing session data to termainl for debugging
-  console.log(
-    sessionLoading ? "session is loading" : "loaded",
-    "sessionData",
-    sessionData
-  );
 
   return (
     <Tabs>
