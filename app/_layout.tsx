@@ -3,13 +3,16 @@ import { NativeBaseProvider, Button } from "native-base";
 import { auth } from "../firebaseConfig";
 import { useRouter, usePathname } from "expo-router";
 import { FirebaseAuthProvider } from "../context/FirebaseAuthContext";
+import { QueryClient, QueryClientProvider } from "react-query";
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from "react-query";
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+  Inter_900Black,
+} from "@expo-google-fonts/inter";
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
@@ -22,6 +25,15 @@ const pathNames = {
 };
 
 export default function Layout() {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_800ExtraBold,
+    Inter_900Black,
+  });
+
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = new QueryClient();
@@ -34,6 +46,10 @@ export default function Layout() {
       console.log(err);
     }
   };
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <NativeBaseProvider>
@@ -48,9 +64,9 @@ export default function Layout() {
               headerTintColor: "#252525",
               headerBackTitleVisible: false,
               headerTitleStyle: {
-                fontWeight: "bold",
+                fontFamily: "Inter_600SemiBold",
                 color: "#000",
-                fontSize: 30,
+                fontSize: 26,
               },
             }}
           >
@@ -65,7 +81,7 @@ export default function Layout() {
                     onPress={handleLogout}
                     p={1}
                     backgroundColor="transparent"
-                    _text={{ color: "black" }}
+                    _text={{ color: "black", fontFamily: "Inter_600SemiBold" }}
                   >
                     Log Out
                   </Button>

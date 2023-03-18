@@ -16,6 +16,7 @@ const Index: React.FC = () => {
     sessionData && router.replace("/(tabs)");
   }, [sessionData]);
 
+  // Display splash screen while loading session data
   if (isLoading) {
     return <SplashScreen />;
   }
@@ -41,7 +42,11 @@ const Index: React.FC = () => {
           w="60%"
           mt="44px"
           borderRadius="full"
-          _text={{ color: "black", fontWeight: "bold" }}
+          _text={{
+            color: "black",
+            fontFamily: "Inter_600SemiBold",
+            fontSize: 16,
+          }}
         >
           Begin.
         </Button>

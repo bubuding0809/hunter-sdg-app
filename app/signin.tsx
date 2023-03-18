@@ -65,7 +65,7 @@ const Login: React.FC = () => {
                 backgroundColor="transparent"
                 _text={{
                   color: "#FD7366",
-                  fontWeight: "medium",
+                  fontFamily: "Inter_500Medium",
                   fontSize: "md",
                   textDecoration: "none",
                 }}
@@ -86,7 +86,7 @@ const Login: React.FC = () => {
           <Box safeArea p="2" py="8" w="90%" maxW="290">
             <Heading
               size="lg"
-              fontWeight="600"
+              fontFamily="Inter_600SemiBold"
               color="coolGray.800"
               _dark={{
                 color: "warmGray.50",
@@ -96,12 +96,12 @@ const Login: React.FC = () => {
             </Heading>
             <Heading
               mt="1"
+              color="coolGray.600"
+              fontFamily="Inter_400Regular"
+              size="xs"
               _dark={{
                 color: "warmGray.200",
               }}
-              color="coolGray.600"
-              fontWeight="medium"
-              size="xs"
             >
               Sign in to continue.
             </Heading>
@@ -112,9 +112,11 @@ const Login: React.FC = () => {
                 <Input
                   onChangeText={text => setEmail(text)}
                   height={10}
-                  borderLeftRadius="8px"
-                  fontSize={14}
+                  fontFamily={"Inter_400Regular"}
+                  borderRadius={8}
+                  fontSize={16}
                   placeholder="Enter your email"
+                  bgColor="#F5F5F5"
                 />
               </FormControl>
               <FormControl>
@@ -122,19 +124,24 @@ const Login: React.FC = () => {
                 <Input
                   type="password"
                   onChangeText={text => setPassword(text)}
-                  height={10}
-                  borderLeftRadius="8px"
-                  fontSize={14}
                   placeholder="Enter your password"
+                  height={10}
+                  fontFamily={"Inter_400Regular"}
+                  borderRadius={8}
+                  fontSize={16}
+                  bgColor="#F5F5F5"
                 />
               </FormControl>
+
+              {/* Login button */}
               <Button
-                mt="20"
+                mt={10}
                 onPress={handleSignin}
                 bgColor="black"
                 borderRadius="full"
                 _text={{
-                  fontWeight: "semibold",
+                  fontFamily: "Inter_600SemiBold",
+                  fontSize: 16,
                 }}
               >
                 Log In
@@ -150,6 +157,7 @@ const Login: React.FC = () => {
                   fontSize: "sm",
                   textDecoration: "none",
                 }}
+                onPress={() => alert("Forgot password")}
               >
                 Forgot you password?
               </Button>

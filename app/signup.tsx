@@ -102,7 +102,7 @@ const Signup: React.FC = () => {
           <Box safeArea p="2" w="90%" maxW="290" py="8">
             <Heading
               size="lg"
-              fontWeight="600"
+              fontFamily="Inter_600SemiBold"
               color="coolGray.800"
               _dark={{
                 color: "warmGray.50",
@@ -112,12 +112,13 @@ const Signup: React.FC = () => {
             </Heading>
             <Heading
               mt="1"
-              _dark={{
-                color: "warmGray.200",
-              }}
+              fontFamily="Inter_400Regular"
               color="coolGray.600"
               fontWeight="medium"
               size="xs"
+              _dark={{
+                color: "warmGray.200",
+              }}
             >
               Make an account now to be a hunter.
             </Heading>
@@ -133,9 +134,11 @@ const Signup: React.FC = () => {
                   }
                   value={signUpform.email}
                   height={10}
-                  borderLeftRadius="8px"
-                  fontSize={14}
                   placeholder="Email"
+                  fontFamily={"Inter_400Regular"}
+                  borderRadius={8}
+                  fontSize={16}
+                  bgColor="#F5F5F5"
                 />
               </FormControl>
               <FormControl>
@@ -149,10 +152,11 @@ const Signup: React.FC = () => {
                     }))
                   }
                   value={signUpform.password}
-                  height={10}
-                  borderLeftRadius="8px"
-                  fontSize={14}
                   placeholder="Password"
+                  fontFamily={"Inter_400Regular"}
+                  borderRadius={8}
+                  fontSize={16}
+                  bgColor="#F5F5F5"
                 />
               </FormControl>
               <FormControl>
@@ -166,48 +170,54 @@ const Signup: React.FC = () => {
                     }))
                   }
                   value={signUpform.confirmPassword}
-                  height={10}
-                  borderLeftRadius="8px"
-                  fontSize={14}
                   placeholder="Confirm Password"
+                  fontFamily={"Inter_400Regular"}
+                  borderRadius={8}
+                  fontSize={16}
+                  bgColor="#F5F5F5"
                 />
               </FormControl>
+
               {/* Check box to opt in newsletter */}
               <FormControl
                 display="flex"
                 flexDirection="row"
                 alignItems="start"
                 justifyContent="space-between"
+                mt={2}
               >
                 <Checkbox
                   value="newsletter"
                   id="newsletter-checkbox"
-                  aria-label="
-                  I would like to receive your newsletter and other promotional information
-                "
+                  aria-label="I would like to receive your newsletter and other promotional information"
+                  mr={2}
                 />
                 <FormControl.Label
                   _text={{
                     fontSize: "xs",
                     color: "muted.700",
-                    fontWeight: 500,
+                    fontWeight: 400,
                   }}
                   htmlFor="newsletter-checkbox"
                   margin={0}
+                  // Make text wrap
+                  flexShrink={1}
                 >
                   I would like to receive your newsletter and other promotional
                   information.
                 </FormControl.Label>
               </FormControl>
 
+              {/* Sign up button */}
               <Button
-                mt="20"
+                mt={10}
                 colorScheme="indigo"
                 onPress={handleSignUp}
                 bgColor="black"
                 borderRadius="full"
                 _text={{
-                  fontWeight: "semibold",
+                  fontFamily: "Inter_600SemiBold",
+                  fontSize: 16,
                 }}
               >
                 Sign up
