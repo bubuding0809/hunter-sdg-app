@@ -3,7 +3,7 @@ import React from "react";
 import { Button, Center, Link as NativeLink } from "native-base";
 import { Link } from "expo-router";
 
-export default function profile() {
+const ProfilePage = () => {
   return (
     <Center
       style={{
@@ -23,4 +23,6 @@ export default function profile() {
       </Button>
     </Center>
   );
-}
+};
+
+export default ProfilePage;

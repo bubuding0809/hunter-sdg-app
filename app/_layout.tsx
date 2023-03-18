@@ -20,8 +20,9 @@ export const unstable_settings = {
 };
 
 const pathNames = {
-  "/": "Home",
+  "/": "Feed",
   "/profile": "Profile",
+  "/activity": "Activity",
 };
 
 export default function Layout() {
@@ -37,6 +38,8 @@ export default function Layout() {
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = new QueryClient();
+
+  console.log("pathname", pathname);
 
   const handleLogout = async () => {
     try {

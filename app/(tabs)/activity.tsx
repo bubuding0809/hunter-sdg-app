@@ -9,7 +9,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { useQuery } from "react-query";
 import useBountiesQuery from "../../utils/scripts/hooks/queries/useBounties";
 
-const FeedPage = () => {
+const ActivityPage = () => {
   const router = useRouter();
   const { data: sessionData, isLoading } = useFirebaseSession();
 
@@ -67,4 +67,4 @@ const FeedPage = () => {
   );
 };
 
-export default FeedPage;
+export default ActivityPage;
