@@ -2,6 +2,9 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Tabs } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { usePathname } from "expo-router";
+import { Button, Flex } from "native-base";
+import useCreateBounty from "../../utils/scripts/hooks/queries/mutations/useCreateBounty";
+import { generateBounty } from "../../utils/scripts/generateFakeData";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -14,9 +17,24 @@ function TabBarIcon(props: {
   return <FontAwesome style={{ marginBottom: -3 }} {...props} />;
 }
 
-export default function TabLayout() {
+const TabLayout = () => {
   const pathName = usePathname();
   const { data: sessionData, isLoading: sessionLoading } = useFirebaseSession();
+  const { mutate: createBounty } = useCreateBounty();
+
+  // * Call back to add a test bounty
+  const handleAddTestBounty = () => {
+    // First generate a random bounty
+    const randomBounty = generateBounty({
+      clientId: sessionData.uid,
+    });
+
+    // Then call the createBounty mutation to add it to the database
+    createBounty({
+      ...randomBounty,
+      client: sessionData.uid,
+    });
+  };
 
   return (
     <Tabs>
@@ -40,8 +58,12 @@ export default function TabLayout() {
         name="index"
         options={{
           // Do not show header for this route
-          header: () => null,
-          title: "Feed",
+          headerLeft: () => (
+            <Button ml={2} height={10} onPress={handleAddTestBounty}>
+              Add
+            </Button>
+          ),
+          title: "Temporary utility bar",
           tabBarIcon: () => {
             const color = pathName === "/" ? "#FD7366" : "#252525";
             return <TabBarIcon name="map" color={color} size={24} />;
@@ -69,4 +91,6 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-}
+};
+
+export default TabLayout;

@@ -12,25 +12,37 @@ import {
 } from "native-base";
 import { useState } from "react";
 import { Platform } from "react-native";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { Link, Stack, useRouter } from "expo-router";
+import { doc, setDoc } from "firebase/firestore";
 
 const Signup: React.FC = () => {
   const router = useRouter();
   const [signUpform, setSignUpForm] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
+    newsletter: false,
   });
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleSignUp = async () => {
     // Check that all fields are filled
     if (
       signUpform.email === "" ||
       signUpform.password === "" ||
-      signUpform.confirmPassword === ""
+      signUpform.confirmPassword === "" ||
+      signUpform.firstName === "" ||
+      signUpform.lastName === ""
     ) {
       alert("Please fill in all fields");
+      return;
+    }
+
+    if (!signUpform.newsletter) {
+      alert("Please agree to the newsletter");
       return;
     }
 
@@ -39,6 +51,7 @@ const Signup: React.FC = () => {
       return;
     }
 
+    setIsCreating(true);
     // call firebase to create a new user
     try {
       const userCredentials = await createUserWithEmailAndPassword(
@@ -49,7 +62,19 @@ const Signup: React.FC = () => {
 
       // If successful, redirect to home page
       if (userCredentials) {
+        // update user profile
         alert("Account created successfully");
+
+        // Create a new user in firestore
+        const userDocRef = doc(db, "User", userCredentials.user.uid);
+        await setDoc(userDocRef, {
+          email: signUpform.email,
+          firstName: signUpform.firstName,
+          lastName: signUpform.lastName,
+          createdAt: new Date(),
+        });
+
+        // Redirect to home page
         router.replace("(tabs)");
       }
     } catch (error: any) {
@@ -66,6 +91,8 @@ const Signup: React.FC = () => {
         default:
           alert("Something went wrong");
       }
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -123,6 +150,44 @@ const Signup: React.FC = () => {
               Make an account now to be a hunter.
             </Heading>
             <VStack space={3} mt="5">
+              <FormControl>
+                {/* <FormControl.Label>Email</FormControl.Label> */}
+                <Input
+                  isRequired
+                  onChangeText={text =>
+                    setSignUpForm(prev => ({
+                      ...prev,
+                      firstName: text,
+                    }))
+                  }
+                  value={signUpform.firstName}
+                  height={10}
+                  placeholder="First name"
+                  fontFamily={"Inter_400Regular"}
+                  borderRadius={8}
+                  fontSize={16}
+                  bgColor="#F5F5F5"
+                />
+              </FormControl>
+              <FormControl>
+                {/* <FormControl.Label>Email</FormControl.Label> */}
+                <Input
+                  isRequired
+                  onChangeText={text =>
+                    setSignUpForm(prev => ({
+                      ...prev,
+                      lastName: text,
+                    }))
+                  }
+                  value={signUpform.lastName}
+                  height={10}
+                  placeholder="Last name"
+                  fontFamily={"Inter_400Regular"}
+                  borderRadius={8}
+                  fontSize={16}
+                  bgColor="#F5F5F5"
+                />
+              </FormControl>
               <FormControl>
                 {/* <FormControl.Label>Email</FormControl.Label> */}
                 <Input
@@ -192,6 +257,9 @@ const Signup: React.FC = () => {
                   aria-label="I would like to receive your newsletter and other promotional information"
                   mr={2}
                   colorScheme="gray"
+                  onChange={check =>
+                    setSignUpForm(prev => ({ ...prev, newsletter: check }))
+                  }
                 />
                 <FormControl.Label
                   _text={{
@@ -211,6 +279,7 @@ const Signup: React.FC = () => {
 
               {/* Sign up button */}
               <Button
+                isDisabled={isCreating}
                 mt={10}
                 colorScheme="indigo"
                 onPress={handleSignUp}
@@ -221,7 +290,7 @@ const Signup: React.FC = () => {
                   fontSize: 16,
                 }}
               >
-                Sign up
+                {isCreating ? "Creating account..." : "Sign Up"}
               </Button>
             </VStack>
           </Box>
