@@ -30,10 +30,20 @@ const TabLayout = () => {
     });
 
     // Then call the createBounty mutation to add it to the database
-    createBounty({
-      ...randomBounty,
-      client: sessionData.uid,
-    });
+    createBounty(
+      {
+        ...randomBounty,
+        client: sessionData.uid,
+      },
+      // This is the options object where you can specify callbacks
+      {
+        onSuccess: (data, variable, context) => {
+          // * Do something upon success
+          // e.g. navigate to the bounty page
+          // e.g. open a confirmation modal
+        },
+      }
+    );
   };
 
   return (

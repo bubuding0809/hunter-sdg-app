@@ -26,7 +26,20 @@ const createBounty = async (variable: CreateBountyType) => {
 };
 
 const useCreateBounty = () => {
-  return useMutation(["createBounty"], createBounty);
+  return useMutation(["createBounty"], createBounty, {
+    onMutate: variable => {
+      // * Do something upon request of mutation
+    },
+    onError: (error, variable, context) => {
+      // * Do something upon error
+    },
+    onSuccess: (data, variable, context) => {
+      // * Do something upon success
+    },
+    onSettled: (data, error, variable, context) => {
+      // * Do something upon completion of mutation this can be either success or error
+    },
+  });
 };
 
 export default useCreateBounty;
