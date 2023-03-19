@@ -11,20 +11,28 @@ export type CreateBountyType = Modify<
   }
 >;
 
+// This is the async function that will be called when the mutation is called
 const createBounty = async (variable: CreateBountyType) => {
   try {
-    const userDocRef = (await getDoc(doc(db, "User", variable.client))).ref;
+    // First get document ref to the user that is creating the bounty
+    const userDocRef = doc(db, "User", variable.client);
+
+    // Create a reference to the bounty collection and add the bounty
     const collectionRef = collection(db, "Bounty");
     const newDoc = await addDoc(collectionRef, {
       ...variable,
       client: userDocRef,
     });
+
+    // Return the data of the newly created bounty
     return (await getDoc(newDoc)).data();
   } catch (error) {
+    // Do something upon error
     throw error;
   }
 };
 
+// This is a wrapper around the useMutation hook that will be used in the component
 const useCreateBounty = () => {
   return useMutation(["createBounty"], createBounty, {
     onMutate: variable => {
