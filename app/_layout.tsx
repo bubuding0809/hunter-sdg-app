@@ -47,15 +47,17 @@ export default function Layout() {
           <Stack.Screen
             name="(tabs)"
             options={{
-              title: "BiteBuddies",
+              title: "Hunter",
+              
               headerRight: () => (
                 <Button
-                  colorScheme="danger"
+                  colorScheme=""
                   onPress={handleLogout}
                   marginRight="10px"
                 >
                   Log Out
                 </Button>
+                
               ),
             }}
           />

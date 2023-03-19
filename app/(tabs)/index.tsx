@@ -4,6 +4,8 @@ import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import {StyleSheet, FlatList,Modal,View,Text,Button, Image} from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { flexbox } from "native-base/lib/typescript/theme/styled-system";
+import { block } from "react-native-reanimated";
 
 
 export default function Home() {
@@ -14,7 +16,10 @@ export default function Home() {
     fullName: "Aafreen Khan",
     timeStamp: "12:47 PM",
     recentText: "Good Day!",
-    avatarUrl: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+    avatarUrl: "https://pbs.twimg.com/profile_images/1002416157280727040/7SjA9KTJ_400x400.jpg",
+    age: 20,
+    gender: "Female",
+    additionalinfo: "Additional info goes here"
   }, {
     id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
     location: "~1.4km",
@@ -83,17 +88,18 @@ export default function Home() {
       
 
         <FlatList
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1 , backgroundColor: "white", alignItems:"center"}}
+          style = {{}}
           data = {DATA}
           renderItem = {({item}) => 
-            <VStack space = {10}>
-              
+          
                 <Container style = {styles.bountyBox}>
-                  <View style = {{margin: 10}}>
+                  <Pressable onPress ={ () => openBounty(item)} style = {styles.pressable}>
+                  <View style = {styles.image_box}>
                     <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
                   </View>
                 
-                  <Pressable onPress ={openBounty} style = {styles.pressable}>
+                  <Pressable onPress ={ () => openBounty(item)} style = {styles.pressable}>
                     <View style = {{flexDirection: "row"}}>
                         <Text style={styles.name_text}>{item.fullName}</Text>
                         <View style = {{flex: 1, padding: 5}}>
@@ -104,16 +110,10 @@ export default function Home() {
                       <Text style={styles.description_text}>{item.recentText}</Text>
                       <View style = {{flex: 1}}>
                         <Text style={styles.location}>{item.location}</Text>
-                      </View>
-                      
-                    </View>
-                    
+                  </View>
                   </Pressable>
                 </Container>
-              
-                
-              
-            </VStack>
+
           
           }
         />
@@ -155,33 +155,144 @@ const styles = StyleSheet.create({
   timestamp: {
     fontWeight: "normal",
     fontSize: 10,
-    textAlign: "right"
-  },
-  bountyBox: {
-    width: "75%", 
-    height: 100,
-    flexDirection: "row", 
-    margin: 10,
-    //borderBottomWidth: 3,
-    backgroundColor: "white",
-  },
-  avatar: {
-    width: 60,
-    height: "100%",
-    marginBottom: 10
-  },
-  pressable: {
-    borderBottomWidth: 1,
-    borderColor: "grey",
-    width: "100%",
-    height: "100%",
-    padding:5,
-    paddingLeft: 15
-
+    textAlign: "right",
   },
   location: {
     fontWeight: "normal",
     fontSize: 10,
     textAlign: "right",
+  },
+  description_box:{
+    width:"70%",
+    height:"100%",
+
+  },
+  bountyBox: {
+    width: "100%", 
+    height: 100,
+    margin: 5,
+    backgroundColor: "white",
+    //alignItems:"center",
+    justifyContent:"center"
+    
+  },
+  avatar: {
+    width: 70,
+    height: 80,
+    borderRadius: 5,
+    marginVertical:10,
+    position:"relative"
+  },
+  image_box: {
+    position: "relative",
+    height:"100%",
+  },
+  leftbox: {
+    position: "relative",
+    padding: 15,
+    flex:6,
+    height:"100%",
+    flexDirection: "column",
+    justifyContent:"space-between",
+    paddingVertical:10,
+    borderBottomWidth: 1,
+
+  },
+  rightbox: {
+    position: "relative",
+    flex:1.75,
+    flexDirection: "column",
+    justifyContent:"space-between",
+    paddingVertical:10,
+    borderBottomWidth: 1,
+
+  },
+  pressable: {
+    //contained inside BountyBox
+    //borderBottomWidth: 1,
+    borderColor: "grey",
+    width: "100%",
+    height: "100%",
+    padding:5,
+    paddingLeft: 15
+  },
+  location: {
+    fontWeight: "normal",
+    fontSize: 10,
+    textAlign: "right",
+  },
+  modalName: {
+    fontWeight: "bold",
+    fontSize: 40
+  },
+  avatarModal:{
+    width: 170,
+    height: 170,
+    borderRadius: 90
+  },
+  modalCloseButtonContainer:{
+    position: 'absolute',
+    bottom: 0,
+    left: 50,
+    right: 50,
+    backgroundColor: 'black',
+    borderTopWidth: 1,
+    borderColor: 'black',
+    padding: 10,
+    borderRadius:40
+  },
+  HuntButtonContainer:{
+    position: 'absolute',
+    bottom: 100,
+    left: 100,
+    right: 100,
+    backgroundColor: 'black',
+    borderTopWidth: 1,
+    borderColor: 'black',
+    padding: 10,
+    borderRadius:40
+  },
+  DescContainerActive:{
+    position: 'absolute',
+    backgroundColor: 'lightgrey',//rgba(124,97,128, 1)',
+    padding: 10,
+    left: 30,
+    right: 190,
+    borderRadius:25
+  },
+  DescContainerInactive:{
+    position: 'absolute',
+    backgroundColor: 'rgba(233,233,233, 1)',//rgba(124,97,128, 1)',
+    padding: 10,
+    left: 30,
+    right: 190,
+    borderRadius:25
+  },
+  PhotoContainerActive:{
+    position: 'absolute',
+    backgroundColor: 'lightgrey',//rgba(124,97,128, 1)',
+    padding: 10,
+    left: 190,
+    right: 30,
+    borderRadius:25
+  },
+  PhotoContainerInactive:{
+    position: 'absolute',
+    backgroundColor: 'rgba(233,233,233, 1)',//rgba(124,97,128, 1)',
+    padding: 10,
+    left: 190,
+    right: 30,
+    borderRadius:25
+  },
+  modalBoldedText:{
+    fontWeight: "bold",
+    fontSize: 20
+  },
+  modalText:{
+    fontSize: 20
+  },
+  photos:{
+    width: 100,
+    height: 100,
   }
 });
