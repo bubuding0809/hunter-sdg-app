@@ -1,18 +1,6 @@
 import { View, Image, Button, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
-import {
-  Center,
-  ScrollView,
-  VStack,
-  Text,
-  Box,
-  Flex,
-  Heading,
-  HStack,
-  Spinner,
-  Divider,
-  FlatList,
-} from "native-base";
+import { Center, Text, Box, Flex, Divider, FlatList } from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import useBountiesQuery, {
@@ -114,7 +102,6 @@ const FeedPage = () => {
       }}
     >
       <FlatList
-        // hide scroll bar
         showsVerticalScrollIndicator={false}
         style={{ width: "100%", minHeight: "100%" }}
         data={bountyData}
@@ -126,7 +113,12 @@ const FeedPage = () => {
             onRefresh={() => {
               // Refetch bounties data
               setRefreshing(true);
-              refetch().then(err => setRefreshing(false));
+              refetch()
+                .then(res => setRefreshing(false))
+                .catch(err => {
+                  setRefreshing(false);
+                  alert("Error refreshing bounties");
+                });
             }}
           />
         }
@@ -134,6 +126,7 @@ const FeedPage = () => {
           <Divider backgroundColor="transparent" p={2} />
         )}
         onEndReached={() => {
+          // This is where we would load more bounties when we get to the end of the list
           console.log("Getting next 10 bounties");
         }}
       />
