@@ -19,6 +19,7 @@ import useBountiesQuery, {
   BountyQueryType,
 } from "../../utils/scripts/hooks/queries/useGetBounties";
 
+// Temporary bounty card to display data
 const bountyCard: React.FC<BountyQueryType> = bountyItem => {
   return (
     <Center
