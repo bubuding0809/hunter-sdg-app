@@ -116,7 +116,7 @@ export const generateBounty = ({
   clientId?: string;
   userRefs?: DocumentReference<DocumentData>[];
 }): Bounty => {
-  const category = categories[faker.datatype.number({ min: 0, max: 4 })] as
+  const category = categories[faker.datatype.number({ min: 0, max: 3 })] as
     | "child"
     | "elderly"
     | "adult"
