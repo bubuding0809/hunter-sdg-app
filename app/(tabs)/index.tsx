@@ -10,6 +10,7 @@ import {
   Heading,
   HStack,
   Spinner,
+  Divider,
 } from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
@@ -104,15 +105,41 @@ const FeedPage = () => {
               >
                 <Text fontSize="xl">{bounty.name}</Text>
                 <Text fontSize="md" numberOfLines={2}>
-                  {bounty.description}
+                  {bounty.appearance}
+                </Text>
+                <Divider my={2} />
+                <Text fontSize="md" numberOfLines={2}>
+                  {bounty.additionalInfo?.length > 0
+                    ? bounty.additionalInfo
+                    : "No additional info"}
+                </Text>
+                <Divider my={2} />
+                <Text fontSize="md" textAlign="left">
+                  Last seen: {bounty.lastSeen.toDate().toString()}
                 </Text>
               </Box>
+              <Divider orientation="vertical" mx={2} />
               <Flex direction="column" h="full" grow={1}>
                 <Text fontSize="md" textAlign="right">
-                  age: {bounty.age}
+                  type: {bounty.category}
                 </Text>
                 <Text fontSize="md" textAlign="right">
-                  $$$ {bounty.reward}
+                  breed: {bounty.breed ?? "unknown"}
+                </Text>
+                <Text fontSize="md" textAlign="right">
+                  age: {bounty.age ?? "unknown"}
+                </Text>
+                <Text fontSize="md" textAlign="right">
+                  $$$ {bounty.reward ?? "unknown"}
+                </Text>
+                <Text fontSize="md" textAlign="right">
+                  Sex: {bounty.gender}
+                </Text>
+                <Text fontSize="md" textAlign="right">
+                  Lat: {bounty.location.toJSON().latitude}
+                </Text>
+                <Text fontSize="md" textAlign="right">
+                  Long: {bounty.location.toJSON().longitude}
                 </Text>
               </Flex>
             </Center>

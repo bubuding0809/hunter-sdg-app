@@ -6,11 +6,10 @@ import {
 } from "firebase/firestore";
 
 export type Bounty = {
+  client: DocumentReference<DocumentData>;
   createdAt: Date;
   active: boolean;
-  client: DocumentReference<DocumentData>;
   name: string;
-  description: string;
   appearance: string;
   location: GeoPoint;
   lastSeen: Date;
@@ -18,8 +17,9 @@ export type Bounty = {
   gender: "male" | "female" | "other";
   images: string[];
   hunters: string[];
-  additionalInfo?: string;
   radius: number;
+  description?: string;
+  additionalInfo?: string;
   reward?: number;
   breed?: string;
   age?: number;

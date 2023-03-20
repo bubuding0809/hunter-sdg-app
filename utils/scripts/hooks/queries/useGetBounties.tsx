@@ -1,16 +1,28 @@
-import { query, collection, getDocs, limit, orderBy } from "firebase/firestore";
+import {
+  query,
+  collection,
+  getDocs,
+  limit,
+  orderBy,
+  Timestamp,
+} from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
 import { useQuery } from "react-query";
 import { Bounty } from "../../types";
+import { Modify } from "react-native-maps/lib/sharedTypesInternal";
+
+type BountyQueryType = Modify<
+  Bounty,
+  {
+    lastSeen: Timestamp;
+    createdAt: Timestamp;
+  }
+>;
 
 // Async function to get the bounty data from firebase
 const getBounties = async () => {
   // limit query to only 10 bounties and order by creation date from newest to oldest
-  const q = query(
-    collection(db, "Bounty"),
-    orderBy("createdAt", "desc"),
-    limit(10)
-  );
+  const q = query(collection(db, "Bounty"), orderBy("createdAt", "desc"));
 
   // Collect all the bounty data into an array and return it
   const bountyData = [];
@@ -19,7 +31,7 @@ const getBounties = async () => {
     bountyData.push(doc.data());
   });
 
-  return bountyData as Bounty[];
+  return bountyData as BountyQueryType[];
 };
 
 type QueryOptions = {

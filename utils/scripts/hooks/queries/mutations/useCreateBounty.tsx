@@ -1,4 +1,11 @@
-import { addDoc, collection, doc, getDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  Timestamp,
+  serverTimestamp,
+} from "firebase/firestore";
 import { Modify } from "react-native-maps/lib/sharedTypesInternal";
 import { useMutation } from "react-query";
 import { db } from "../../../../../firebaseConfig";
@@ -8,6 +15,10 @@ export type CreateBountyType = Modify<
   Bounty,
   {
     client: string;
+    active?: boolean;
+    createdAt?: Date;
+    hunters?: string[];
+    radius?: number;
   }
 >;
 
@@ -15,14 +26,29 @@ export type CreateBountyType = Modify<
 const createBounty = async (variable: CreateBountyType) => {
   try {
     // First get document ref to the user that is creating the bounty
-    const userDocRef = doc(db, "User", variable.client);
+    const clientRef = doc(db, "User", variable.client);
+
+    // Then create a new bounty object with the data from the variable with some defaults
+    const newBounty = {
+      ...variable,
+      client: clientRef,
+      createdAt: variable.createdAt ?? serverTimestamp(),
+      active: variable.active ?? true,
+      hunters: variable.hunters ?? [],
+      radius: variable.radius ?? 1000,
+    };
+
+    // remove any undefined values from the bounty
+    Object.keys(newBounty).forEach(key => {
+      if (newBounty[key] === undefined) {
+        delete newBounty[key];
+      }
+    });
 
     // Create a reference to the bounty collection and add the bounty
     const collectionRef = collection(db, "Bounty");
-    const newDoc = await addDoc(collectionRef, {
-      ...variable,
-      client: userDocRef,
-    });
+
+    const newDoc = await addDoc(collectionRef, newBounty);
 
     // Return the data of the newly created bounty
     return (await getDoc(newDoc)).data();
