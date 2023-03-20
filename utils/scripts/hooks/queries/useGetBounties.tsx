@@ -22,7 +22,11 @@ export type BountyQueryType = Modify<
 // Async function to get the bounty data from firebase
 const getBounties = async () => {
   // limit query to only 10 bounties and order by creation date from newest to oldest
-  const q = query(collection(db, "Bounty"), orderBy("createdAt", "desc"));
+  const q = query(
+    collection(db, "Bounty"),
+    orderBy("createdAt", "desc"),
+    limit(10)
+  );
 
   // Collect all the bounty data into an array and return it
   const bountyData = [];

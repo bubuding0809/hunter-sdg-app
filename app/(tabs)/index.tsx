@@ -3,9 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Center, Text, Box, Flex, Divider, FlatList } from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
-import useBountiesQuery, {
-  BountyQueryType,
-} from "../../utils/scripts/hooks/queries/useGetBounties";
+import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
+import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
 
 // Temporary bounty card to display data
 const bountyCard: React.FC<BountyQueryType> = bountyItem => {
