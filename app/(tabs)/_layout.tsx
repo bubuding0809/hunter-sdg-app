@@ -32,8 +32,17 @@ const TabLayout = () => {
     // Then call the createBounty mutation to add it to the database
     createBounty(
       {
-        ...randomBounty,
         client: sessionData.uid,
+        name: randomBounty.name,
+        age: randomBounty.age,
+        gender: randomBounty.gender,
+        category: randomBounty.category,
+        breed: randomBounty.breed,
+        lastSeen: randomBounty.lastSeen,
+        location: randomBounty.location,
+        appearance: randomBounty.appearance,
+        additionalInfo: randomBounty.additionalInfo,
+        images: randomBounty.images,
       },
       // This is the options object where you can specify callbacks
       {

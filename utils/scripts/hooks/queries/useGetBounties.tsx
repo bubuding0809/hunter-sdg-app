@@ -11,7 +11,7 @@ import { useQuery } from "react-query";
 import { Bounty } from "../../types";
 import { Modify } from "react-native-maps/lib/sharedTypesInternal";
 
-type BountyQueryType = Modify<
+export type BountyQueryType = Modify<
   Bounty,
   {
     lastSeen: Timestamp;

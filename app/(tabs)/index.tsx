@@ -1,4 +1,4 @@
-import { View, Image, Button } from "react-native";
+import { View, Image, Button, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
   Center,
@@ -11,10 +11,13 @@ import {
   HStack,
   Spinner,
   Divider,
+  FlatList,
 } from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
-import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
+import useBountiesQuery, {
+  BountyQueryType,
+} from "../../utils/scripts/hooks/queries/useGetBounties";
 
 const FeedPage = () => {
   const router = useRouter();
@@ -25,127 +28,138 @@ const FeedPage = () => {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const handleScroll = event => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    const contentHeight = event.nativeEvent.contentSize.height;
-    const scrollViewHeight = event.nativeEvent.layoutMeasurement.height;
+  // const handleScroll = event => {
+  //   const offsetY = event.nativeEvent.contentOffset.y;
+  //   const contentHeight = event.nativeEvent.contentSize.height;
+  //   const scrollViewHeight = event.nativeEvent.layoutMeasurement.height;
 
-    // Check if we're close to the bottom of the list
-    if (offsetY >= contentHeight - scrollViewHeight * 1.2) {
-      // Get the next 10 bounties
-      console.log("Getting next 10 bounties");
-    }
+  //   // Check if we're close to the bottom of the list
+  //   if (offsetY >= contentHeight - scrollViewHeight * 1.2) {
+  //     // Get the next 10 bounties
+  //     console.log("Getting next 10 bounties");
+  //   }
 
-    // Check if we pulled down to refresh
-    if (offsetY <= -60) {
-      // Refetch the bounty data
-      console.log("Refreshing bounty data");
-      if (!refreshing) {
-        setRefreshing(true);
-        refetch()
-          .catch(err => console.log("Error refreshing bounty data: ", err))
-          .finally(() => setTimeout(() => setRefreshing(false), 200));
-      }
-    }
+  //   // Check if we pulled down to refresh
+  //   if (offsetY <= -60) {
+  //     // Refetch the bounty data
+  //     console.log("Refreshing bounty data");
+  //     if (!refreshing) {
+  //       setRefreshing(true);
+  //       refetch()
+  //         .catch(err => console.log("Error refreshing bounty data: ", err))
+  //         .finally(() => setTimeout(() => setRefreshing(false), 200));
+  //     }
+  //   }
+  // };
+
+  const bountyCard = (bountyItem: BountyQueryType) => {
+    return (
+      <Center
+        w="full"
+        bg="white"
+        borderWidth={1}
+        rounded="md"
+        shadow={3}
+        flexDirection="row"
+        justifyContent={"start"}
+        alignItems="start"
+        p={3}
+      >
+        {/* Image */}
+        <Image
+          source={{
+            uri: bountyItem.images[0],
+          }}
+          style={{ width: 50, height: 50 }}
+          borderRadius={10}
+        />
+        <Box
+          style={{
+            marginLeft: 10,
+          }}
+          flexShrink={1}
+        >
+          <Text fontSize="xl">{bountyItem.name}</Text>
+          <Text fontSize="md" numberOfLines={2}>
+            {bountyItem.appearance}
+          </Text>
+          <Divider my={2} />
+          <Text fontSize="md" numberOfLines={2}>
+            {bountyItem.additionalInfo?.length > 0
+              ? bountyItem.additionalInfo
+              : "No additional info"}
+          </Text>
+          <Divider my={2} />
+          <Text fontSize="md" textAlign="left">
+            Last seen: {bountyItem.lastSeen.toDate().toString()}
+          </Text>
+        </Box>
+        <Divider orientation="vertical" mx={2} />
+        <Flex direction="column" h="full" grow={1}>
+          <Text fontSize="md" textAlign="right">
+            type: {bountyItem.category}
+          </Text>
+          <Text fontSize="md" textAlign="right">
+            breed: {bountyItem.breed ?? "unknown"}
+          </Text>
+          <Text fontSize="md" textAlign="right">
+            age: {bountyItem.age ?? "unknown"}
+          </Text>
+          <Text fontSize="md" textAlign="right">
+            $$$ {bountyItem.reward ?? "unknown"}
+          </Text>
+          <Text fontSize="md" textAlign="right">
+            Sex: {bountyItem.gender}
+          </Text>
+          <Text fontSize="md" textAlign="right">
+            Lat: {bountyItem.location.toJSON().latitude}
+          </Text>
+          <Text fontSize="md" textAlign="right">
+            Long: {bountyItem.location.toJSON().longitude}
+          </Text>
+        </Flex>
+      </Center>
+    );
   };
 
   return (
     <Center
       style={{
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        padding: 10,
+        paddingHorizontal: 10,
+        paddingTop: 10,
         backgroundColor: "#fff",
       }}
     >
-      <ScrollView
-        w="full"
-        h="full"
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-      >
-        {refreshing && (
-          <HStack space={2} justifyContent="center" p={2}>
-            <Spinner accessibilityLabel="Loading posts" color="black" />
-            <Heading color="black" fontSize="md">
-              Loading
-            </Heading>
-          </HStack>
+      <FlatList
+        style={{ width: "100%", minHeight: "100%" }}
+        data={bountyData}
+        renderItem={({ item }) => bountyCard(item)}
+        keyExtractor={item => item.createdAt.toString()}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              refetch()
+                .catch(err =>
+                  console.log("Error refreshing bounty data: ", err)
+                )
+                .finally(() => setRefreshing(false));
+            }}
+          />
+        }
+        ItemSeparatorComponent={() => (
+          <Divider backgroundColor="transparent" p={2} />
         )}
-        {/* Show drag down to refresh indicator when user pulls down screen */}
-        <VStack space={4} alignItems="center">
-          {bountyData?.map((bounty, i) => (
-            <Center
-              key={i}
-              w="full"
-              bg="white"
-              borderWidth={1}
-              rounded="md"
-              shadow={3}
-              flexDirection="row"
-              justifyContent={"start"}
-              alignItems="start"
-              p={3}
-            >
-              {/* Image */}
-              <Image
-                source={{
-                  uri: bounty.images[0],
-                }}
-                style={{ width: 50, height: 50 }}
-                borderRadius={10}
-              />
-              <Box
-                style={{
-                  marginLeft: 10,
-                }}
-                flexShrink={1}
-              >
-                <Text fontSize="xl">{bounty.name}</Text>
-                <Text fontSize="md" numberOfLines={2}>
-                  {bounty.appearance}
-                </Text>
-                <Divider my={2} />
-                <Text fontSize="md" numberOfLines={2}>
-                  {bounty.additionalInfo?.length > 0
-                    ? bounty.additionalInfo
-                    : "No additional info"}
-                </Text>
-                <Divider my={2} />
-                <Text fontSize="md" textAlign="left">
-                  Last seen: {bounty.lastSeen.toDate().toString()}
-                </Text>
-              </Box>
-              <Divider orientation="vertical" mx={2} />
-              <Flex direction="column" h="full" grow={1}>
-                <Text fontSize="md" textAlign="right">
-                  type: {bounty.category}
-                </Text>
-                <Text fontSize="md" textAlign="right">
-                  breed: {bounty.breed ?? "unknown"}
-                </Text>
-                <Text fontSize="md" textAlign="right">
-                  age: {bounty.age ?? "unknown"}
-                </Text>
-                <Text fontSize="md" textAlign="right">
-                  $$$ {bounty.reward ?? "unknown"}
-                </Text>
-                <Text fontSize="md" textAlign="right">
-                  Sex: {bounty.gender}
-                </Text>
-                <Text fontSize="md" textAlign="right">
-                  Lat: {bounty.location.toJSON().latitude}
-                </Text>
-                <Text fontSize="md" textAlign="right">
-                  Long: {bounty.location.toJSON().longitude}
-                </Text>
-              </Flex>
-            </Center>
-          ))}
-        </VStack>
-      </ScrollView>
+        onEndReached={() => {
+          console.log("Getting next 10 bounties");
+        }}
+      />
     </Center>
   );
 };
