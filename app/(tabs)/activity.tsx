@@ -1,12 +1,14 @@
 import { View, Image, Button } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Center, ScrollView, VStack, Text } from "native-base";
+import { Center, ScrollView, VStack, Text, Box } from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
+import { useLocation } from "../../context/LocationContext";
 
 const ActivityPage = () => {
   const router = useRouter();
-  const { data: sessionData, isLoading } = useFirebaseSession();
+  const { data: sessionData, isLoading: sessionLoading } = useFirebaseSession();
+  const { location, heading } = useLocation();
 
   return (
     <Center
@@ -20,7 +22,19 @@ const ActivityPage = () => {
         height: "100%",
       }}
     >
-      <Text>Map view of current activity</Text>
+      <Box>
+        <Text>Magnetic heading:</Text>
+        <Text color={"red.500"}>{heading?.magHeading ?? "No reading"}</Text>
+      </Box>
+      <Box>
+        <Text>Location</Text>
+        <Text color={"red.500"}>
+          {location?.coords.latitude ?? "No reading"}
+        </Text>
+        <Text color={"red.500"}>
+          {location?.coords.longitude ?? "No reading"}
+        </Text>
+      </Box>
     </Center>
   );
 };

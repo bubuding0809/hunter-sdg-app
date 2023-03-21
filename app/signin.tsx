@@ -110,6 +110,7 @@ const Login: React.FC = () => {
               <FormControl>
                 {/* <FormControl.Label>Email ID</FormControl.Label> */}
                 <Input
+                  spellCheck={false}
                   onChangeText={text => setEmail(text)}
                   height={10}
                   fontFamily={"Inter_400Regular"}
