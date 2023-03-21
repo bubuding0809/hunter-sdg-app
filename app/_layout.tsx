@@ -13,6 +13,7 @@ import {
   Inter_800ExtraBold,
   Inter_900Black,
 } from "@expo-google-fonts/inter";
+import { LocationProvider } from "../context/LocationContext";
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
@@ -55,42 +56,47 @@ export default function Layout() {
   return (
     <NativeBaseProvider>
       <QueryClientProvider client={queryClient}>
-        <FirebaseAuthProvider>
-          <Stack
-            initialRouteName="home"
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: "#fff",
-              },
-              headerTintColor: "#252525",
-              headerBackTitleVisible: false,
-              headerTitleStyle: {
-                fontFamily: "Inter_600SemiBold",
-                color: "#000",
-                fontSize: 26,
-              },
-            }}
-          >
-            <Stack.Screen
-              name="(tabs)"
-              options={{
-                // set title to current tab
-                title: pathNames[pathname],
-                headerBackVisible: false,
-                headerRight: () => (
-                  <Button
-                    onPress={handleLogout}
-                    p={1}
-                    backgroundColor="transparent"
-                    _text={{ color: "black", fontFamily: "Inter_600SemiBold" }}
-                  >
-                    Log Out
-                  </Button>
-                ),
+        <LocationProvider>
+          <FirebaseAuthProvider>
+            <Stack
+              initialRouteName="home"
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: "#fff",
+                },
+                headerTintColor: "#252525",
+                headerBackTitleVisible: false,
+                headerTitleStyle: {
+                  fontFamily: "Inter_600SemiBold",
+                  color: "#000",
+                  fontSize: 26,
+                },
               }}
-            />
-          </Stack>
-        </FirebaseAuthProvider>
+            >
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  // set title to current tab
+                  title: pathNames[pathname],
+                  headerBackVisible: false,
+                  headerRight: () => (
+                    <Button
+                      onPress={handleLogout}
+                      p={1}
+                      backgroundColor="transparent"
+                      _text={{
+                        color: "black",
+                        fontFamily: "Inter_600SemiBold",
+                      }}
+                    >
+                      Log Out
+                    </Button>
+                  ),
+                }}
+              />
+            </Stack>
+          </FirebaseAuthProvider>
+        </LocationProvider>
       </QueryClientProvider>
     </NativeBaseProvider>
   );

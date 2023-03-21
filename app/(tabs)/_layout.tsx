@@ -5,7 +5,6 @@ import { usePathname } from "expo-router";
 import { Button, Flex } from "native-base";
 import useCreateBounty from "../../utils/scripts/hooks/queries/mutations/useCreateBounty";
 import { generateBounty } from "../../utils/scripts/generateFakeData";
-import { LocationProvider } from "../../context/LocationContext";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -57,61 +56,59 @@ const TabLayout = () => {
   };
 
   return (
-    <LocationProvider>
-      <Tabs>
-        <Tabs.Screen
-          name="profile"
-          options={{
-            // Do not show header for this route
-            header: () => null,
-            title: "Profile",
-            tabBarIcon: () => {
-              // q: gives me shades of light blacks
-              const color = pathName === "/profile" ? "#FD7366" : "#252525";
-              return <TabBarIcon name="user" color={color} size={24} />;
-            },
-            tabBarLabelStyle: {
-              color: pathName === "/profile" ? "#FD7366" : "#252525",
-            },
-          }}
-        />
-        <Tabs.Screen
-          name="index"
-          options={{
-            // Do not show header for this route
-            headerLeft: () => (
-              <Button ml={2} height={10} onPress={handleAddTestBounty}>
-                Add
-              </Button>
-            ),
-            title: "Temporary utility bar",
-            tabBarIcon: () => {
-              const color = pathName === "/" ? "#FD7366" : "#252525";
-              return <TabBarIcon name="map" color={color} size={24} />;
-            },
-            // style tab bar title
-            tabBarLabelStyle: {
-              color: pathName === "/" ? "#FD7366" : "#252525",
-            },
-          }}
-        />
-        <Tabs.Screen
-          name="activity"
-          options={{
-            // Do not show header for this route
-            header: () => null,
-            title: "Activity",
-            tabBarIcon: () => {
-              const color = pathName === "/activity" ? "#FD7366" : "#252525";
-              return <TabBarIcon name="delicious" color={color} size={24} />;
-            },
-            tabBarLabelStyle: {
-              color: pathName === "/activity" ? "#FD7366" : "#252525",
-            },
-          }}
-        />
-      </Tabs>
-    </LocationProvider>
+    <Tabs>
+      <Tabs.Screen
+        name="profile"
+        options={{
+          // Do not show header for this route
+          header: () => null,
+          title: "Profile",
+          tabBarIcon: () => {
+            // q: gives me shades of light blacks
+            const color = pathName === "/profile" ? "#FD7366" : "#252525";
+            return <TabBarIcon name="user" color={color} size={24} />;
+          },
+          tabBarLabelStyle: {
+            color: pathName === "/profile" ? "#FD7366" : "#252525",
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          // Do not show header for this route
+          headerLeft: () => (
+            <Button ml={2} height={10} onPress={handleAddTestBounty}>
+              Add
+            </Button>
+          ),
+          title: "Temporary utility bar",
+          tabBarIcon: () => {
+            const color = pathName === "/" ? "#FD7366" : "#252525";
+            return <TabBarIcon name="map" color={color} size={24} />;
+          },
+          // style tab bar title
+          tabBarLabelStyle: {
+            color: pathName === "/" ? "#FD7366" : "#252525",
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="activity"
+        options={{
+          // Do not show header for this route
+          header: () => null,
+          title: "Activity",
+          tabBarIcon: () => {
+            const color = pathName === "/activity" ? "#FD7366" : "#252525";
+            return <TabBarIcon name="delicious" color={color} size={24} />;
+          },
+          tabBarLabelStyle: {
+            color: pathName === "/activity" ? "#FD7366" : "#252525",
+          },
+        }}
+      />
+    </Tabs>
   );
 };
 
