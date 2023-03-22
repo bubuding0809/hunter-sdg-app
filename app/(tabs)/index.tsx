@@ -4,9 +4,17 @@ import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import {StyleSheet, FlatList,Modal,View,Text,Button, Image} from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
+<<<<<<< Updated upstream
+import { flexbox } from "native-base/lib/typescript/theme/styled-system";
+import { block } from "react-native-reanimated";
 
+=======
+import BountyDescription from '../BountyDescription'
+import BountyCard from '../Component/BountyCard'
+>>>>>>> Stashed changes
 
 export default function Home() {
+  
 
   const DATA = [{
     id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -89,36 +97,39 @@ export default function Home() {
     gender: "Female",
     additionalinfo: "Additional info goes here"
   }];
-
-  const router = useRouter();
   const [isModalVisible, setModalVisible] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [selectedItem, setSelectedItem] = useState(DATA[0]);
-  const [IsDesc,setIsDesc] = useState(true);
+<<<<<<< Updated upstream
+
+  const openBounty: () => void = () => {
+    setModalVisible(true);
+    console.log("You pressed");
+  };
 
   const closeModal = () => {
     setModalVisible(false);
   };
 
-  const openBounty = (item: any): void => {
-    setModalVisible(true);
-    setSelectedItem(item);
-  };
-  
-  
-
+=======
+  const [selectedItem, setSelectedItem] = useState(DATA[0]);
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [IsDesc,setIsDesc] = useState(true);
+ 
+  const changeModalVisible =(bool:boolean) =>{
+    setModalVisible(bool)
+  }
+>>>>>>> Stashed changes
   return (
     <SafeAreaView edges={['left', 'right']}>
-      
-
         <FlatList
-          contentContainerStyle={{ flexGrow: 1 }}
+<<<<<<< Updated upstream
+          contentContainerStyle={{ flexGrow: 1 , backgroundColor: "white", alignItems:"center"}}
+          style = {{}}
           data = {DATA}
           renderItem = {({item}) => 
-            <VStack space = {10}>
-              
+          
                 <Container style = {styles.bountyBox}>
-                  <View style = {{margin: 10}}>
+                  <Pressable onPress ={ () => openBounty(item)} style = {styles.pressable}>
+                  <View style = {styles.image_box}>
                     <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
                   </View>
                 
@@ -133,19 +144,43 @@ export default function Home() {
                       <Text style={styles.description_text}>{item.recentText}</Text>
                       <View style = {{flex: 1}}>
                         <Text style={styles.location}>{item.location}</Text>
-                      </View>
-                      
+=======
+          contentContainerStyle={{ flexGrow: 1, alignItems:"center", backgroundColor: "white"}}
+          data = {DATA}
+          renderItem = {({item}) => 
+              
+                <Container style = {[styles.bountyBox, styles.shadowProp]}>
+                  <Pressable onPress ={ () => changeModalVisible(true)} style = {styles.pressable}>
+                    <View style = {styles.imagebox}>
+                      <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
                     </View>
-                    
+                  <View style = {styles.leftbox}>
+                        <Text style={styles.name_text}>{item.fullName}</Text>
+                        <View style = {styles.descriptionbox}>
+                          <Text style={styles.description_text}>{item.recentText}</Text>
+                        </View>
+                        
+                  </View>
+                  <View style = {styles.rightbox}>
+                      <Text style={styles.timestamp}>{item.timeStamp}</Text>
+                      <Text style={styles.location}>{item.location}</Text>
+>>>>>>> Stashed changes
+                  </View>
                   </Pressable>
+                  <Modal
+                    visible = {isModalVisible}
+                    animationType = "slide">
+                    <BountyCard
+                    changeModalVisible ={changeModalVisible}
+                    />
+                    </Modal>
+                    
                 </Container>
-              
-                
-              
-            </VStack>
+
           
           }
         />
+<<<<<<< Updated upstream
         {/* <Link href="/modal">AAAAAAAAAAAAAA</Link> */}
 
 
@@ -241,14 +276,11 @@ export default function Home() {
             
 
         </Modal>
+=======
+>>>>>>> Stashed changes
     </SafeAreaView>
-
-
-    
   );
 }
-
-
 
 const styles = StyleSheet.create({
   
@@ -263,28 +295,118 @@ const styles = StyleSheet.create({
   timestamp: {
     fontWeight: "normal",
     fontSize: 10,
-    textAlign: "right"
+    textAlign: "right",
+  },
+  location: {
+    fontWeight: "normal",
+    fontSize: 10,
+    textAlign: "right",
+  },
+  description_box:{
+    width:"70%",
+    height:"100%",
+
   },
   bountyBox: {
-    width: "75%", 
+    width: "100%", 
     height: 100,
+<<<<<<< Updated upstream
+    margin: 5,
+=======
     flexDirection: "row", 
-    margin: 10,
-    //borderBottomWidth: 3,
+    marginVertical: 10,
+>>>>>>> Stashed changes
     backgroundColor: "white",
+    //alignItems:"center",
+    justifyContent:"center"
+    
   },
   avatar: {
-    width: 60,
-    height: "100%",
-    marginBottom: 10
+<<<<<<< Updated upstream
+    width: 70,
+    height: 80,
+    borderRadius: 5,
+    marginVertical:10,
+    position:"relative"
+  },
+  image_box: {
+    position: "relative",
+    height:"100%",
+  },
+  leftbox: {
+    position: "relative",
+    padding: 15,
+    flex:6,
+    height:"100%",
+    flexDirection: "column",
+    justifyContent:"space-between",
+    paddingVertical:10,
+    borderBottomWidth: 1,
+
+  },
+  rightbox: {
+    position: "relative",
+    flex:1.75,
+    flexDirection: "column",
+    justifyContent:"space-between",
+    paddingVertical:10,
+    borderBottomWidth: 1,
+
   },
   pressable: {
-    borderBottomWidth: 1,
+    //contained inside BountyBox
+    //borderBottomWidth: 1,
+=======
+    aspectRatio: 1, 
+    width: "100%",
+    marginVertical: 10,
+    borderRadius: 5,
+  },
+  descriptionbox: {
+    width:"100%",
+    height: "75%",
+    marginTop: 20,
+    justifyContent:"center"
+  },
+  imagebox:{
+    position: "relative",
+    flex: 2,
+    paddingHorizontal: 5
+  },
+  leftbox:{
+    position: "relative",
+    flex: 6,
+    justifyContent: "space-around",
+    paddingVertical:15,
+    paddingLeft:5,
+    //borderBottomWidth: 2
+  },
+  rightbox:{
+    position: "relative",
+    flex: 1.5,
+    justifyContent: "space-between",
+    paddingTop:15,
+    paddingRight:5,
+    paddingBottom: 25,
+    //borderBottomWidth: 2
+
+  },
+  pressable: {
+    //borderBottomWidth: 1,
+    //borderWidth: 1,
+>>>>>>> Stashed changes
     borderColor: "grey",
     width: "100%",
     height: "100%",
-    padding:5,
-    paddingLeft: 15
+    flexDirection: "row",
+    borderRadius: 5,
+
+  },
+  shadowProp: {
+    shadowColor: '#171717',
+    shadowOffset: {width: 3, height: 3},
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
   },
   location: {
     fontWeight: "normal",
