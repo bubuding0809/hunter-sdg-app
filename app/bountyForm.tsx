@@ -5,6 +5,7 @@ import {
   Text,
   View,
   TextInput,
+  FlatList,
 } from "react-native";
 import React, { useState } from "react";
 import {
@@ -22,10 +23,13 @@ import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Carousel from "react-native-snap-carousel";
 import MapSelect from "../components/Map/MapSelect";
-import "firebase/storage"; // Needed for storing of images...
+import { getDownloadURL } from "firebase/storage";
 import useCreateBounty from "../utils/scripts/hooks/queries/mutations/useCreateBounty";
 import { useFirebaseSession } from "../context/FirebaseAuthContext";
 import { getFirestore, GeoPoint, DocumentReference } from "firebase/firestore";
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../firebaseConfig";
+import { uuidv4 } from "@firebase/util";
 
 interface NewBountyFormProps {}
 
@@ -40,7 +44,9 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
   // To create a multi page form
   const [step, setStep] = useState(1);
   const nextStep = () => {
-    setStep(step + 1);
+    if (step < 2) {
+      setStep(step + 1);
+    }
   };
 
   // For mapView function
@@ -60,11 +66,44 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     setShow(true);
   };
 
+  const uploadImages = async (images) => {
+    const uploadedImageUrls = [];
+
+    // Creating a function to reference
+    const storageRef = ref(storage, "images");
+
+    // Uploading the images
+    for (const imageUri of images) {
+      try {
+        // Generating a unique filename for each image
+        const filename = uuidv4();
+
+        // Generating a reference to the file
+        const imageRef = ref(storageRef, `images/${filename}`);
+
+        // Converting the image to a blob
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+
+        // Uploading the image to Firebase Storage
+        await uploadBytes(imageRef, blob);
+
+        // Getting the download URL for the image
+        const url = await getDownloadURL(imageRef);
+        uploadedImageUrls.push(url);
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    return uploadedImageUrls;
+  };
+
   // Ding said that the below will be used to generate the form
   const [bountyForm, setBountyForm] = useState<{
     lostName: string;
     age: string;
-    gender: "male" | "female" | "other";
+    gender: "Male" | "Female" | "Others";
     lastSeen: string;
     location: {
       latitude: number;
@@ -77,7 +116,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
   }>({
     lostName: "",
     age: "",
-    gender: "male",
+    gender: "Male",
     lastSeen: "",
     location: {
       latitude: 0,
@@ -97,7 +136,17 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     setBountyForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    // Prevent the user from spamming the submit button
+    if (submitting) {
+      return;
+    }
+
+    // Set Submitting = true to disable the submit button:
+    setSubmitting(true);
+
     // Performing Validation For The Form:
     if (
       !bountyForm.age ||
@@ -105,18 +154,19 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
       !bountyForm.description ||
       !bountyForm.gender ||
       !bountyForm.lastSeen ||
-      !bountyForm.lostName
+      !bountyForm.lostName ||
+      !bountyForm.images.length
     ) {
       alert(
         "Please enter all the fields in the form, and please at least submit one photo"
       );
       return;
     }
+    // Uploading the images:
+    const uploadedImageUrls = await uploadImages(bountyForm.images);
 
-    const uploadedImageUrls = [];
-    // 1.  Uploading Images to Firebase Cloud Storage by using the collected URIs in bountyForm.images
-    // 2.  await URLs from cloud storage and append to uploadedImageUrls
-
+    // Logging the form data:
+    console.log(bountyForm);
     createBounty(
       {
         gender: bountyForm.gender as "male" | "female" | "other",
@@ -137,10 +187,12 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
           alert("An error occurred");
           console.log(error);
         },
+        onSettled: () => {
+          // Set submit back to false so that user will not spam the submit button.
+        },
       }
     );
   };
-
   // Image Picker Function
   const handleMultipleImageUpload = async () => {
     const permissionResult =
@@ -154,7 +206,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
       allowsEditing: false,
       aspect: [16, 9],
       quality: 1,
-      allowsMultipleSelection: true,
+      allowsMultipleSelection: true, // Setting it to false first, want to try and get the image out on Google Firebase first. Following tutorial: https://www.youtube.com/watch?v=H-yXO46WDak
     });
 
     if (pickerResult.canceled) {
@@ -164,7 +216,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
       const uploadedURIs = pickerResult.assets.map((assets) => assets.uri);
       setBountyForm((prev) => ({
         ...prev,
-        image: [...prev.images, ...uploadedURIs],
+        images: [...prev.images, ...uploadedURIs],
       }));
     }
   };
@@ -187,137 +239,127 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
   };
 
   if (step === 1) {
-    return (
-      <View
-        style={{
-          height: "100%",
-        }}
-      >
-        <ScrollView>
-          <Center
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10,
-              height: "100%",
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "column",
-              }}
-            >
+    const renderItem = ({ item }) => (
+      <View>
+        <Center
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 10,
+            height: "100%",
+          }}
+        >
+          <View style={{ flexDirection: "column" }}>
+            <Input
+              isRequired
+              mx="10"
+              marginBottom={5}
+              placeholder="Name of lost item"
+              w="95%"
+              padding={4}
+              value={bountyForm.lostName}
+              onChangeText={(val) => handleFormChange("lostName", val)}
+            />
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <Box alignItems="center" marginRight={9}>
+              <Input
+                isRequired
+                keyboardType="number-pad"
+                mx="10"
+                marginBottom={5}
+                placeholder="Age"
+                w="150%"
+                padding={4}
+                value={bountyForm.age}
+                onChangeText={(val) => handleFormChange("age", val)}
+              />
+            </Box>
+            <Box alignItems="center" marginLeft={9}>
               <Input
                 isRequired
                 mx="10"
-                marginBottom={5}
-                placeholder="Name of lost item"
-                w="95%"
+                placeholder="Gender"
+                w="150%"
                 padding={4}
-                value={bountyForm.lostName}
-                onChangeText={(val) => handleFormChange("lostName", val)}
+                value={bountyForm.gender}
+                onChangeText={(val) => handleFormChange("gender", val)}
               />
-              {/* <Select /> TODO - Edit Here */}
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-              }}
-            >
-              <Box alignItems="center" marginRight={9}>
-                <Input
-                  keyboardType="number-pad"
-                  mx="10"
-                  marginBottom={5}
-                  placeholder="Age"
-                  w="150%"
-                  padding={4}
-                  value={bountyForm.age}
-                  onChangeText={(val) => handleFormChange("age", val)}
-                />
-              </Box>
-              <Box alignItems="center" marginLeft={9}>
-                <Input
-                  mx="10"
-                  placeholder="Gender"
-                  w="150%"
-                  padding={4}
-                  value={bountyForm.gender}
-                  onChangeText={(val) => handleFormChange("gender", val)}
-                />
-              </Box>
-            </View>
-            <View
-              style={{
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            ></View>
-            <Input
-              marginBottom={5}
-              width={360}
-              placeholder="Last Seen"
-              value={bountyForm.lastSeen ? date.toLocaleString() : ""}
-              onTouchStart={showDateTimePicker}
-              editable={true}
+            </Box>
+          </View>
+          <Input
+            isRequired
+            marginBottom={5}
+            width={360}
+            placeholder="Last Seen"
+            value={bountyForm.lastSeen ? date.toLocaleString() : ""}
+            onTouchStart={showDateTimePicker}
+            editable={true}
+          />
+          {show && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              // @ts-ignore
+              mode={Platform.OS === "ios" ? "datetime" : "date"}
+              value={date}
+              is24Hour={false}
+              display="default"
+              onChange={handleDateTimeChange}
             />
-            {show && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                // The mode allows the users to pick the time. HOWEVER, it is only available for iOS devices.
-                // @ts-ignore
-                mode={Platform.OS === "ios" ? "datetime" : "date"}
-                value={date}
-                is24Hour={false}
-                display="default"
-                onChange={handleDateTimeChange}
-              />
-            )}
-            <Input
-              mx="10"
-              marginBottom={5}
-              padding={4}
-              placeholder="Appearance"
-              w="95%"
-              value={bountyForm.appearance}
-              onChangeText={(val) => handleFormChange("appearance", val)}
+          )}
+          <Input
+            isRequired
+            mx="10"
+            marginBottom={5}
+            padding={4}
+            placeholder="Appearance"
+            w="95%"
+            value={bountyForm.appearance}
+            onChangeText={(val) => handleFormChange("appearance", val)}
+          />
+          <TextArea
+            value={bountyForm.description}
+            onChangeText={(val) => handleFormChange("description", val)}
+            placeholder="Additional Information"
+            autoCompleteType={undefined}
+            numberOfLines={4}
+            mx="10"
+            marginBottom={5}
+            w="95%"
+          />
+          {showMapSelect && (
+            <MapSelect
+              setOpen={setShowMapSelect}
+              setLocation={setLocation}
+              setRadius={setRadius}
             />
-            <TextArea
-              value={bountyForm.description}
-              mx="10"
-              marginBottom={5}
-              placeholder="Additional Information"
-              w="95%"
-              onChangeText={(val) => handleFormChange("description", val)}
-              autoCompleteType={undefined}
-              numberOfLines={4}
-            />
-            {showMapSelect && (
-              <MapSelect
-                setOpen={setShowMapSelect}
-                setLocation={setLocation}
-                setRadius={setRadius}
-              />
-            )}
-            <Text>Latitude: {location.latitude}</Text>
-            <Text>Longitude: {location.longitude}</Text>
-            <Text>Radius: {radius}</Text>
-            <Button
-              onPress={() => setShowMapSelect(true)}
-              style={{ marginBottom: 10 }}
-            >
-              Select Location
-            </Button>
-          </Center>
+          )}
+          <Text>Latitude: {location.latitude}</Text>
+          <Text>Longitude: {location.longitude}</Text>
+          <Text>Radius: {radius}</Text>
+          <Button
+            onPress={() => setShowMapSelect(true)}
+            style={{ marginBottom: 10 }}
+          >
+            Select Location
+          </Button>
           <Button onPress={nextStep}>Next Step: Uploading Images</Button>
-        </ScrollView>
+        </Center>
       </View>
+    );
+
+    return (
+      <FlatList
+        data={[{ key: "step1" }]}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.key}
+      />
     );
   }
 
-  if (step == 2) {
+  if (step === 2) {
     const renderItem = ({ item, index }) => {
       return (
         <View
@@ -327,13 +369,16 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
           <Image
             source={{ uri: item }}
             alt={`Bounty Image ${index}`}
-            width={Dimensions.get("window").width * 0.8}
-            height={Dimensions.get("window").width * 0.6}
-            resizeMode="contain"
+            style={{
+              width: Dimensions.get("window").width * 0.8,
+              height: Dimensions.get("window").width * 0.6,
+              resizeMode: "contain",
+            }}
           />
         </View>
       );
     };
+
     return (
       <View
         style={{
@@ -357,10 +402,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
                 key={index}
                 source={{ uri: imageUri }}
                 alt={`Bounty Image ${index}`}
-                width={100}
-                height={100}
-                size="2xl"
-                resizeMode="contain"
+                style={{ width: 100, height: 100, resizeMode: "contain" }}
               />
             ))}
             <Button
@@ -369,9 +411,9 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
             >
               Upload Images
             </Button>
+            <Button onPress={handleSubmit}> Submit Bounty</Button>
           </Center>
         </ScrollView>
-        <Button onPress={handleSubmit}> Submit </Button>
       </View>
     );
   }
