@@ -6,15 +6,19 @@ import {StyleSheet, FlatList,Modal,View,Text,Button, Image, Dimensions} from 're
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
+const windowHeight = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT =Dimensions.get('window').height;
 type prop = {
     changeModalVisible: (bool:boolean) => void
 }
 
+
+
+
 function BountyCard ({changeModalVisible}:prop) {
     const [IsDesc,setIsDesc] = useState(true);
-
+    const [modalVisible, setModalVisible] = useState(false);
     return(
         <SafeAreaView style = {styles.topbox}
         edges={['left', 'right','top']}>
@@ -76,20 +80,70 @@ function BountyCard ({changeModalVisible}:prop) {
                         <Button title = "GO BACK" color="white" onPress={() => changeModalVisible(false)}></Button>
                     </View>
                     <View>
-                        <Button title = "HUNT" color="white" onPress={() => changeModalVisible(false)}></Button>
+                        <Button title = "Hunt" color="white" onPress={() => setModalVisible(true)}></Button>
                     </View>
-
-                    
                 </Container>
                 <Container>
                 </Container>
+                
+            <Modal            
+                visible={modalVisible}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setModalVisible(false)}>
+                <View style={{
+                    height: '50%',
+                    marginTop: 'auto',
+                    backgroundColor:'white',
+                    borderTopLeftRadius: 10,
+                    borderTopRightRadius: 10,
+                    
+                    }}>
+                        <Center>
+                        <Text style ={{fontSize:30, fontWeight:'bold', marginTop:40}}>Join search</Text>
+                        <Text style = {{fontSize:20,color:'grey',marginTop:20}}>Please note that you can only join 1</Text>
+                        <Text style = {{fontSize:20,color:'grey',marginTop:0}}>search party at a time</Text>
+                        </Center>
+                    <View style ={styles.ImInContainer}>
+                    <Button title="I'm In!" color='white' onPress={() => setModalVisible(false)} />
+                    </View>
 
+                    <View style ={styles.CancelContainer}>
+                    <Button title="Cancel" color='black' onPress={() => setModalVisible(false)} />
+                    </View>
+                    
+                    
+                </View>
+            </Modal>
         </SafeAreaView>
+
+
+        
         
     );
 }
 
 const styles = StyleSheet.create({
+    ImInContainer:{
+        position: 'absolute',
+        left: 50,
+        right: 50,
+        marginTop: 250,
+        backgroundColor: 'black',
+        borderTopWidth: 1,
+        borderColor: 'black',
+        padding: 10,
+        borderRadius:40
+      },
+      CancelContainer:{
+        position: 'absolute',
+        left: 120,
+        right: 120,
+        bottom: 60,
+        backgroundColor: 'white',
+        padding: 10,
+        borderRadius:40
+      },
     topbox:{
         paddingVertical:0,
         maxHeight:"100%",

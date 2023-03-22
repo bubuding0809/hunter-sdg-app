@@ -4,14 +4,7 @@ import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import {StyleSheet, FlatList,Modal,View,Text,Button, Image} from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
-<<<<<<< Updated upstream
-import { flexbox } from "native-base/lib/typescript/theme/styled-system";
-import { block } from "react-native-reanimated";
-
-=======
-import BountyDescription from '../BountyDescription'
 import BountyCard from '../Component/BountyCard'
->>>>>>> Stashed changes
 
 export default function Home() {
   
@@ -98,18 +91,6 @@ export default function Home() {
     additionalinfo: "Additional info goes here"
   }];
   const [isModalVisible, setModalVisible] = useState(false);
-<<<<<<< Updated upstream
-
-  const openBounty: () => void = () => {
-    setModalVisible(true);
-    console.log("You pressed");
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
-
-=======
   const [selectedItem, setSelectedItem] = useState(DATA[0]);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [IsDesc,setIsDesc] = useState(true);
@@ -117,34 +98,9 @@ export default function Home() {
   const changeModalVisible =(bool:boolean) =>{
     setModalVisible(bool)
   }
->>>>>>> Stashed changes
   return (
     <SafeAreaView edges={['left', 'right']}>
         <FlatList
-<<<<<<< Updated upstream
-          contentContainerStyle={{ flexGrow: 1 , backgroundColor: "white", alignItems:"center"}}
-          style = {{}}
-          data = {DATA}
-          renderItem = {({item}) => 
-          
-                <Container style = {styles.bountyBox}>
-                  <Pressable onPress ={ () => openBounty(item)} style = {styles.pressable}>
-                  <View style = {styles.image_box}>
-                    <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
-                  </View>
-                
-                  <Pressable onPress ={ () => openBounty(item)} style = {styles.pressable}>
-                    <View style = {{flexDirection: "row"}}>
-                        <Text style={styles.name_text}>{item.fullName}</Text>
-                        <View style = {{flex: 1, padding: 5}}>
-                          <Text style={styles.timestamp}>{item.timeStamp}</Text> 
-                        </View> 
-                    </View>
-                    <View style = {{flexDirection: "row"}}>
-                      <Text style={styles.description_text}>{item.recentText}</Text>
-                      <View style = {{flex: 1}}>
-                        <Text style={styles.location}>{item.location}</Text>
-=======
           contentContainerStyle={{ flexGrow: 1, alignItems:"center", backgroundColor: "white"}}
           data = {DATA}
           renderItem = {({item}) => 
@@ -164,7 +120,6 @@ export default function Home() {
                   <View style = {styles.rightbox}>
                       <Text style={styles.timestamp}>{item.timeStamp}</Text>
                       <Text style={styles.location}>{item.location}</Text>
->>>>>>> Stashed changes
                   </View>
                   </Pressable>
                   <Modal
@@ -180,104 +135,6 @@ export default function Home() {
           
           }
         />
-<<<<<<< Updated upstream
-        {/* <Link href="/modal">AAAAAAAAAAAAAA</Link> */}
-
-
-        <Modal
-          visible = {isModalVisible}
-          animationType = "slide"
-          onRequestClose={closeModal}>
-
-            <Center style={{paddingTop:50}}>
-              <Image style={styles.avatarModal} source={{ uri: selectedItem.avatarUrl }} />
-              <Text style ={styles.modalName}>{selectedItem.fullName}</Text>
-              <Text style ={{fontSize:15}}>{selectedItem.timeStamp}</Text>
-            </Center>
-
-          <View>
-            <Center style={{ marginTop: 35, borderWidth: 0 }}>
-              {/* { IsDesc? (
-
-
-
-
-
-              ):(
-
-
-
-
-              )
-              
-            
-            
-            
-            
-            } */}
-              <View style = { IsDesc ? styles.DescContainerActive:styles.DescContainerInactive}>
-                <Button title="Description" onPress={() => setIsDesc(true)} color="black" />
-              </View>
-              <View style = { IsDesc ? styles.PhotoContainerInactive:styles.PhotoContainerActive}>
-                <Button title="Photos" onPress={ () => setIsDesc(false)} color="black" />
-              </View>
-            </Center>
-          </View>
-
-            { IsDesc ? (
-
-              <View style={{marginTop:50, backgroundColor:'grey'}}>
-                <View style={{backgroundColor:'lightgrey', flexDirection:'row'}}>
-                  <Text style={{marginLeft:20, fontSize:18,fontWeight:"bold"}}>Age: </Text>
-                  <Text style={{fontSize:20}}>{selectedItem.age}</Text>
-                  <Text style={{marginLeft:140, fontSize:18,fontWeight:"bold"}}>Gender: </Text>
-                  <Text style={{fontSize:20}}>{selectedItem.gender}</Text>
-                </View>
-
-                <View style={{backgroundColor:'lightgrey', flexDirection:'row'}}>
-                  <Text style={{marginTop:10,marginLeft:20, fontSize:18,fontWeight:"bold"}}>Last seen: </Text>
-                  <Text style={{marginTop:10, fontSize:18}}>Insert info</Text>
-                </View>
-
-                <View style={{backgroundColor:'lightgrey', flexDirection:'row'}}>
-                  <Text style={{marginTop:10,marginLeft:20, fontSize:18,fontWeight:"bold"}}>Location: </Text>
-                  <Text style={{marginTop:10, fontSize:18}}>Insert info</Text>
-                </View>
-
-                <View style={{backgroundColor:'lightgrey', flexDirection:'row'}}>
-                  <Text style={{marginTop:10,marginLeft:20, fontSize:18,fontWeight:"bold"}}>Appearance: </Text>
-                  <Text style={{marginTop:10, fontSize:18}}>Insert info</Text>
-                </View>
-
-                <View style={{backgroundColor:'lightgrey', flexDirection:'row'}}>
-                  <Text style={{marginTop:10,marginLeft:20, fontSize:18,fontWeight:"bold"}}>Additional Information: </Text>
-                  <Text style={{marginTop:10, fontSize:18}}>Insert info</Text>
-                </View>
-
-              </View>
-            ) : (
-              <Center marginTop={10}>
-                <Image style={styles.photos} source={{ uri: selectedItem.avatarUrl }} />
-              </Center>
-              
-            )}
-
-            <View style = {styles.HuntButtonContainer}>
-              <Button title="Hunt" onPress={()=>{}} color="white" />
-            </View>
-
-            <View style = {styles.modalCloseButtonContainer}>
-              <Button title="Close" onPress={closeModal} color="white" />
-            </View>
-            
-
-
-
-            
-
-        </Modal>
-=======
->>>>>>> Stashed changes
     </SafeAreaView>
   );
 }
@@ -310,53 +167,14 @@ const styles = StyleSheet.create({
   bountyBox: {
     width: "100%", 
     height: 100,
-<<<<<<< Updated upstream
-    margin: 5,
-=======
     flexDirection: "row", 
     marginVertical: 10,
->>>>>>> Stashed changes
     backgroundColor: "white",
     //alignItems:"center",
     justifyContent:"center"
     
   },
   avatar: {
-<<<<<<< Updated upstream
-    width: 70,
-    height: 80,
-    borderRadius: 5,
-    marginVertical:10,
-    position:"relative"
-  },
-  image_box: {
-    position: "relative",
-    height:"100%",
-  },
-  leftbox: {
-    position: "relative",
-    padding: 15,
-    flex:6,
-    height:"100%",
-    flexDirection: "column",
-    justifyContent:"space-between",
-    paddingVertical:10,
-    borderBottomWidth: 1,
-
-  },
-  rightbox: {
-    position: "relative",
-    flex:1.75,
-    flexDirection: "column",
-    justifyContent:"space-between",
-    paddingVertical:10,
-    borderBottomWidth: 1,
-
-  },
-  pressable: {
-    //contained inside BountyBox
-    //borderBottomWidth: 1,
-=======
     aspectRatio: 1, 
     width: "100%",
     marginVertical: 10,
@@ -394,7 +212,6 @@ const styles = StyleSheet.create({
   pressable: {
     //borderBottomWidth: 1,
     //borderWidth: 1,
->>>>>>> Stashed changes
     borderColor: "grey",
     width: "100%",
     height: "100%",
@@ -408,11 +225,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 3,
   },
-  location: {
-    fontWeight: "normal",
-    fontSize: 10,
-    textAlign: "right",
-  },
+  // location: {
+  //   fontWeight: "normal",
+  //   fontSize: 10,
+  //   textAlign: "right",
+  // },
   modalName: {
     fontWeight: "bold",
     fontSize: 40
