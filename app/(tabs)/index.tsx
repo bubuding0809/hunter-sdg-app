@@ -16,8 +16,8 @@ const bountyCard: React.FC<BountyQueryType> = bountyItem => {
       rounded="md"
       shadow={3}
       flexDirection="row"
-      justifyContent={"start"}
-      alignItems="start"
+      justifyContent="flex-start"
+      alignItems="flex-start"
       p={3}
     >
       {/* Image */}
@@ -86,7 +86,6 @@ const FeedPage = () => {
 
   // Pull to refresh state
   const [refreshing, setRefreshing] = useState(false);
-
   return (
     <Center
       style={{
