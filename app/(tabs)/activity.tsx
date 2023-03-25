@@ -122,7 +122,7 @@ const ActivityPage = () => {
                 p={2}
                 width="100%"
               >
-                <Heading fontSize="md">Bounty: {key}</Heading>
+                <Heading fontSize="md">UID: {key}</Heading>
                 <HStack space={4}>
                   <Box>
                     <Text>Location</Text>
