@@ -39,7 +39,9 @@ const LocationProvider: React.FC<React.PropsWithChildren<unknown>> = ({
           timeInterval: 1000,
           distanceInterval: 1,
         },
-        location => setLocation(location)
+        location => {
+          setLocation(location);
+        }
       );
 
       await Location.watchHeadingAsync(heading => {

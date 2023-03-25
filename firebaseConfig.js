@@ -38,6 +38,9 @@ if (getApps().length === 0) {
 
 const auth = getAuth(app);
 const db = getFirestore(app);
-const rtdb = getDatabase(app);
+const rtdb = getDatabase(
+  app,
+  "https://bitebuddies-38265-default-rtdb.asia-southeast1.firebasedatabase.app"
+);
 
 export { auth, db, rtdb };
