@@ -68,7 +68,7 @@ const ActivityPage = () => {
 
   useEffect(() => {
     // If user is jIk747p2cjXnVL3z6SO8N2uXMT33, set a interval fo 1s to update the location randomly
-    let interval;
+    let interval: NodeJS.Timer | undefined;
     if (sessionData?.uid === "jIk747p2cjXnVL3z6SO8N2uXMT33") {
       console.log("Starting interval for jIk747p2cjXnVL3z6SO8N2uXMT33");
       interval = setInterval(() => {
