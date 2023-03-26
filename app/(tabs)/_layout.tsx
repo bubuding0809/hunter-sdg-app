@@ -3,7 +3,7 @@ import { Tabs } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { usePathname } from "expo-router";
 import { Button, Flex } from "native-base";
-import useCreateBounty from "../../utils/scripts/hooks/queries/mutations/useCreateBounty";
+import useCreateBounty from "../../utils/scripts/hooks/mutations/useCreateBounty";
 import { generateBounty } from "../../utils/scripts/generateFakeData";
 
 /**

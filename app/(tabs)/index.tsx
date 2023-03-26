@@ -1,13 +1,49 @@
-import { View, Image, Button, RefreshControl } from "react-native";
+import { View, Image, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Center, Text, Box, Flex, Divider, FlatList } from "native-base";
+import {
+  Center,
+  Text,
+  Box,
+  Flex,
+  Divider,
+  FlatList,
+  Button,
+  HStack,
+} from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
 import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
+import useJoinBounty, {
+  JoinBountyType,
+} from "../../utils/scripts/hooks/mutations/useJoinBounty";
+import { UseMutateFunction } from "react-query";
+import { DocumentData } from "firebase/firestore";
+import type { User } from "firebase/auth";
+import useGetUser, {
+  UserQueryType,
+} from "../../utils/scripts/hooks/queries/useGetUserInfo";
 
+interface bountyCardProps {
+  bountyItem: BountyQueryType;
+  joinBounty: UseMutateFunction<
+    {
+      message: string;
+    },
+    unknown,
+    JoinBountyType,
+    void
+  >;
+  sessionData: User;
+  userData: UserQueryType;
+}
 // Temporary bounty card to display data
-const bountyCard: React.FC<BountyQueryType> = bountyItem => {
+const bountyCard: React.FC<bountyCardProps> = ({
+  bountyItem,
+  joinBounty,
+  sessionData,
+  userData,
+}) => {
   return (
     <Center
       w="full"
@@ -21,13 +57,39 @@ const bountyCard: React.FC<BountyQueryType> = bountyItem => {
       p={3}
     >
       {/* Image */}
-      <Image
-        source={{
-          uri: bountyItem.images[0],
-        }}
-        style={{ width: 50, height: 50 }}
-        borderRadius={10}
-      />
+      <HStack direction="column" space={2}>
+        <Image
+          source={{
+            uri: bountyItem.images[0],
+          }}
+          style={{ width: 50, height: 50 }}
+          borderRadius={10}
+        />
+        {(!userData?.bounties || !userData?.bounties.length) && (
+          <Button
+            backgroundColor="red.500"
+            borderRadius={"full"}
+            onPress={() => {
+              joinBounty(
+                {
+                  bountyId: bountyItem.id,
+                  hunter: sessionData.uid,
+                },
+                {
+                  onSuccess: response => {
+                    alert(response.message);
+                  },
+                  onError: err => {
+                    alert(err);
+                  },
+                }
+              );
+            }}
+          >
+            Join
+          </Button>
+        )}
+      </HStack>
       <Box
         style={{
           marginLeft: 10,
@@ -82,10 +144,19 @@ const FeedPage = () => {
   const { data: sessionData, isLoading } = useFirebaseSession();
 
   // Use query hook to get bounty data
-  const { data: bountyData, refetch } = useBountiesQuery();
+  const { data: bountyData, refetch: refetchBountData } = useBountiesQuery();
 
+  // User query hook to get user data by id
+  const { data: userData, refetch: refetchUserInfo } = useGetUser({
+    id: sessionData?.uid,
+  });
+
+  // Mutation to join bounty
+  const { mutate: joinBounty } = useJoinBounty();
   // Pull to refresh state
+
   const [refreshing, setRefreshing] = useState(false);
+
   return (
     <Center
       style={{
@@ -103,7 +174,14 @@ const FeedPage = () => {
         showsVerticalScrollIndicator={false}
         style={{ width: "100%", minHeight: "100%" }}
         data={bountyData}
-        renderItem={({ item }) => bountyCard(item)}
+        renderItem={({ item: bountyItem }) =>
+          bountyCard({
+            bountyItem,
+            joinBounty,
+            sessionData,
+            userData,
+          })
+        }
         keyExtractor={item => item.createdAt.toString()}
         refreshControl={
           <RefreshControl
@@ -111,7 +189,7 @@ const FeedPage = () => {
             onRefresh={() => {
               // Refetch bounties data
               setRefreshing(true);
-              refetch()
+              refetchBountData()
                 .then(res => setRefreshing(false))
                 .catch(err => {
                   setRefreshing(false);

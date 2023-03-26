@@ -16,6 +16,7 @@ export type BountyQueryType = Modify<
   {
     lastSeen: Timestamp;
     createdAt: Timestamp;
+    id: string;
   }
 >;
 
@@ -32,7 +33,10 @@ const getBounties = async () => {
   const bountyData = [];
   const snapShot = await getDocs(q);
   snapShot.forEach(doc => {
-    bountyData.push(doc.data());
+    bountyData.push({
+      ...doc.data(),
+      id: doc.id,
+    });
   });
 
   return bountyData as BountyQueryType[];
