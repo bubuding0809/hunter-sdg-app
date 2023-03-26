@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
 import { Center, Pressable, VStack, Container} from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
@@ -7,6 +8,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 <<<<<<< Updated upstream
 import { flexbox } from "native-base/lib/typescript/theme/styled-system";
 import { block } from "react-native-reanimated";
+=======
+import { StyleSheet,View, Image, Button, RefreshControl, Pressable, Modal} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Center, Text, Box, Flex, Divider, FlatList, Container } from "native-base";
+import { Link, Stack, usePathname, useRouter } from "expo-router";
+import { useFirebaseSession } from "../../context/FirebaseAuthContext";
+import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
+import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
+import { SafeAreaView } from "react-native-safe-area-context";
+import BountyCard from '../../Component/BountyCard'
+>>>>>>> Stashed changes
 
 =======
 import BountyDescription from '../BountyDescription'
@@ -206,6 +218,7 @@ const styles = StyleSheet.create({
     width:"70%",
     height:"100%",
 
+<<<<<<< Updated upstream
   },
   bountyBox: {
     width: "100%", 
@@ -257,6 +270,128 @@ const styles = StyleSheet.create({
     //contained inside BountyBox
     //borderBottomWidth: 1,
 =======
+=======
+  const [modalData, setModalData] = useState(null);
+
+  // Pull to refresh state
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const changeModalVisible =(bool:boolean) =>{
+    setModalVisible(bool)
+  }
+
+  const changeModalData =(data:BountyQueryType) =>{
+    setModalData(data)
+  }
+
+  return (
+    <SafeAreaView edges={['left', 'right']}>
+      <FlatList
+          contentContainerStyle={{ flexGrow: 1, alignItems:"center", backgroundColor: "#FFFFF"}}
+          data = {bountyData}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => {
+                // Refetch bounties data
+                setRefreshing(true);
+                refetch()
+                  .then(res => setRefreshing(false))
+                  .catch(err => {
+                    setRefreshing(false);
+                    alert("Error refreshing bounties");
+                  });
+              }}
+            />
+          }
+          renderItem = {({item}) => 
+              
+                <Container style = {[styles.bountyBox, styles.shadowProp]}>
+                  <Pressable onPress ={ () => {changeModalVisible(true); changeModalData(item)}} style = {styles.pressable}>
+                    <View style = {styles.imagebox}>
+                      <Image style={styles.avatar} source={{ uri: item.images[0] }} />
+                    </View>
+                  <View style = {styles.leftbox}>
+                        <Text style={styles.name_text}>{item.name}</Text>
+                          {item.category == "pet" ? (
+                          <View style = {styles.descriptionbox}>
+                            <Text style={styles.description_text}>{item.breed}</Text>
+                            <Text style={styles.description_text}>Age:{item.age}</Text>
+                          </View>
+                          ):(
+                            <View style = {styles.descriptionbox}>
+                            <Text style={styles.description_text}>{item.category}</Text>
+                            <View style = {{flexDirection:"row"}}>
+                              <Text style={styles.description_text}>Age: {item.age}</Text>
+                              <Text style={styles.description_text}>Gender: {item.gender}</Text>
+                            </View>
+                            
+                          </View>
+                          )}
+                          
+                        
+                        
+                  </View>
+                  <View style = {styles.rightbox}>
+                      <Text style={styles.timestamp}>{item.lastSeen.toDate().toString()}</Text>
+                      <Text style={styles.location}>{item.location.toJSON().longitude}</Text>
+                  </View>
+                  </Pressable>
+                  <Modal
+                    visible = {isModalVisible}
+                    animationType = "slide">
+                    <BountyCard
+                    changeModalVisible ={changeModalVisible}
+                    data = {modalData}
+                    />
+                    </Modal>
+                    
+                </Container>
+
+          
+          }
+        />
+    </SafeAreaView>
+
+  );
+};
+
+const styles = StyleSheet.create({
+  name_text: {
+    fontWeight: "bold",
+    fontSize: 16,
+    alignSelf: 'stretch',
+  },
+  description_text: {
+    fontWeight: "normal",
+    fontSize: 14,
+    fontFamily: "Helvetica",
+    paddingHorizontal:5
+  },
+  timestamp: {
+    fontWeight: "normal",
+    fontSize: 10,
+    textAlign: "right",
+  },
+  location: {
+    fontWeight: "normal",
+    fontSize: 10,
+    textAlign: "right",
+  },
+  bountyBox: {
+    width: "100%", 
+    height: 100,
+    flexDirection: "row", 
+    marginVertical: 10,
+    backgroundColor: "white",
+    //alignItems:"center",
+    justifyContent:"center"
+    
+  },
+  avatar: {
+>>>>>>> Stashed changes
     aspectRatio: 1, 
     width: "100%",
     marginVertical: 10,
@@ -264,6 +399,7 @@ const styles = StyleSheet.create({
   },
   descriptionbox: {
     width:"100%",
+<<<<<<< Updated upstream
     height: "75%",
     marginTop: 20,
     justifyContent:"center"
@@ -272,6 +408,18 @@ const styles = StyleSheet.create({
     position: "relative",
     flex: 2,
     paddingHorizontal: 5
+=======
+    height: "70%",
+    justifyContent:"center",
+    backgroundColor:"orange"
+  },
+  imagebox:{
+    position: "relative",
+    justifyContent:"center",
+    flex: 2,
+    paddingHorizontal: 5,
+    backgroundColor:"blue"
+>>>>>>> Stashed changes
   },
   leftbox:{
     position: "relative",
@@ -279,21 +427,36 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingVertical:15,
     paddingLeft:5,
+<<<<<<< Updated upstream
+=======
+    backgroundColor: "red",
+>>>>>>> Stashed changes
     //borderBottomWidth: 2
   },
   rightbox:{
     position: "relative",
+<<<<<<< Updated upstream
     flex: 1.5,
+=======
+    flex: 2,
+>>>>>>> Stashed changes
     justifyContent: "space-between",
     paddingTop:15,
     paddingRight:5,
     paddingBottom: 25,
+<<<<<<< Updated upstream
+=======
+    backgroundColor: "green"
+>>>>>>> Stashed changes
     //borderBottomWidth: 2
 
   },
   pressable: {
     //borderBottomWidth: 1,
     //borderWidth: 1,
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     borderColor: "grey",
     width: "100%",
@@ -308,6 +471,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 3,
   },
+<<<<<<< Updated upstream
   location: {
     fontWeight: "normal",
     fontSize: 10,
@@ -388,3 +552,8 @@ const styles = StyleSheet.create({
     height: 100,
   }
 });
+=======
+})
+
+export default FeedPage;
+>>>>>>> Stashed changes
