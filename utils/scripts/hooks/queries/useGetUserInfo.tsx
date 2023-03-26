@@ -1,11 +1,4 @@
 import {
-  query,
-  collection,
-  getDocs,
-  limit,
-  orderBy,
-  Timestamp,
-  where,
   getDoc,
   doc,
   DocumentReference,
@@ -13,9 +6,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
 import { useQuery } from "react-query";
-import { Bounty } from "../../types";
-import { Modify } from "react-native-maps/lib/sharedTypesInternal";
-import { Shape } from "react-native-svg";
 
 export type UserQueryType = {
   id: string;
