@@ -45,6 +45,7 @@ type BountyCardProp = {
 
 function BountyCard ({changeModalVisible,data}:BountyCardProp) {
     const [IsDesc,setIsDesc] = useState(true);
+    const [modalVisible,setModalVisible] = useState(false)
 
     return(
         <SafeAreaView style = {styles.topbox} >
@@ -112,9 +113,69 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                 </Container>
                 <Container style = {styles.buttonbox}>
                     <View>
-                        <Button title = "HUNT" color="black" onPress={() => changeModalVisible(false)}></Button>
+                        <Button title = "HUNT" color="black" onPress={() => setModalVisible(true)}></Button>
                     </View>
+                    <Modal
+                visible={modalVisible}
+                animationType="none"
+                transparent={true}
+                onRequestClose={() => {
+                    setModalVisible(false)
+                }}>
+                <TouchableOpacity onPress={() =>{
+                        setModalVisible(false)
+                    } }
+                    style={{
+                        height: '100%',
+                        marginTop: 'auto',
+                        backgroundColor:'rgba(0, 0, 0, 0.5)',
+                        }}>
 
+                </TouchableOpacity>
+                <Modal            
+                visible={modalVisible}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => {
+                    setModalVisible(false)
+                }}>
+                                    <TouchableOpacity onPress={() =>{
+                        setModalVisible(false)
+                    } }
+                    style={{
+                        height: '100%',
+                        marginTop: 'auto',
+                        backgroundColor:'rgba(0, 0, 0, 0.0)',
+                        }}>
+
+                </TouchableOpacity>
+                    <View style={{
+                        height: '50%',
+                        marginTop: 'auto',
+                        backgroundColor:'white',
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                        
+                        }}>
+                            <Center>
+                            <Text style ={{fontSize:30, fontWeight:'bold', marginTop:40}}>Join search</Text>
+                            <Text style = {{fontSize:20,color:'grey',marginTop:20}}>Please note that you can only join 1</Text>
+                            <Text style = {{fontSize:20,color:'grey',marginTop:0}}>search party at a time</Text>
+                            </Center>
+                        <View style ={styles.ImInContainer}>
+                        <Button title="I'm In!" color='white' onPress={() => setModalVisible(false)} />
+                        </View>
+
+                        <View style ={styles.CancelContainer}>
+                        <Button title="Cancel" color='black' onPress={() => {
+                            setModalVisible(false)
+                            }} />
+                        </View>
+                        
+                        
+                    </View>
+                </Modal>
+            </Modal>
                     
                 </Container>
         </SafeAreaView>
