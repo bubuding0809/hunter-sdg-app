@@ -2,7 +2,7 @@ import React, { useState, FunctionComponent} from "react";
 import { Center, Pressable, VStack, Container, Row} from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
-import {StyleSheet, FlatList,Modal,View,Text,Button, Image, Dimensions} from 'react-native';
+import {StyleSheet, FlatList,Modal,View,Text,Button, Image, Dimensions,TouchableWithoutFeedback} from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
@@ -16,18 +16,25 @@ type prop = {
 
 
 
+
+
 function BountyCard ({changeModalVisible}:prop) {
+    const [topbg,settopbg] = useState('rgba(0, 0, 0, 0.0)')
     const [IsDesc,setIsDesc] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     return(
         <SafeAreaView style = {styles.topbox}
         edges={['left', 'right','top']}>
+        <TouchableWithoutFeedback onPress={()=>{setModalVisible(false)}}>
+            
+        
             
                 <Container style = {styles.picturebox}>
                     <Container style = {styles.imagebox}>
                         <Image style = {styles.profilePhoto} source= {{ uri: 'https://cdn.vox-cdn.com/thumbor/CJBBOUHXygJR6PVSCuCn_RIOBXM=/0x0:6080x2546/1220x813/filters:focal(2406x699:3378x1671):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/65753797/elsainfall.0.jpg'}}/>
                     </Container>
                 </Container>
+                </TouchableWithoutFeedback>
                 <Container style = {styles.togglebox}>
                     <View style  = {styles.leftbutton}>
                         <Button title = "DESCRIPTION" onPress={ () => setIsDesc(true)}></Button>
@@ -80,41 +87,75 @@ function BountyCard ({changeModalVisible}:prop) {
                         <Button title = "GO BACK" color="white" onPress={() => changeModalVisible(false)}></Button>
                     </View>
                     <View>
-                        <Button title = "Hunt" color="white" onPress={() => setModalVisible(true)}></Button>
+                        <Button title = "Hunt" color="white" onPress={() => {
+                            setModalVisible(true)
+                            }}></Button>
                     </View>
                 </Container>
                 <Container>
                 </Container>
-                
-            <Modal            
+            <Modal
+                visible={modalVisible}
+                animationType="none"
+                transparent={true}
+                onRequestClose={() => {
+                    setModalVisible(false)
+                }}>
+                <TouchableOpacity onPress={() =>{
+                        setModalVisible(false)
+                    } }
+                    style={{
+                        height: '100%',
+                        marginTop: 'auto',
+                        backgroundColor:'rgba(0, 0, 0, 0.5)',
+                        }}>
+
+                </TouchableOpacity>
+                <Modal            
                 visible={modalVisible}
                 animationType="slide"
                 transparent={true}
-                onRequestClose={() => setModalVisible(false)}>
-                <View style={{
-                    height: '50%',
-                    marginTop: 'auto',
-                    backgroundColor:'white',
-                    borderTopLeftRadius: 10,
-                    borderTopRightRadius: 10,
-                    
-                    }}>
-                        <Center>
-                        <Text style ={{fontSize:30, fontWeight:'bold', marginTop:40}}>Join search</Text>
-                        <Text style = {{fontSize:20,color:'grey',marginTop:20}}>Please note that you can only join 1</Text>
-                        <Text style = {{fontSize:20,color:'grey',marginTop:0}}>search party at a time</Text>
-                        </Center>
-                    <View style ={styles.ImInContainer}>
-                    <Button title="I'm In!" color='white' onPress={() => setModalVisible(false)} />
-                    </View>
+                onRequestClose={() => {
+                    setModalVisible(false)
+                }}>
+                                    <TouchableOpacity onPress={() =>{
+                        setModalVisible(false)
+                    } }
+                    style={{
+                        height: '100%',
+                        marginTop: 'auto',
+                        backgroundColor:'rgba(0, 0, 0, 0.0)',
+                        }}>
 
-                    <View style ={styles.CancelContainer}>
-                    <Button title="Cancel" color='black' onPress={() => setModalVisible(false)} />
+                </TouchableOpacity>
+                    <View style={{
+                        height: '50%',
+                        marginTop: 'auto',
+                        backgroundColor:'white',
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                        
+                        }}>
+                            <Center>
+                            <Text style ={{fontSize:30, fontWeight:'bold', marginTop:40}}>Join search</Text>
+                            <Text style = {{fontSize:20,color:'grey',marginTop:20}}>Please note that you can only join 1</Text>
+                            <Text style = {{fontSize:20,color:'grey',marginTop:0}}>search party at a time</Text>
+                            </Center>
+                        <View style ={styles.ImInContainer}>
+                        <Button title="I'm In!" color='white' onPress={() => setModalVisible(false)} />
+                        </View>
+
+                        <View style ={styles.CancelContainer}>
+                        <Button title="Cancel" color='black' onPress={() => {
+                            setModalVisible(false)
+                            }} />
+                        </View>
+                        
+                        
                     </View>
-                    
-                    
-                </View>
+                </Modal>
             </Modal>
+            
         </SafeAreaView>
 
 
