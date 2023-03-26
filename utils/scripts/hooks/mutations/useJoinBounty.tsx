@@ -8,6 +8,8 @@ import {
   updateDoc,
   runTransaction,
   query,
+  DocumentReference,
+  DocumentData,
 } from "firebase/firestore";
 import { useMutation, useQueryClient } from "react-query";
 import { db } from "../../../../firebaseConfig";
@@ -23,20 +25,28 @@ const joinBounty = async (variable: JoinBountyType) => {
     // Create a reference to the bounty collection and add the bounty
     const bountyCollectionRef = collection(db, "Bounty");
     const userCollectionRef = collection(db, "User");
-    const bountyRef = doc(bountyCollectionRef, variable.bountyId);
-    const hunterRef = doc(userCollectionRef, variable.hunter);
+    const bountyRef = doc(
+      bountyCollectionRef,
+      variable.bountyId
+    ) as DocumentReference<DocumentData>;
+    const hunterRef = doc(
+      userCollectionRef,
+      variable.hunter
+    ) as DocumentReference<DocumentData>;
 
     await runTransaction(db, async transaction => {
       const bountyDoc = await transaction.get(bountyRef);
       const hunterDoc = await transaction.get(hunterRef);
-      const prevHunters = bountyDoc.data().hunters;
-      const prevBounties = hunterDoc.data().bounties;
+      const prevHunters = bountyDoc.data()
+        .hunters as DocumentReference<DocumentData>[];
+      const prevBounties = hunterDoc.data()
+        .bounties as DocumentReference<DocumentData>[];
 
       if (prevBounties && !!prevBounties.length) {
         throw new Error("User already joined a bounty");
       }
 
-      if (prevHunters && prevHunters.includes(hunterRef)) {
+      if (prevHunters && prevHunters.map(b => b.id).includes(hunterRef.id)) {
         throw new Error("User already joined this bounty");
       }
 
@@ -80,6 +90,7 @@ const useJoinBounty = () => {
     },
     onSettled: (data, error, variable, context) => {
       // * Do something upon completion of mutation this can be either success or error
+      console.log("Settled");
       queryClient.invalidateQueries(["getUserById", { id: variable.hunter }]);
     },
   });

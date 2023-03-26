@@ -32,13 +32,6 @@ const ActivityPage = () => {
 
   // Access live data from the database
   useEffect(() => {
-    const getInitialUsers = async () => {
-      const bountyRef = await get(ref(rtdb, "bounties" + "/test"));
-
-      // Set the initial state of the user locations
-      setUserLocations(bountyRef.val());
-    };
-
     // Subscribe to the database
     const bountyRef = ref(rtdb, "bounties" + "/test");
     const unsubscribe = onValue(bountyRef, snapshot => {
@@ -65,38 +58,6 @@ const ActivityPage = () => {
       set(bountyRef, data);
     }
   }, [location, heading]);
-
-  useEffect(() => {
-    // If user is jIk747p2cjXnVL3z6SO8N2uXMT33, set a interval fo 1s to update the location randomly
-    let interval: NodeJS.Timer | undefined;
-    if (sessionData?.uid === "jIk747p2cjXnVL3z6SO8N2uXMT33") {
-      console.log("Starting interval for jIk747p2cjXnVL3z6SO8N2uXMT33");
-      interval = setInterval(() => {
-        const bountyRef = ref(rtdb, "bounties" + "/test/" + sessionData.uid);
-
-        // Every 1s increment or decrement the location by 0.0001
-        const data: {
-          lat: number;
-          long: number;
-          heading?: number;
-        } = {
-          lat: userLocations[sessionData?.uid]?.lat + Math.random() * 0.0001,
-          long: userLocations[sessionData?.uid]?.long + Math.random() * 0.0001,
-        };
-
-        heading && (data.heading = heading.magHeading);
-        set(bountyRef, data);
-      }, 1000);
-    }
-
-    return () => {
-      console.log(
-        "Clearing interval for jIk747p2cjXnVL3z6SO8N2uXMT33",
-        interval
-      );
-      clearInterval(interval);
-    };
-  }, []);
 
   return (
     <Center

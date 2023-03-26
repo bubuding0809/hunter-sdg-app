@@ -18,7 +18,6 @@ import useJoinBounty, {
   JoinBountyType,
 } from "../../utils/scripts/hooks/mutations/useJoinBounty";
 import { UseMutateFunction } from "react-query";
-import { DocumentData } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import useGetUser, {
   UserQueryType,
@@ -147,7 +146,7 @@ const FeedPage = () => {
   const { data: bountyData, refetch: refetchBountData } = useBountiesQuery();
 
   // User query hook to get user data by id
-  const { data: userData, refetch: refetchUserInfo } = useGetUser({
+  const { data: userData, isFetching } = useGetUser({
     id: sessionData?.uid,
   });
 
