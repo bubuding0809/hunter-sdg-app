@@ -1,5 +1,5 @@
 import { View, Image, RefreshControl } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   Center,
   Text,
@@ -17,11 +17,15 @@ import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBo
 import useJoinBounty, {
   JoinBountyType,
 } from "../../utils/scripts/hooks/mutations/useJoinBounty";
-import { UseMutateFunction } from "react-query";
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  RefetchQueryFilters,
+  UseMutateFunction,
+} from "react-query";
 import type { User } from "firebase/auth";
-import useGetUser, {
-  UserQueryType,
-} from "../../utils/scripts/hooks/queries/useGetUserInfo";
+import useGetUser from "../../utils/scripts/hooks/queries/useGetUser";
+import type { UserQueryType } from "../../utils/scripts/hooks/queries/useGetUser";
 
 interface bountyCardProps {
   bountyItem: BountyQueryType;
@@ -35,13 +39,19 @@ interface bountyCardProps {
   >;
   sessionData: User;
   userData: UserQueryType;
+  refetchUserData: <TPageData>(
+    options?: RefetchOptions & RefetchQueryFilters<TPageData>
+  ) => Promise<QueryObserverResult<UserQueryType, unknown>>;
+  router: ReturnType<typeof useRouter>;
 }
 // Temporary bounty card to display data
-const bountyCard: React.FC<bountyCardProps> = ({
+const BountyCard: React.FC<bountyCardProps> = ({
   bountyItem,
   joinBounty,
   sessionData,
   userData,
+  refetchUserData,
+  router,
 }) => {
   return (
     <Center
@@ -72,14 +82,12 @@ const bountyCard: React.FC<bountyCardProps> = ({
               joinBounty(
                 {
                   bountyId: bountyItem.id,
-                  hunter: sessionData.uid,
+                  userId: sessionData.uid,
                 },
                 {
-                  onSuccess: response => {
-                    alert(response.message);
-                  },
-                  onError: err => {
-                    alert(err);
+                  onSuccess: () => {
+                    refetchUserData();
+                    router.replace("(tabs)/activity");
                   },
                 }
               );
@@ -146,13 +154,12 @@ const FeedPage = () => {
   const { data: bountyData, refetch: refetchBountData } = useBountiesQuery();
 
   // User query hook to get user data by id
-  const { data: userData, isFetching } = useGetUser({
-    id: sessionData?.uid,
+  const { data: userData, refetch: refetchUserData } = useGetUser({
+    userId: sessionData?.uid,
   });
 
   // Mutation to join bounty
   const { mutate: joinBounty } = useJoinBounty();
-  // Pull to refresh state
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -173,14 +180,16 @@ const FeedPage = () => {
         showsVerticalScrollIndicator={false}
         style={{ width: "100%", minHeight: "100%" }}
         data={bountyData}
-        renderItem={({ item: bountyItem }) =>
-          bountyCard({
-            bountyItem,
-            joinBounty,
-            sessionData,
-            userData,
-          })
-        }
+        renderItem={({ item: bountyItem }) => (
+          <BountyCard
+            bountyItem={bountyItem}
+            joinBounty={joinBounty}
+            sessionData={sessionData}
+            userData={userData}
+            refetchUserData={refetchUserData}
+            router={router}
+          />
+        )}
         keyExtractor={item => item.createdAt.toString()}
         refreshControl={
           <RefreshControl
