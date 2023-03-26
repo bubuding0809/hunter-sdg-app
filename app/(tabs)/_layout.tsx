@@ -71,6 +71,7 @@ const TabLayout = () => {
           tabBarLabelStyle: {
             color: pathName === "/profile" ? "#FD7366" : "#252525",
           },
+          unmountOnBlur: true,
         }}
       />
       <Tabs.Screen
@@ -91,6 +92,7 @@ const TabLayout = () => {
           tabBarLabelStyle: {
             color: pathName === "/" ? "#FD7366" : "#252525",
           },
+          unmountOnBlur: true,
         }}
       />
       <Tabs.Screen
@@ -106,6 +108,7 @@ const TabLayout = () => {
           tabBarLabelStyle: {
             color: pathName === "/activity" ? "#FD7366" : "#252525",
           },
+          unmountOnBlur: true,
         }}
       />
     </Tabs>
