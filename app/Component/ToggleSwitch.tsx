@@ -60,7 +60,6 @@ const ToggleSwitch:React.FC<Props> = (
           onPress={() => updatedSwitchData(2)}
           style={{
             flex: 1,
-
             backgroundColor: getSelectionMode == 2 ? selectionColor : 'white',
             borderRadius: 25,
             justifyContent: 'center',

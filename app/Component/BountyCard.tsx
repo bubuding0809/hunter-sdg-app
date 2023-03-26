@@ -163,7 +163,7 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                             <Text style = {{fontSize:20,color:'grey',marginTop:0}}>search party at a time</Text>
                             </Center>
                         <View style ={styles.ImInContainer}>
-                        <Button title="I'm In!" color='white' onPress={() => setModalVisible(false)} />
+                        <Button title="I'm In!" color='white' onPress={() => {}} />
                         </View>
 
                         <View style ={styles.CancelContainer}>
@@ -183,6 +183,26 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
 }
 
 const styles = StyleSheet.create({
+    ImInContainer:{
+        position: 'absolute',
+        left: 50,
+        right: 50,
+        marginTop: 250,
+        backgroundColor: 'black',
+        borderTopWidth: 1,
+        borderColor: 'black',
+        padding: 10,
+        borderRadius:40
+      },
+      CancelContainer:{
+        position: 'absolute',
+        left: 120,
+        right: 120,
+        bottom: 60,
+        backgroundColor: 'white',
+        padding: 10,
+        borderRadius:40
+      },
     topbox:{
         paddingVertical:0,
         maxHeight:"100%",
