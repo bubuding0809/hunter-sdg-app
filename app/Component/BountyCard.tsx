@@ -10,6 +10,7 @@ import ToggleSwitch from "./ToggleSwitch";
 import type {StatusBarStyle} from 'react-native';
 
 const WIDTH = Dimensions.get('window').width;
+const HEIGHT = Dimensions.get('window').height;
 
 
 const CarouselRenderItems = ({SingularPicture}: {SingularPicture: string}) =>{
@@ -46,14 +47,15 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
     const [IsDesc,setIsDesc] = useState(true);
 
     return(
-        <Fragment>
-        <SafeAreaView style = {styles.topbox}
-        edges={['left', 'right','top']}>
+        <SafeAreaView style = {styles.topbox} >
             <StatusBar
             barStyle="light-content"
             />
-             
+                    
                 <Container style = {styles.picturebox}>
+                    <View style = {{position:"absolute",left:10,top:40, }}>
+                        <Button title = "BACK" color="white" onPress={() => changeModalVisible(false)}></Button>
+                    </View>
                    <View style = {{backgroundColor:"#E5E5E5",height: "40%",width:"100%",bottom:0,position:"absolute"}}></View>
                     <Container style = {styles.imagebox}>
                         <Image style = {styles.profilePhoto} source= {{ uri: data.images[0]}}/>
@@ -71,11 +73,12 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                 <Container style = {styles.bottombox}>
                     { IsDesc ? (
                         <Container style = {styles.description_box}>
-                            <View style = {{width:"100%",flexDirection: "row", justifyContent:"space-between", backgroundColor:"white",paddingVertical:5,paddingLeft:5,paddingRight:70, marginTop:20}}>
-                                <View style = {{flexDirection:"row"}}>
+                            <View style = {{width:"100%",flexDirection: "row",
+                            backgroundColor:"white",paddingHorizontal:5, marginTop:20, paddingRight:100}}>
+                                <View style = {{flex:1,flexDirection:"row",justifyContent: 'flex-start'}}>
                                     <Text style={{fontWeight: "bold"}}> Age: </Text><Text> {data.age}</Text>
                                 </View>
-                                <View style = {{flexDirection:"row"}}>
+                                <View style = {{flex:1,flexDirection:"row",justifyContent: 'flex-end'}}>
                                     <Text style={{fontWeight: "bold"}}> Gender: </Text><Text>{data.gender}</Text>
                                 </View>
                             
@@ -109,19 +112,12 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                 </Container>
                 <Container style = {styles.buttonbox}>
                     <View>
-                        <Button title = "GO BACK" color="black" onPress={() => changeModalVisible(false)}></Button>
-                    </View>
-                    <View>
                         <Button title = "HUNT" color="black" onPress={() => changeModalVisible(false)}></Button>
                     </View>
 
                     
                 </Container>
-                <Container>
-                </Container>
-
         </SafeAreaView>
-        </Fragment>
     );
 }
 
@@ -152,7 +148,7 @@ const styles = StyleSheet.create({
         marginTop:70
     },
     profilePhoto:{
-        height:180,
+        height:200,
         aspectRatio:1,
         borderRadius:150,
         borderWidth:3,
@@ -171,19 +167,24 @@ const styles = StyleSheet.create({
     },
     bottombox:{
         maxWidth:"100%",
+        width:"100%",
         flex:5,
         position:"relative",
         backgroundColor:"#E5E5E5",
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        // borderColor:"red",
+        // borderWidth:1,
     },
     description_box:{
         backgroundColor:"white",
         height: "95%",
-        width:"95%",
+        width:"100%",
         borderRadius:20,
         justifyContent:"space-between",
-        paddingHorizontal:3
+        paddingHorizontal:3,
+        // borderColor:"red",
+        // borderWidth:1
     },
     buttonbox:{
         maxWidth:"100%",

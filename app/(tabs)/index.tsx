@@ -1,4 +1,4 @@
-import { View, Image, Button, RefreshControl,Modal,StyleSheet,FlatList } from "react-native";
+import { View, Image, Button, RefreshControl,Modal,StyleSheet,FlatList,Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useState} from "react";
 import { Center, Text, Box, Flex, Divider,Container,Pressable} from "native-base";
@@ -7,6 +7,7 @@ import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
 import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
 import BountyCard from "../Component/BountyCard";
+import moment from 'moment';
 
 // Temporary bounty card to display data
 const bountyCard: React.FC<BountyQueryType> = bountyItem => {
@@ -78,13 +79,15 @@ const bountyCard: React.FC<BountyQueryType> = bountyItem => {
     </Center>
   );
 };
-
+const HEIGHT = Dimensions.get('window').height;
+const WIDTH = Dimensions.get('window').width;
 const FeedPage = () => {
   const router = useRouter();
   const { data: sessionData, isLoading } = useFirebaseSession();
 
   // Use query hook to get bounty data
   const { data: bountyData, refetch } = useBountiesQuery();
+  // bountyData.map(bountyItem => bountyItem.createdAt.toDate())
 
   // Pull to refresh state
   const [refreshing, setRefreshing] = useState(false);
@@ -103,10 +106,12 @@ const FeedPage = () => {
   }
 
   return (
-    <SafeAreaView edges={['left', 'right']}>
+    <View style = {{height: HEIGHT, backgroundColor:"white"}}>
+      <SafeAreaView edges={['left', 'right']}>
     <FlatList
-      contentContainerStyle= {{ flexGrow: 1, alignItems:"center", backgroundColor: "white"}}
+      contentContainerStyle= {{ flexGrow: 1, alignItems:"center", backgroundColor: "white", height:HEIGHT, width:WIDTH}}
       data = {bountyData}
+      showsVerticalScrollIndicator = {false}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -129,16 +134,40 @@ const FeedPage = () => {
                 <View style = {styles.imagebox}>
                   <Image style={styles.avatar} source={{ uri: item.images[0] }} />
                 </View>
-              <View style = {styles.leftbox}>
-                    <Text style={styles.name_text}>{item.name}</Text>
+
+              {item.category === 'pet' ? (
+                //pet
+                <View style = {styles.leftbox}>
+                  <Text style={styles.name_text}>{item.name}</Text>
                   <View style = {styles.descriptionbox}>
-                    <Text style={styles.description_text}>{item.age}</Text>
+                    <Text style={styles.description_text}>Breed:{item.breed}</Text>
+                    <View style = {{flexDirection:"row"}}>
+                      <Text style={styles.description_text}>Age:{item.age}</Text>
+                      <Text style={styles.description_text}>Gender:{item.gender}</Text>
+                    </View>
+                    
                   </View>
-              </View>
+                </View>
+                ) : (
+                  //non pet 
+                  <View style = {styles.leftbox}>
+                 <Text style={styles.name_text}>{item.name}</Text>
+                  <View style = {styles.descriptionbox}>
+                  <Text style={styles.description_text}>{item.category}</Text>
+                  <View style = {{flexDirection: "row"}}>
+                    <Text style={styles.description_text}>Age: {item.age} </Text>
+                    <Text style={styles.description_text}>Gender: {item.gender} </Text>
+                  </View>
+                    
+                  </View>
+                </View>
+              )}
               
-              <View style = {styles.rightbox}>
-                  <Text style={styles.timestamp}>{item.lastSeen.toDate().toString()}</Text>
-                  <Text style={styles.location}>{item.location.toJSON().latitude}</Text>
+              <View style = {styles.rightbox}> 
+              {/* ."ctrl space" to see all available options */}
+                  <Text style={styles.timestamp}>{moment(item.createdAt.toDate(), "MMDDYYYY").fromNow()}</Text>
+                  {/* //Need to add in geolocation  */}
+                  <Text style={styles.location}>{item.createdAt.toDate().toDateString()}</Text>
               </View>
               </Pressable>
               <Modal
@@ -155,7 +184,9 @@ const FeedPage = () => {
       
       }
     />
-</SafeAreaView>
+    </SafeAreaView>
+    </View>
+    
   );
 };
 const styles = StyleSheet.create({
@@ -190,8 +221,8 @@ const styles = StyleSheet.create({
     flexDirection: "row", 
     marginVertical: 10,
     backgroundColor: "white",
-    justifyContent:"center"
-    
+    justifyContent:"center",
+    borderRadius: 10
   },
   avatar: {
     aspectRatio: 1, 
@@ -208,7 +239,8 @@ const styles = StyleSheet.create({
   imagebox:{
     position: "relative",
     flex: 2,
-    paddingHorizontal: 5
+    paddingHorizontal: 5,
+    justifyContent:"center",
   },
   leftbox:{
     position: "relative",
@@ -220,7 +252,7 @@ const styles = StyleSheet.create({
   },
   rightbox:{
     position: "relative",
-    flex: 1.5,
+    flex: 2,
     justifyContent: "space-between",
     paddingTop:15,
     paddingRight:5,
@@ -229,8 +261,6 @@ const styles = StyleSheet.create({
 
   },
   pressable: {
-    //borderBottomWidth: 1,
-    //borderWidth: 1,
     borderColor: "grey",
     width: "100%",
     height: "100%",
@@ -274,45 +304,6 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     padding: 10,
     borderRadius:40
-  },
-  DescContainerActive:{
-    position: 'absolute',
-    backgroundColor: 'lightgrey',//rgba(124,97,128, 1)',
-    padding: 10,
-    left: 30,
-    right: 190,
-    borderRadius:25
-  },
-  DescContainerInactive:{
-    position: 'absolute',
-    backgroundColor: 'rgba(233,233,233, 1)',//rgba(124,97,128, 1)',
-    padding: 10,
-    left: 30,
-    right: 190,
-    borderRadius:25
-  },
-  PhotoContainerActive:{
-    position: 'absolute',
-    backgroundColor: 'lightgrey',//rgba(124,97,128, 1)',
-    padding: 10,
-    left: 190,
-    right: 30,
-    borderRadius:25
-  },
-  PhotoContainerInactive:{
-    position: 'absolute',
-    backgroundColor: 'rgba(233,233,233, 1)',//rgba(124,97,128, 1)',
-    padding: 10,
-    left: 190,
-    right: 30,
-    borderRadius:25
-  },
-  modalBoldedText:{
-    fontWeight: "bold",
-    fontSize: 20
-  },
-  modalText:{
-    fontSize: 20
   },
   photos:{
     width: 100,

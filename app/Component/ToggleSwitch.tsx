@@ -27,8 +27,8 @@ const ToggleSwitch:React.FC<Props> = (
         <View>
       <View
         style={{
-          height: 44,
-          width: 215,
+          height: 50,
+          width: 320,
           backgroundColor: 'white',
           borderRadius: 25,
           borderWidth: 1,
