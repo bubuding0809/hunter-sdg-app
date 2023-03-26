@@ -12,7 +12,7 @@ export type UserQueryType = {
   email: string;
   firstName: string;
   lastName: string;
-  bounties: DocumentReference<DocumentData>[];
+  bounties?: DocumentReference<DocumentData>[];
 };
 
 type QueryOptions = {
@@ -23,21 +23,25 @@ type QueryOptions = {
 // Use react-query to get the bounty data
 const useGetUser = (
   queryParams: {
-    id: string;
+    userId: string;
   },
   queryOptions?: QueryOptions
 ) => {
   // Async function to get the user data from firebase
-  const getUserById = async () => {
+  const getUser = async () => {
     try {
-      const user = await getDoc(doc(db, "User", queryParams.id));
+      const user = await getDoc(doc(db, "User", queryParams.userId));
       return user.data() as UserQueryType;
     } catch (err) {
       throw err;
     }
   };
 
-  return useQuery(["getUserById", queryParams], getUserById, queryOptions);
+  return useQuery({
+    queryKey: ["getUser", queryParams.userId],
+    queryFn: getUser,
+    ...queryOptions,
+  });
 };
 
 export default useGetUser;

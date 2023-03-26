@@ -1,26 +1,22 @@
+import { ref, remove } from "firebase/database";
 import {
-  addDoc,
   collection,
   doc,
-  getDoc,
-  Timestamp,
-  serverTimestamp,
-  updateDoc,
   runTransaction,
-  query,
   DocumentReference,
   DocumentData,
 } from "firebase/firestore";
+import { RefreshControlComponent } from "react-native";
 import { useMutation, useQueryClient } from "react-query";
-import { db } from "../../../../firebaseConfig";
+import { db, rtdb } from "../../../../firebaseConfig";
 
-export type JoinBountyType = {
+export type leaveBountyType = {
   bountyId: string;
   userId: string;
 };
 
 // This is the async function that will be called when the mutation is called
-const joinBounty = async (variable: JoinBountyType) => {
+const leaveBounty = async (variable: leaveBountyType) => {
   try {
     // Create a reference to the bounty collection and add the bounty
     const bountyCollectionRef = collection(db, "Bounty");
@@ -42,31 +38,34 @@ const joinBounty = async (variable: JoinBountyType) => {
       const prevBounties = hunterDoc.data()
         .bounties as DocumentReference<DocumentData>[];
 
-      if (prevBounties && !!prevBounties.length) {
-        throw new Error("User already joined a bounty");
+      if (!prevBounties || !prevBounties.length) {
+        throw new Error("User has not joined a bounty");
       }
 
-      if (prevHunters && prevHunters.map(b => b.id).includes(hunterRef.id)) {
-        throw new Error("User already joined this bounty");
+      if (!prevHunters || !prevHunters.map(b => b.id).includes(hunterRef.id)) {
+        throw new Error("User has not joined this bounty");
       }
 
-      // Add the userId ref to the bounty userId array
+      // Remove the userId ref from the bounty userId array
       transaction.update(bountyRef, {
-        hunters: prevHunters
-          ? [...bountyDoc.data().hunters, hunterRef]
-          : [hunterRef],
+        hunters: prevHunters.filter(h => h.id !== hunterRef.id),
       });
 
-      // Add the bounty ref to the user bounty array
+      // Remove the bounty ref from the user bounty array
       transaction.update(hunterRef, {
-        bounties: prevBounties
-          ? [...hunterDoc.data().bounties, bountyRef]
-          : [bountyRef],
+        bounties: prevBounties.filter(b => b.id !== bountyRef.id),
       });
     });
 
+    // Remove the user from the real time database of hunters
+    const bountyRtdbRef = ref(
+      rtdb,
+      `bounties/${variable.bountyId}/${variable.userId}`
+    );
+    await remove(bountyRtdbRef);
+
     return {
-      message: "Successfully joined bounty",
+      message: "Successfully left bounty",
     };
   } catch (error) {
     // Do something upon error
@@ -75,10 +74,10 @@ const joinBounty = async (variable: JoinBountyType) => {
 };
 
 // This is a wrapper around the useMutation hook that will be used in the component
-const useJoinBounty = () => {
+const useLeaveBounty = () => {
   const queryClient = useQueryClient();
 
-  return useMutation(["joinBounty"], joinBounty, {
+  return useMutation(["leaveBounty"], leaveBounty, {
     onMutate: async variable => {
       // * Do something before mutation
     },
@@ -94,4 +93,4 @@ const useJoinBounty = () => {
   });
 };
 
-export default useJoinBounty;
+export default useLeaveBounty;

@@ -49,7 +49,7 @@ type QueryOptions = {
 
 // Use react-query to get the bounty data
 const useGetBounties = (queryOptions?: QueryOptions) => {
-  return useQuery(["bounties"], getBounties, queryOptions);
+  return useQuery(["getBounties"], getBounties, queryOptions);
 };
 
 export default useGetBounties;
