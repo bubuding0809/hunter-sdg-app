@@ -12,6 +12,7 @@ import {
   Inter_700Bold,
   Inter_800ExtraBold,
   Inter_900Black,
+  Inter_400Bold,
 } from "@expo-google-fonts/inter";
 
 export const unstable_settings = {
