@@ -42,5 +42,4 @@ const db = getFirestore(app);
 //For storage of images. By JL:
 const app2 = initializeApp(firebaseConfig);
 export const storage = getStorage(app2);
-
 export { auth, db };

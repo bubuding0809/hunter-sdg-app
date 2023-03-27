@@ -6,6 +6,7 @@ import {
   View,
   TextInput,
   FlatList,
+  TouchableWithoutFeedback,
 } from "react-native";
 import React, { useState } from "react";
 import {
@@ -13,9 +14,11 @@ import {
   Button,
   Center,
   Container,
+  FormControl,
   Image,
   Input,
   ScrollView,
+  Select,
   TextArea,
 } from "native-base";
 import { Link } from "expo-router";
@@ -62,6 +65,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
       handleFormChange("lastSeen", selectedDate);
     }
   };
+
   const showDateTimePicker = () => {
     setShow(true);
   };
@@ -99,11 +103,12 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     return uploadedImageUrls;
   };
 
-  // Ding said that the below will be used to generate the form
+  // Below will be used to generate a new form
   const [bountyForm, setBountyForm] = useState<{
     lostName: string;
     age: string;
     gender: "Male" | "Female" | "Others";
+    category: "Child" | "Adult" | "Pet" | "Elderly";
     lastSeen: string;
     location: {
       latitude: number;
@@ -117,6 +122,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     lostName: "",
     age: "",
     gender: "Male",
+    category: "Pet",
     lastSeen: "",
     location: {
       latitude: 0,
@@ -136,6 +142,15 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     setBountyForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Trying to debug the form changes for the mapchanges
+  const handleMapChange = (newLocation, newRadius) => {
+    setLocation(newLocation);
+    setRadius(newRadius);
+    handleFormChange("location", newLocation);
+    handleFormChange("radius", newRadius);
+  };
+
+  // This prevents the user from spamming the submit button.
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -172,11 +187,12 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
         gender: bountyForm.gender as "male" | "female" | "other",
         appearance: bountyForm.appearance,
         age: parseInt(bountyForm.age),
-        category: "child",
+        category: bountyForm.category as "child" | "adult" | "pet" | "elderly",
         client: sessionData.uid,
         images: uploadedImageUrls,
         lastSeen: new Date(bountyForm.lastSeen),
         location: new GeoPoint(location.latitude, location.longitude),
+        radius: radius,
         name: bountyForm.lostName,
       },
       {
@@ -263,6 +279,22 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
               onChangeText={(val) => handleFormChange("lostName", val)}
             />
           </View>
+
+          <View style={{ flexDirection: "row" }}>
+            <Select
+              minWidth="360"
+              mx="10"
+              marginBottom={5}
+              placeholder="Choose the category"
+              padding={4}
+              onValueChange={(val) => handleFormChange("category", val)}
+            >
+              <Select.Item label="Child" value="Child" />
+              <Select.Item label="Adult" value="Adult" />
+              <Select.Item label="Pet" value="Pet" />
+              <Select.Item label="Other" value="Other" />
+            </Select>
+          </View>
           <View style={{ flexDirection: "row" }}>
             <Box alignItems="center" marginRight={9}>
               <Input
@@ -289,15 +321,18 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
               />
             </Box>
           </View>
-          <Input
-            isRequired
-            marginBottom={5}
-            width={360}
-            placeholder="Last Seen"
-            value={bountyForm.lastSeen ? date.toLocaleString() : ""}
-            onTouchStart={showDateTimePicker}
-            editable={true}
-          />
+          <TouchableWithoutFeedback onPress={showDateTimePicker}>
+            <Input
+              isRequired
+              marginBottom={5}
+              padding={4}
+              width={360}
+              placeholder="Last Seen"
+              value={bountyForm.lastSeen ? date.toLocaleString() : ""}
+              onTouchStart={showDateTimePicker}
+              editable={true}
+            />
+          </TouchableWithoutFeedback>
           {show && (
             <DateTimePicker
               testID="dateTimePicker"
@@ -305,7 +340,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
               mode={Platform.OS === "ios" ? "datetime" : "date"}
               value={date}
               is24Hour={false}
-              display="default"
+              display="spinner"
               onChange={handleDateTimeChange}
             />
           )}

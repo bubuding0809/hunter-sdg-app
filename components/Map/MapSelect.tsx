@@ -130,14 +130,14 @@ const MapSelect: React.FC<MapSelectProps> = ({
             // Reverse geocode to get address
             let geoDecodedAddress: undefined | Location.LocationGeocodedAddress;
             reverseGeocode(nativeEvent.coordinate)
-              .then(address => {
+              .then((address) => {
                 // Set Decoded address
                 geoDecodedAddress = address[0];
 
                 // if decoding is successful, set decoded address
                 geoDecodedAddress && setDecodedAddress(geoDecodedAddress.name);
               })
-              .catch(err => {
+              .catch((err) => {
                 console.log(err);
               });
           }}
@@ -166,7 +166,7 @@ const MapSelect: React.FC<MapSelectProps> = ({
           <InputAutocomplete
             label="Location"
             placeholder="Search for a location"
-            onPlaceSelected={details => {
+            onPlaceSelected={(details) => {
               setLocation({
                 latitude: details?.geometry.location.lat ?? 0,
                 longitude: details?.geometry.location.lng ?? 0,
@@ -190,6 +190,7 @@ const MapSelect: React.FC<MapSelectProps> = ({
             <Button
               width="70%"
               onPress={() => {
+                setLocation(origin || { latitude: 0, longitude: 0 });
                 setOpen(false);
               }}
             >
@@ -221,8 +222,8 @@ const MapSelect: React.FC<MapSelectProps> = ({
               maxValue={2000}
               accessibilityLabel="Radius slider"
               step={100}
-              onChange={value => setOnChangeValue(value)}
-              onChangeEnd={value => {
+              onChange={(value) => setOnChangeValue(value)}
+              onChangeEnd={(value) => {
                 setRadius(value);
               }}
             >
