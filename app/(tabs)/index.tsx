@@ -106,10 +106,10 @@ const FeedPage = () => {
   }
 
   return (
-    <View style = {{height: HEIGHT, backgroundColor:"white"}}>
+    <View style = {{backgroundColor:"white"}}>
       <SafeAreaView edges={['left', 'right']}>
     <FlatList
-      contentContainerStyle= {{ flexGrow: 1, alignItems:"center", backgroundColor: "white", height:HEIGHT, width:WIDTH}}
+      contentContainerStyle= {{ flexGrow: 1, alignItems:"center", backgroundColor: "white"}}
       data = {bountyData}
       showsVerticalScrollIndicator = {false}
       refreshControl={
@@ -198,7 +198,8 @@ const styles = StyleSheet.create({
   },
   description_text: {
     fontWeight: "normal",
-    fontSize: 14
+    fontSize: 14,
+    paddingHorizontal:3
   },
   timestamp: {
     fontWeight: "normal",
@@ -252,7 +253,7 @@ const styles = StyleSheet.create({
   },
   rightbox:{
     position: "relative",
-    flex: 2,
+    flex: 3,
     justifyContent: "space-between",
     paddingTop:15,
     paddingRight:5,

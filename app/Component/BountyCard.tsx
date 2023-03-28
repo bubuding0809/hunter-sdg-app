@@ -7,7 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
 import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
 import ToggleSwitch from "./ToggleSwitch";
-import type {StatusBarStyle} from 'react-native';
+import moment from 'moment';
+import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -46,6 +47,9 @@ type BountyCardProp = {
 function BountyCard ({changeModalVisible,data}:BountyCardProp) {
     const [IsDesc,setIsDesc] = useState(true);
 
+    const switchfunction = val => {
+       { val == 1 ? (setIsDesc(true)):(setIsDesc(false))};
+    }
     return(
         <SafeAreaView style = {styles.topbox} >
             <StatusBar
@@ -66,7 +70,7 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                         selectionMode = {1}
                         option1 =   'DESCRIPTION'
                         option2 = {'PHOTOS'}
-                        onSelectSwitch = {() => setIsDesc(!IsDesc)}
+                        onSelectSwitch = { switchfunction}
                         selectionColor = {'#000000'}
                     />
                 </Container>
@@ -85,11 +89,11 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                             </View>
                             <View style = {{flexDirection:"row",width:"100%", backgroundColor:"white",paddingLeft:5}}>
                                 <Text style={{fontWeight: "bold"}}> Last Seen Time: </Text>
-                                <Text> data.lastseen </Text>
+                                <Text> {data.lastSeen.toDate().toDateString()} </Text>
                             </View>
                             <View style = {{flexDirection:"row",width:"100%",  backgroundColor:"white",paddingLeft:5}}>
                                 <Text style={{fontWeight: "bold"}}> Last Seen Location: </Text>
-                                <Text> data.location</Text>
+                                <Text>{data.description}</Text>
                             </View>
                             <View style = {{width:"100%", backgroundColor:"white",paddingLeft:5,}}>
                             <Text style={{fontWeight: "bold" }}> Appearance:</Text>
