@@ -33,7 +33,6 @@ import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../firebaseConfig";
 import { uuidv4 } from "@firebase/util";
 interface NewBountyFormProps {}
-// Load in the fonts
 
 const NewBountyForm: React.FC<NewBountyFormProps> = () => {
   const { data: sessionData } = useFirebaseSession();
@@ -239,15 +238,19 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
   // Image carousell rendering function
   const renderItem = ({ item, index }) => {
     return (
-      <View>
+      <View
+        key={index}
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <Image
-          key={index}
           source={{ uri: item }}
-          alt={"Bounty Image ${index}"}
-          width={300}
-          height={200}
-          size="2xl"
-          resizeMode="contain"
+          alt={`Bounty Image ${index}`}
+          style={{
+            width: Dimensions.get("window").width * 0.8,
+            height: Dimensions.get("window").width * 0.6,
+            resizeMode: "contain",
+            margin: 10,
+          }}
         />
       </View>
     );
@@ -468,14 +471,14 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
               height: "100%",
             }}
           >
-            {bountyForm.images.map((imageUri, index) => (
-              <Image
-                key={index}
-                source={{ uri: imageUri }}
-                alt={`Bounty Image ${index}`}
-                style={{ width: 300, height: 300, resizeMode: "contain" }}
-              />
-            ))}
+            <FlatList
+              data={bountyForm.images}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+            />
             <Button
               onPress={handleMultipleImageUpload}
               mt={10}
