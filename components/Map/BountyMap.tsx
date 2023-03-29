@@ -25,6 +25,7 @@ import {
   Text,
   VStack,
   Image,
+  Pressable,
 } from "native-base";
 import * as Location from "expo-location";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -210,24 +211,21 @@ const BountyMap: React.FC<BountyMapProps> = ({
                 longitude: bountyData.location.longitude,
               }}
             >
-              <Center>
-                <Image
-                  source={{
-                    uri: bountyData.images[0],
-                  }}
-                  style={{
-                    // center the image on the marker
-                    backgroundColor: "white",
-                    borderRadius: 100,
-                    height: 40,
-                    width: 40,
-                    borderWidth: 2,
-                    borderColor: "white",
-                  }}
-                  alt="Bounty image"
-                />
-                <Text fontFamily="Inter_500Medium">{bountyData.name}</Text>
-              </Center>
+              <Image
+                source={{
+                  uri: bountyData.images[0],
+                }}
+                style={{
+                  // center the image on the marker
+                  backgroundColor: "white",
+                  borderRadius: 100,
+                  height: 40,
+                  width: 40,
+                  borderWidth: 2,
+                  borderColor: "white",
+                }}
+                alt="Bounty image"
+              />
             </Marker>
             <Circle
               center={{
@@ -319,6 +317,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
             >
               {bountyData.name}
             </Text>
+
             {/* Section 1 */}
             <HStack alignItems="flex-start" justifyContent="space-between">
               <HStack>
@@ -358,15 +357,30 @@ const BountyMap: React.FC<BountyMapProps> = ({
                   )}
                 </VStack>
               </HStack>
-              <Image
-                source={{
-                  uri: bountyData.images[0],
+
+              {/* Pressable bounty image that moves center to location when pressed */}
+              <Pressable
+                onPress={() => {
+                  bountyData.location &&
+                    moveTo({
+                      latitude: bountyData.location.latitude,
+                      longitude: bountyData.location.longitude,
+                    });
                 }}
-                alt={bountyData.name}
-                borderRadius="full"
-                width="81px"
-                height="81px"
-              />
+                _pressed={{
+                  opacity: 0.5,
+                }}
+              >
+                <Image
+                  source={{
+                    uri: bountyData.images[0],
+                  }}
+                  alt={bountyData.name}
+                  borderRadius="full"
+                  width="81px"
+                  height="81px"
+                />
+              </Pressable>
             </HStack>
 
             {/* Section 2 */}
