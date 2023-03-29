@@ -141,7 +141,7 @@ const FeedPage = () => {
               <Modal visible={isModalVisible} animationType="slide">
                 <BountyCard
                   changeModalVisible={changeModalVisible}
-                  bountyData={isModalData}
+                  data={isModalData}
                 />
               </Modal>
             </Container>

@@ -9,7 +9,7 @@ import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBo
 import ToggleSwitch from "./ToggleSwitch";
 import type {StatusBarStyle} from 'react-native';
 import useJoinBounty from "../../utils/scripts/hooks/mutations/useJoinBounty";
-import useGetUser from "../../utils/scripts/hooks/queries/useGetUser";
+import useGetUser, { UserQueryType } from "../../utils/scripts/hooks/queries/useGetUser";
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -42,16 +42,18 @@ function Carousel({data}:{data: BountyQueryType}){
 };
 type BountyCardProp = {
     changeModalVisible: (bool:boolean) => void,
-    bountyData: BountyQueryType
+    data: BountyQueryType
 }
 
-function BountyCard ({changeModalVisible,bountyData}:BountyCardProp) {
+function BountyCard ({changeModalVisible,data}:BountyCardProp) {
     const router = useRouter()
     const [IsDesc,setIsDesc] = useState(true);
     const [modalVisible,setModalVisible] = useState(false)
     const {mutate: joinBounty} = useJoinBounty()
     // const { data, isLoading } = useFirebaseSession();
     const { data: sessionData, isLoading } = useFirebaseSession();
+    const { data:userData, refetch} = useGetUser({userId:sessionData.uid});
+    
     
     return(
         <SafeAreaView style = {styles.topbox} >
@@ -65,7 +67,7 @@ function BountyCard ({changeModalVisible,bountyData}:BountyCardProp) {
                     </View>
                    <View style = {{backgroundColor:"#E5E5E5",height: "40%",width:"100%",bottom:0,position:"absolute"}}></View>
                     <Container style = {styles.imagebox}>
-                        <Image style = {styles.profilePhoto} source= {{ uri: bountyData.images[0]}}/>
+                        <Image style = {styles.profilePhoto} source= {{ uri: data.images[0]}}/>
                     </Container>
                 </Container>
                 <Container style = {styles.togglebox}>
@@ -83,10 +85,10 @@ function BountyCard ({changeModalVisible,bountyData}:BountyCardProp) {
                             <View style = {{width:"100%",flexDirection: "row",
                             backgroundColor:"white",paddingHorizontal:5, marginTop:20, paddingRight:100}}>
                                 <View style = {{flex:1,flexDirection:"row",justifyContent: 'flex-start'}}>
-                                    <Text style={{fontWeight: "bold"}}> Age: </Text><Text> {bountyData.age}</Text>
+                                    <Text style={{fontWeight: "bold"}}> Age: </Text><Text> {data.age}</Text>
                                 </View>
                                 <View style = {{flex:1,flexDirection:"row",justifyContent: 'flex-end'}}>
-                                    <Text style={{fontWeight: "bold"}}> Gender: </Text><Text>{bountyData.gender}</Text>
+                                    <Text style={{fontWeight: "bold"}}> Gender: </Text><Text>{data.gender}</Text>
                                 </View>
                             
                             </View>
@@ -100,11 +102,11 @@ function BountyCard ({changeModalVisible,bountyData}:BountyCardProp) {
                             </View>
                             <View style = {{width:"100%", backgroundColor:"white",paddingLeft:5,}}>
                             <Text style={{fontWeight: "bold" }}> Appearance:</Text>
-                                <Text style={{paddingLeft:5,textAlign:"justify", paddingRight: 10}}>{bountyData.appearance}</Text>
+                                <Text style={{paddingLeft:5,textAlign:"justify", paddingRight: 10}}>{data.appearance}</Text>
                             </View>
                             <View style = {{width:"100%",  backgroundColor:"white",paddingLeft:5, marginBottom:20}}>
                                 <Text style={{fontWeight: "bold"}}> Additional Information</Text>
-                                <Text style={{paddingLeft:5,textAlign:"justify", paddingRight: 10}}>{bountyData.additionalInfo}</Text>
+                                <Text style={{paddingLeft:5,textAlign:"justify", paddingRight: 10}}>{data.additionalInfo}</Text>
                             </View>
                         </Container>
                             
@@ -112,14 +114,23 @@ function BountyCard ({changeModalVisible,bountyData}:BountyCardProp) {
                         ) : (
                             //add carousell function here
                             <Carousel
-                            data = {bountyData}
+                            data = {data}
                             />
                             
                         )}
                 </Container>
                 <Container style = {styles.buttonbox}>
                     <View>
-                        <Button title = "HUNT" color="black" onPress={() => setModalVisible(true)}></Button>
+                        <TouchableOpacity 
+                        disabled = {userData?.bounties?.length > 0 ?? false}
+                        style = {{borderWidth:0,marginTop:17}}
+                        onPress={() => setModalVisible(true)}>
+                            <Text style = {{
+                                fontSize:25,
+                                fontWeight:"bold",}}>
+                                    {userData?.bounties?.length > 0  ? "You are already in a hunt": "Hunt"}
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                     <Modal
                 visible={modalVisible}
@@ -171,7 +182,7 @@ function BountyCard ({changeModalVisible,bountyData}:BountyCardProp) {
                         <View style ={styles.ImInContainer}>
                         <Button title="I'm In!" color='white' onPress={() => {
                             joinBounty({
-                                bountyId:bountyData.id,
+                                bountyId:data.id,
                                 userId: sessionData.uid
                             }, {
                                 onSuccess: () => {
@@ -196,7 +207,7 @@ function BountyCard ({changeModalVisible,bountyData}:BountyCardProp) {
                         
                     </View>
                 </Modal>
-            </Modal>
+                    </Modal>
                     
                 </Container>
         </SafeAreaView>
