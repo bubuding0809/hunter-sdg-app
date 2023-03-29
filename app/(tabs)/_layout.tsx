@@ -1,4 +1,4 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { usePathname } from "expo-router";
@@ -9,11 +9,11 @@ import { generateBounty } from "../../utils/scripts/generateFakeData";
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
+  name: React.ComponentProps<typeof FontAwesome5>["name"];
   color: string;
   size?: number;
 }) {
-  return <FontAwesome style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome5 style={{ marginBottom: -3 }} {...props} />;
 }
 
 const TabLayout = () => {
@@ -55,7 +55,7 @@ const TabLayout = () => {
           tabBarIcon: () => {
             // q: gives me shades of light blacks
             const color = pathName === "/profile" ? "#FD7366" : "#252525";
-            return <TabBarIcon name="user" color={color} size={24} />;
+            return <TabBarIcon name="user-alt" color={color} size={24} />;
           },
           tabBarLabelStyle: {
             color: pathName === "/profile" ? "#FD7366" : "#252525",
@@ -68,10 +68,10 @@ const TabLayout = () => {
         options={{
           // Do not show header for this route
           header: () => null,
-          title: "Temporary utility bar",
+          title: "Feed",
           tabBarIcon: () => {
             const color = pathName === "/" ? "#FD7366" : "#252525";
-            return <TabBarIcon name="map" color={color} size={24} />;
+            return <TabBarIcon name="home" color={color} size={24} />;
           },
           // style tab bar title
           tabBarLabelStyle: {
@@ -88,7 +88,7 @@ const TabLayout = () => {
           title: "Activity",
           tabBarIcon: () => {
             const color = pathName === "/activity" ? "#FD7366" : "#252525";
-            return <TabBarIcon name="delicious" color={color} size={24} />;
+            return <TabBarIcon name="map-marked-alt" color={color} size={24} />;
           },
           tabBarLabelStyle: {
             color: pathName === "/activity" ? "#FD7366" : "#252525",
