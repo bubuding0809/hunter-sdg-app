@@ -2,7 +2,6 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { usePathname } from "expo-router";
-import { Button, Flex } from "native-base";
 import useCreateBounty from "../../utils/scripts/hooks/mutations/useCreateBounty";
 import { generateBounty } from "../../utils/scripts/generateFakeData";
 
@@ -68,11 +67,7 @@ const TabLayout = () => {
         name="index"
         options={{
           // Do not show header for this route
-          headerLeft: () => (
-            <Button ml={2} height={10} onPress={handleAddTestBounty}>
-              Add
-            </Button>
-          ),
+          header: () => null,
           title: "Temporary utility bar",
           tabBarIcon: () => {
             const color = pathName === "/" ? "#FD7366" : "#252525";
