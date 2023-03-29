@@ -10,75 +10,7 @@ import BountyCard from "../Component/BountyCard";
 import moment from 'moment';
 
 // Temporary bounty card to display data
-const bountyCard: React.FC<BountyQueryType> = bountyItem => {
-  return (
-    <Center
-      w="full"
-      bg="white"
-      borderWidth={1}
-      rounded="md"
-      shadow={3}
-      flexDirection="row"
-      justifyContent="flex-start"
-      alignItems="flex-start"
-      p={3}
-    >
-      {/* Image */}
-      <Image
-        source={{
-          uri: bountyItem.images[0],
-        }}
-        style={{ width: 50, height: 50 }}
-        borderRadius={10}
-      />
-      <Box
-        style={{
-          marginLeft: 10,
-        }}
-        flexShrink={1}
-      >
-        <Text fontSize="xl">{bountyItem.name}</Text>
-        <Text fontSize="md" numberOfLines={2}>
-          {bountyItem.appearance}
-        </Text>
-        <Divider my={2} />
-        <Text fontSize="md" numberOfLines={2}>
-          {bountyItem.additionalInfo?.length > 0
-            ? bountyItem.additionalInfo
-            : "No additional info"}
-        </Text>
-        <Divider my={2} />
-        <Text fontSize="md" textAlign="left">
-          Last seen: {bountyItem.lastSeen.toDate().toString()}
-        </Text>
-      </Box>
-      <Divider orientation="vertical" mx={2} />
-      <Flex direction="column" h="full" grow={1}>
-        <Text fontSize="md" textAlign="right">
-          type: {bountyItem.category}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          breed: {bountyItem.breed ?? "unknown"}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          age: {bountyItem.age ?? "unknown"}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          $$$ {bountyItem.reward ?? "unknown"}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          Sex: {bountyItem.gender}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          Lat: {bountyItem.location.toJSON().latitude}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          Long: {bountyItem.location.toJSON().longitude}
-        </Text>
-      </Flex>
-    </Center>
-  );
-};
+
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 const FeedPage = () => {
