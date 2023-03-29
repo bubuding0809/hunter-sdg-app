@@ -3,6 +3,7 @@ import MapView, {
   Marker,
   PROVIDER_GOOGLE,
   MapCircle,
+  Polyline,
 } from "react-native-maps";
 import {
   StyleSheet,
@@ -12,11 +13,12 @@ import {
   StyleProp,
   ViewStyle,
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import InputAutocomplete from "./InputAutocomplete";
-import { Button, Heading, HStack, Slider, Spinner } from "native-base";
-
+import { Box, Button, Heading, HStack, Icon, Fab, Spinner } from "native-base";
 import * as Location from "expo-location";
+import { useLocation } from "../../context/LocationContext";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 // https://docs.expo.dev/versions/latest/sdk/map-view/
 // https://www.npmjs.com/package/react-native-google-places-autocomplete
@@ -42,8 +44,8 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.02;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const INITIAL_POSITION = {
-  latitude: 40.76711, // Some US location
-  longitude: -73.979704, // Some US location
+  latitude: 1.353075102394308, // Some US location
+  longitude: 103.75781245624543,
   latitudeDelta: LATITUDE_DELTA,
   longitudeDelta: LONGITUDE_DELTA,
 };
@@ -51,8 +53,6 @@ const INITIAL_POSITION = {
 const MapSelect: React.FC<MapSelectProps> = ({
   setOpen,
   setLocation,
-  setRadius,
-  externalStyles,
   decodedAddress,
   setDecodedAddress,
 }) => {
@@ -60,56 +60,26 @@ const MapSelect: React.FC<MapSelectProps> = ({
   const mapRef = useRef<MapView>(null);
 
   const [onChangeValue, setOnChangeValue] = useState(200);
+  const { location: userLocation, locationLoading, heading } = useLocation();
 
-  const [userLocation, setUserLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [loadingUserLocation, setLoadingUserLocation] = useState(false);
-
-  // Effect to get user location
-  useEffect(() => {
-    const getLocationPermission = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      // Show loading indicator for user location
-      setLoadingUserLocation(true);
-
-      // Get user location
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
-
-      // Hide loading indicator for user location
-      setLoadingUserLocation(false);
-
-      // If location is found, move to it
-      location &&
-        moveTo({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        });
-
-      setUserLocation({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-    };
-
-    getLocationPermission();
-  }, []);
+  // Move to current location on load
+  useEffect(
+    () =>
+      userLocation &&
+      void moveTo({
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+      }),
+    []
+  );
 
   // Callback to move map to a location
   const moveTo = async (position: LatLng) => {
     const camera = await mapRef.current?.getCamera();
     if (camera) {
       camera.center = position;
-      mapRef.current?.animateCamera(camera, { duration: 1000 });
+      camera.zoom = 15;
+      mapRef.current?.animateCamera(camera, { duration: 500 });
     }
   };
 
@@ -148,14 +118,14 @@ const MapSelect: React.FC<MapSelectProps> = ({
 
             // Reverse geocode to get address;
             reverseGeocode(nativeEvent.coordinate)
-              .then((address) => {
+              .then(address => {
                 // Set Decoded address
                 const geoDecodedAddress = address[0];
 
                 // if decoding is successful, set decoded address
                 geoDecodedAddress && setDecodedAddress(geoDecodedAddress.name);
               })
-              .catch((err) => {
+              .catch(err => {
                 console.log(err);
               });
           }}
@@ -164,7 +134,14 @@ const MapSelect: React.FC<MapSelectProps> = ({
           {origin && <Marker coordinate={origin} pinColor="green" />}
 
           {/* Display current location if able to get from user */}
-          {userLocation && <Marker coordinate={userLocation} />}
+          {userLocation && (
+            <Marker
+              coordinate={{
+                latitude: userLocation.coords.latitude,
+                longitude: userLocation.coords.longitude,
+              }}
+            />
+          )}
 
           {/* Display radius circle */}
         </MapView>
@@ -192,7 +169,7 @@ const MapSelect: React.FC<MapSelectProps> = ({
           <InputAutocomplete
             label="" // It needs a label. But we don't want to show it
             placeholder="Search for a location"
-            onPlaceSelected={(details) => {
+            onPlaceSelected={details => {
               setLocation({
                 latitude: details?.geometry.location.lat ?? 0,
                 longitude: details?.geometry.location.lng ?? 0,
@@ -248,22 +225,6 @@ const MapSelect: React.FC<MapSelectProps> = ({
               Cancel
             </Button>
           </View>
-
-          {/* Loading indicator */}
-          {loadingUserLocation && (
-            <HStack space={2} justifyContent="center" p={2}>
-              <Spinner accessibilityLabel="Loading posts" />
-              <Heading color="primary.500" fontSize="md">
-                Loading current location
-              </Heading>
-            </HStack>
-          )}
-          {/* Error message */}
-          {errorMsg && (
-            <Text style={{ color: "red" }}>
-              Error getting current location: {errorMsg}
-            </Text>
-          )}
         </View>
       </View>
     </>

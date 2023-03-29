@@ -250,7 +250,7 @@ const Signup: React.FC = () => {
               <FormControl
                 display="flex"
                 flexDirection="row"
-                alignItems="start"
+                alignItems="flex-start"
                 justifyContent="space-between"
                 mt={2}
               >

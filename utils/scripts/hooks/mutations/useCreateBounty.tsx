@@ -8,8 +8,8 @@ import {
 } from "firebase/firestore";
 import { Modify } from "react-native-maps/lib/sharedTypesInternal";
 import { useMutation } from "react-query";
-import { db } from "../../../../../firebaseConfig";
-import { Bounty } from "../../../types";
+import { db } from "../../../../firebaseConfig";
+import { Bounty } from "../../types";
 
 export type CreateBountyType = Modify<
   Bounty,

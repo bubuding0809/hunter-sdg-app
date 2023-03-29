@@ -110,7 +110,8 @@ const Login: React.FC = () => {
               <FormControl>
                 {/* <FormControl.Label>Email ID</FormControl.Label> */}
                 <Input
-                  onChangeText={(text) => setEmail(text)}
+                  onChangeText={text => setEmail(text)}
+                  spellCheck={false}
                   height={10}
                   fontFamily={"Inter_400Regular"}
                   borderRadius={8}
@@ -123,7 +124,7 @@ const Login: React.FC = () => {
                 {/* <FormControl.Label>Password</FormControl.Label> */}
                 <Input
                   type="password"
-                  onChangeText={(text) => setPassword(text)}
+                  onChangeText={text => setPassword(text)}
                   placeholder="Enter your password"
                   height={10}
                   fontFamily={"Inter_400Regular"}
