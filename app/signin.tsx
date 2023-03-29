@@ -80,7 +80,7 @@ const Login: React.FC = () => {
         w="full"
         h="full"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        backgroundColor="#fff"
+        backgroundColor="white"
       >
         <Center>
           <Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -110,8 +110,8 @@ const Login: React.FC = () => {
               <FormControl>
                 {/* <FormControl.Label>Email ID</FormControl.Label> */}
                 <Input
-                  spellCheck={false}
                   onChangeText={text => setEmail(text)}
+                  spellCheck={false}
                   height={10}
                   fontFamily={"Inter_400Regular"}
                   borderRadius={8}

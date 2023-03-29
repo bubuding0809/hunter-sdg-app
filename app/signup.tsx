@@ -154,8 +154,8 @@ const Signup: React.FC = () => {
                 {/* <FormControl.Label>Email</FormControl.Label> */}
                 <Input
                   isRequired
-                  onChangeText={text =>
-                    setSignUpForm(prev => ({
+                  onChangeText={(text) =>
+                    setSignUpForm((prev) => ({
                       ...prev,
                       firstName: text,
                     }))
@@ -173,8 +173,8 @@ const Signup: React.FC = () => {
                 {/* <FormControl.Label>Email</FormControl.Label> */}
                 <Input
                   isRequired
-                  onChangeText={text =>
-                    setSignUpForm(prev => ({
+                  onChangeText={(text) =>
+                    setSignUpForm((prev) => ({
                       ...prev,
                       lastName: text,
                     }))
@@ -191,8 +191,9 @@ const Signup: React.FC = () => {
               <FormControl>
                 {/* <FormControl.Label>Email</FormControl.Label> */}
                 <Input
-                  onChangeText={text =>
-                    setSignUpForm(prev => ({
+                  isRequired
+                  onChangeText={(text) =>
+                    setSignUpForm((prev) => ({
                       ...prev,
                       email: text,
                     }))
@@ -209,9 +210,10 @@ const Signup: React.FC = () => {
               <FormControl>
                 {/* <FormControl.Label>Password</FormControl.Label> */}
                 <Input
+                  isRequired
                   type="password"
-                  onChangeText={text =>
-                    setSignUpForm(prev => ({
+                  onChangeText={(text) =>
+                    setSignUpForm((prev) => ({
                       ...prev,
                       password: text,
                     }))
@@ -227,9 +229,10 @@ const Signup: React.FC = () => {
               <FormControl>
                 {/* <FormControl.Label>Confirm Password</FormControl.Label> */}
                 <Input
+                  isRequired
                   type="password"
-                  onChangeText={text =>
-                    setSignUpForm(prev => ({
+                  onChangeText={(text) =>
+                    setSignUpForm((prev) => ({
                       ...prev,
                       confirmPassword: text,
                     }))
@@ -257,8 +260,8 @@ const Signup: React.FC = () => {
                   aria-label="I would like to receive your newsletter and other promotional information"
                   mr={2}
                   colorScheme="gray"
-                  onChange={check =>
-                    setSignUpForm(prev => ({ ...prev, newsletter: check }))
+                  onChange={(check) =>
+                    setSignUpForm((prev) => ({ ...prev, newsletter: check }))
                   }
                 />
                 <FormControl.Label

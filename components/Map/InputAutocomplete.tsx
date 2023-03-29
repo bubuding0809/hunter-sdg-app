@@ -40,6 +40,7 @@ const InputAutocomplete: React.FC<InputAutocompleteProps> = ({
         placeholder={placeholder || ""}
         fetchDetails
         onPress={(data, details = null) => {
+          console.log(data.description);
           onPlaceSelected(details);
         }}
         query={{

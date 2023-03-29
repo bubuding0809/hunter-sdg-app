@@ -39,7 +39,7 @@ const createBounty = async (variable: CreateBountyType) => {
     };
 
     // remove any undefined values from the bounty
-    Object.keys(newBounty).forEach(key => {
+    Object.keys(newBounty).forEach((key) => {
       if (newBounty[key] === undefined) {
         delete newBounty[key];
       }
@@ -61,7 +61,7 @@ const createBounty = async (variable: CreateBountyType) => {
 // This is a wrapper around the useMutation hook that will be used in the component
 const useCreateBounty = () => {
   return useMutation(["createBounty"], createBounty, {
-    onMutate: variable => {
+    onMutate: (variable) => {
       // * Do something upon request of mutation
     },
     onError: (error, variable, context) => {
