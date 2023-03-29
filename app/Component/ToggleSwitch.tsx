@@ -20,9 +20,11 @@ const ToggleSwitch:React.FC<Props> = (
     const [getSelectionMode, setSelectionMode] = useState(selectionMode);
 
     const updatedSwitchData = val => {
-        setSelectionMode(val);
-        onSelectSwitch(val);
-      };
+      {setSelectionMode(val);
+      onSelectSwitch(val);
+        
+        
+      }};
     return(
         <View>
       <View

@@ -9,7 +9,7 @@ import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBo
 import ToggleSwitch from "./ToggleSwitch";
 import type {StatusBarStyle} from 'react-native';
 import useJoinBounty from "../../utils/scripts/hooks/mutations/useJoinBounty";
-import useGetUser, { UserQueryType } from "../../utils/scripts/hooks/queries/useGetUser";
+import useGetUser from "../../utils/scripts/hooks/queries/useGetUser";
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -52,8 +52,6 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
     const {mutate: joinBounty} = useJoinBounty()
     // const { data, isLoading } = useFirebaseSession();
     const { data: sessionData, isLoading } = useFirebaseSession();
-    const { data:userData, refetch} = useGetUser({userId:sessionData.uid});
-    
     
     return(
         <SafeAreaView style = {styles.topbox} >
@@ -121,16 +119,7 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                 </Container>
                 <Container style = {styles.buttonbox}>
                     <View>
-                        <TouchableOpacity 
-                        disabled = {userData?.bounties?.length > 0 ?? false}
-                        style = {{borderWidth:0,marginTop:17}}
-                        onPress={() => setModalVisible(true)}>
-                            <Text style = {{
-                                fontSize:25,
-                                fontWeight:"bold",}}>
-                                    {userData?.bounties?.length > 0  ? "You are already in a hunt": "Hunt"}
-                            </Text>
-                        </TouchableOpacity>
+                        <Button title = "HUNT" color="black" onPress={() => setModalVisible(true)}></Button>
                     </View>
                     <Modal
                 visible={modalVisible}
@@ -207,7 +196,7 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                         
                     </View>
                 </Modal>
-                    </Modal>
+            </Modal>
                     
                 </Container>
         </SafeAreaView>
