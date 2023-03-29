@@ -77,12 +77,13 @@ const TabLayout = () => {
         name="index"
         options={{
           // Do not show header for this route
+          header: () => null,
           headerLeft: () => (
             <Button ml={2} height={10} onPress={handleAddTestBounty}>
               Add
             </Button>
           ),
-          title: "Temporary utility bar",
+          title: "Feed",
           tabBarIcon: () => {
             const color = pathName === "/" ? "#FD7366" : "#252525";
             return <TabBarIcon name="map" color={color} size={24} />;
