@@ -1,4 +1,4 @@
-import { View, Image, Button } from "react-native";
+import { View, Image } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   Center,
@@ -10,17 +10,30 @@ import {
   HStack,
   Heading,
   Divider,
+  Button,
 } from "native-base";
 import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { useLocation } from "../../context/LocationContext";
 import { rtdb } from "../../firebaseConfig";
-import { ref, onValue, set, get } from "firebase/database";
+import { ref, onValue, set } from "firebase/database";
+import type { Unsubscribe } from "firebase/database";
+import useGetBounty from "../../utils/scripts/hooks/queries/useGetBounty";
+import useLeaveBounty from "../../utils/scripts/hooks/mutations/useLeaveBounty";
+import { useQueryClient } from "react-query";
 
 const ActivityPage = () => {
   const router = useRouter();
   const { data: sessionData, isLoading: sessionLoading } = useFirebaseSession();
   const { location, heading } = useLocation();
+
+  // Query hook to get the bounty data
+  const { data: bountyData, isLoading } = useGetBounty({
+    userId: sessionData?.uid,
+  });
+
+  // Mutation to leave the bounty
+  const { mutate: leaveBounty } = useLeaveBounty();
 
   const [userLocations, setUserLocations] = useState<{
     [key: string]: {
@@ -30,28 +43,29 @@ const ActivityPage = () => {
     };
   }>({});
 
-  // Access live data from the database
+  const [isLeaving, setIsLeaving] = useState(false);
+
+  // Subscribe to the realtime database at the /bounties/test path
   useEffect(() => {
-    const getInitialUsers = async () => {
-      const bountyRef = await get(ref(rtdb, "bounties" + "/test"));
-
-      // Set the initial state of the user locations
-      setUserLocations(bountyRef.val());
-    };
-
     // Subscribe to the database
-    const bountyRef = ref(rtdb, "bounties" + "/test");
-    const unsubscribe = onValue(bountyRef, snapshot => {
-      setUserLocations(snapshot.val());
-    });
-
+    let unsubscribe: Unsubscribe | undefined;
+    if (bountyData) {
+      const bountyRef = ref(rtdb, "bounties/" + bountyData.id);
+      unsubscribe = onValue(bountyRef, snapshot => {
+        setUserLocations(snapshot.val());
+      });
+    }
     return unsubscribe;
-  }, []);
+  }, [bountyData]);
 
+  // Update the location in the database when the location changes
   useEffect(() => {
     // Update the rtdb with the current location at /bounties/test/user1
-    if (location) {
-      const bountyRef = ref(rtdb, "bounties" + "/test/" + sessionData.uid);
+    if (location && bountyData) {
+      const bountyRef = ref(
+        rtdb,
+        `bounties/${bountyData?.id}/${sessionData?.uid}`
+      );
       const data: {
         lat: number;
         long: number;
@@ -64,39 +78,49 @@ const ActivityPage = () => {
       heading && (data.heading = heading.magHeading);
       set(bountyRef, data);
     }
-  }, [location, heading]);
+  }, [location, heading, bountyData, sessionData]);
 
-  useEffect(() => {
-    // If user is jIk747p2cjXnVL3z6SO8N2uXMT33, set a interval fo 1s to update the location randomly
-    let interval: NodeJS.Timer | undefined;
-    if (sessionData?.uid === "jIk747p2cjXnVL3z6SO8N2uXMT33") {
-      console.log("Starting interval for jIk747p2cjXnVL3z6SO8N2uXMT33");
-      interval = setInterval(() => {
-        const bountyRef = ref(rtdb, "bounties" + "/test/" + sessionData.uid);
+  if (isLoading) {
+    return (
+      <Center
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 10,
+          backgroundColor: "#fff",
+          height: "100%",
+        }}
+        _text={{
+          fontFamily: "Inter_500Medium",
+          fontSize: "lg",
+        }}
+      >
+        Loading...
+      </Center>
+    );
+  }
 
-        // Every 1s increment or decrement the location by 0.0001
-        const data: {
-          lat: number;
-          long: number;
-          heading?: number;
-        } = {
-          lat: userLocations[sessionData?.uid]?.lat + Math.random() * 0.0001,
-          long: userLocations[sessionData?.uid]?.long + Math.random() * 0.0001,
-        };
-
-        heading && (data.heading = heading.magHeading);
-        set(bountyRef, data);
-      }, 1000);
-    }
-
-    return () => {
-      console.log(
-        "Clearing interval for jIk747p2cjXnVL3z6SO8N2uXMT33",
-        interval
-      );
-      clearInterval(interval);
-    };
-  }, []);
+  if (!bountyData) {
+    return (
+      <Center
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 10,
+          backgroundColor: "#fff",
+          height: "100%",
+        }}
+      >
+        <Text fontFamily={"Inter_500Medium"} fontSize={"lg"}>
+          You are not in a hunt
+        </Text>
+      </Center>
+    );
+  }
 
   return (
     <Center
@@ -110,9 +134,38 @@ const ActivityPage = () => {
         height: "100%",
       }}
     >
+      <Button
+        alignSelf="start"
+        mb={2}
+        bgColor="black"
+        borderRadius="full"
+        _text={{
+          fontFamily: "Inter_500Medium",
+        }}
+        onPress={() => {
+          setIsLeaving(true);
+          leaveBounty(
+            {
+              bountyId: bountyData?.id,
+              userId: sessionData?.uid,
+            },
+            {
+              onSuccess: data => {
+                router.push("(tabs)");
+                setIsLeaving(false);
+              },
+              onError: err => {
+                alert(err);
+              },
+            }
+          );
+        }}
+      >
+        {isLeaving ? "Leaving..." : "Leave Hunt"}
+      </Button>
       <ScrollView width="full">
         <VStack space={2}>
-          {Object.entries(userLocations).map(([key, value]) => {
+          {Object.entries(userLocations ?? {}).map(([key, value]) => {
             return (
               <Flex
                 key={key}
