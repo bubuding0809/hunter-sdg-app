@@ -1,5 +1,11 @@
 import { Dimensions, StyleSheet, Image } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import MapView, {
   LatLng,
   Marker,
@@ -7,12 +13,14 @@ import MapView, {
   MapCircle,
   Polyline,
   Circle,
+  Heatmap,
 } from "react-native-maps";
 import { useLocation } from "../../context/LocationContext";
 import { Box, Button, Center, Fab, Flex, Icon, Text } from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
+import { faker } from "@faker-js/faker";
 
 // Initialize map settings
 const { width, height } = Dimensions.get("window");
@@ -74,6 +82,35 @@ const BountyMap: React.FC<BountyMapProps> = ({
       mapRef.current?.animateCamera(camera, { duration: 500 });
     }
   };
+
+  const heatMapPoints = useMemo(() => {
+    return Array.from({ length: 5 })
+      .map(() => {
+        const [latitude, longitude] = faker.address.nearbyGPSCoordinate(
+          [bountyData.location.latitude, bountyData.location.longitude],
+          0.5,
+          true
+        );
+        return Array.from({
+          length: faker.datatype.number({
+            min: 1000,
+            max: 5000,
+          }),
+        }).map(() => {
+          const point = faker.address.nearbyGPSCoordinate(
+            [parseFloat(latitude), parseFloat(longitude)],
+            0.1,
+            true
+          );
+
+          return {
+            latitude: parseFloat(point[0]),
+            longitude: parseFloat(point[1]),
+          };
+        });
+      })
+      .flat();
+  }, [bountyData]);
 
   return (
     <Box display="relative">
@@ -166,6 +203,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
                 <Image
                   source={require("../../assets/map_other_hunter.png")}
                   style={{
+                    backgroundColor: "white",
                     height: 35,
                     width: 35,
                     borderRadius: 100,
@@ -180,6 +218,18 @@ const BountyMap: React.FC<BountyMapProps> = ({
                 />
               </Marker>
             ))}
+
+        {/* Display a heatmap */}
+        <Heatmap
+          points={heatMapPoints}
+          opacity={1}
+          radius={50}
+          gradient={{
+            colorMapSize: 100,
+            colors: ["#0000ff", "#00ffff", "#00ff00", "#ffff00", "#ff0000"],
+            startPoints: [0.2, 0.4, 0.6, 0.8, 1],
+          }}
+        />
       </MapView>
       {children}
 
