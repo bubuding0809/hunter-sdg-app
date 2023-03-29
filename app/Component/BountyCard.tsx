@@ -8,6 +8,8 @@ import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
 import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
 import ToggleSwitch from "./ToggleSwitch";
 import type {StatusBarStyle} from 'react-native';
+import useJoinBounty from "../../utils/scripts/hooks/mutations/useJoinBounty";
+import useGetUser from "../../utils/scripts/hooks/queries/useGetUser";
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -44,9 +46,13 @@ type BountyCardProp = {
 }
 
 function BountyCard ({changeModalVisible,data}:BountyCardProp) {
+    const router = useRouter()
     const [IsDesc,setIsDesc] = useState(true);
     const [modalVisible,setModalVisible] = useState(false)
-
+    const {mutate: joinBounty} = useJoinBounty()
+    // const { data, isLoading } = useFirebaseSession();
+    const { data: sessionData, isLoading } = useFirebaseSession();
+    
     return(
         <SafeAreaView style = {styles.topbox} >
             <StatusBar
@@ -163,7 +169,22 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                             <Text style = {{fontSize:20,color:'grey',marginTop:0}}>search party at a time</Text>
                             </Center>
                         <View style ={styles.ImInContainer}>
-                        <Button title="I'm In!" color='white' onPress={() => {}} />
+                        <Button title="I'm In!" color='white' onPress={() => {
+                            joinBounty({
+                                bountyId:data.id,
+                                userId: sessionData.uid
+                            }, {
+                                onSuccess: () => {
+                                    router.push("(tabs)/activity")
+                                },
+                                onSettled(data, error, variables, context) {
+                                    
+                                },
+                                onError: () => {
+
+                                }
+                            })
+                        }} />
                         </View>
 
                         <View style ={styles.CancelContainer}>
