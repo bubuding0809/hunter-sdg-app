@@ -2,24 +2,24 @@ import {
   Dimensions,
   Platform,
   StyleSheet,
-  Text,
   View,
-  TextInput,
   FlatList,
   TouchableWithoutFeedback,
+  Modal,
+  Keyboard,
+  Touchable,
 } from "react-native";
 import React, { useState } from "react";
 import {
   Box,
   Button,
   Center,
-  Container,
-  FormControl,
   Image,
   Input,
   ScrollView,
   Select,
   TextArea,
+  KeyboardAvoidingView,
 } from "native-base";
 import { Link } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
@@ -50,8 +50,11 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     }
   };
 
+  // To pass the decoded location back to the form after getting it from MapSelect.tsx:
+  const [locationName, setLocationName] = useState<string>("");
+
   // For mapView function
-  const [showMapSelect, setShowMapSelect] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
 
   // For Date time picker:
   const [date, setDate] = useState(new Date());
@@ -79,7 +82,6 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
       try {
         // Generating a unique filename for each image
         const filename = uuidv4();
-
         // Generating a reference to the file
         const imageRef = ref(storageRef, `images/${filename}`);
 
@@ -178,7 +180,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     // Uploading the images:
     const uploadedImageUrls = await uploadImages(bountyForm.images);
 
-    // Logging the form data:
+    // Logging the entire form data after it has been submitted
     console.log(bountyForm);
     createBounty(
       {
@@ -207,6 +209,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
       }
     );
   };
+
   // Image Picker Function
   const handleMultipleImageUpload = async () => {
     const permissionResult =
@@ -257,7 +260,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
   };
 
   if (step === 1) {
-    const renderItem = ({ item }) => (
+    return (
       <View>
         <Center
           style={{
@@ -267,6 +270,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
             alignItems: "center",
             padding: 10,
             height: "100%",
+            backgroundColor: "#fff",
           }}
         >
           <View style={{ flexDirection: "column" }}>
@@ -275,8 +279,8 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
               onChangeText={(val) => handleFormChange("lostName", val)}
               mx="10"
               marginBottom={5}
-              fontFamily={"Inter_400Regular"}
-              fontSize={14}
+              fontFamily={"Inter_500Medium"}
+              fontSize={16}
               placeholder="Name"
               bgColor="#F5F5F5"
               padding={3}
@@ -284,14 +288,14 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
               value={bountyForm.lostName}
             />
           </View>
-
           <View style={{ flexDirection: "row" }}>
             <Select
               onValueChange={(val) => handleFormChange("category", val)}
               minWidth="350"
               mx="10"
               marginBottom={5}
-              fontFamily={"Inter_400Regular"}
+              fontFamily={"Inter_500Medium"}
+              fontSize={16}
               bgColor="#F5F5F5"
               placeholder="Choose the category"
               padding={4}
@@ -302,12 +306,14 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
               <Select.Item label="Other" value="Other" />
             </Select>
           </View>
+
           <View style={{ flexDirection: "row" }}>
             <Box alignItems="center" marginLeft={0} marginRight={1}>
               <Input
                 isRequired
-                minWidth={100}
-                fontFamily={"Inter_400Regular"}
+                minWidth={130}
+                fontFamily={"Inter_500Medium"}
+                fontSize={16}
                 bgColor="#F5F5F5"
                 keyboardType="number-pad"
                 onChangeText={(val) => handleFormChange("age", val)}
@@ -319,10 +325,11 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
                 value={bountyForm.age}
               />
             </Box>
-            <Box alignItems="center" marginLeft={3} marginRight={3}>
+            <Box alignItems="center" marginLeft={1} marginRight={4}>
               <Select
-                minWidth="170"
-                fontFamily={"Inter_400Regular"}
+                minWidth="150"
+                fontFamily={"Inter_500Medium"}
+                fontSize={16}
                 bgColor="#F5F5F5"
                 placeholder="Gender"
                 padding={4}
@@ -334,10 +341,12 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
               </Select>
             </Box>
           </View>
+
           <TouchableWithoutFeedback onPress={showDateTimePicker}>
             <Input
               isRequired
-              fontFamily={"Inter_400Regular"}
+              fontFamily={"Inter_500Medium"}
+              fontSize={16}
               bgColor="#F5F5F5"
               marginBottom={5}
               padding={4}
@@ -363,8 +372,20 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
           )}
           <Input
             isRequired
+            fontFamily={"Inter_500Medium"}
+            fontSize={16}
+            bgColor="#F5F5F5"
+            marginBottom={5}
+            padding={4}
+            width={350}
+            placeholder={locationName || "Choose Last Seen Location"}
+            onPressIn={() => setShowMapModal(true)}
+          ></Input>
+          <Input
+            isRequired
             mx="10"
-            fontFamily={"Inter_400Regular"}
+            fontFamily={"Inter_500Medium"}
+            fontSize={16}
             bgColor="#F5F5F5"
             marginBottom={5}
             padding={4}
@@ -373,42 +394,31 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
             value={bountyForm.appearance}
             onChangeText={(val) => handleFormChange("appearance", val)}
           />
-          <TextArea
-            value={bountyForm.description}
-            fontFamily={"Inter_400Regular"}
-            bgColor="#F5F5F5"
-            onChangeText={(val) => handleFormChange("description", val)}
-            placeholder="Additional Information"
-            autoCompleteType={undefined}
-            numberOfLines={4}
-            mx="10"
-            marginBottom={5}
-            w="95%"
-          />
-          {showMapSelect && (
-            <MapSelect
-              setOpen={setShowMapSelect}
-              setLocation={setLocation}
-              setRadius={setRadius}
-            />
-          )}
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAvoidingView
+              h={{
+                base: "200px",
+                lg: "auto",
+              }}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+              <TextArea
+                value={bountyForm.description}
+                fontFamily={"Inter_500Medium"}
+                fontSize={16}
+                bgColor="#F5F5F5"
+                onChangeText={(val) => handleFormChange("description", val)}
+                placeholder="Additional Information"
+                autoCompleteType={undefined}
+                numberOfLines={4}
+                mx="10"
+                marginBottom={5}
+                w="95%"
+              />
+            </KeyboardAvoidingView>
+          </TouchableWithoutFeedback>
           <Button
-            mt={10}
-            bgColor="black"
-            borderRadius="full"
-            paddingRight={20}
-            paddingLeft={20}
-            _text={{
-              fontFamily: "Inter_600SemiBold",
-              fontSize: 16,
-            }}
-            onPress={() => setShowMapSelect(true)}
-            style={{ marginBottom: 10 }}
-          >
-            Select Location
-          </Button>
-          <Button
-            mt={10}
+            mt={5}
             bgColor="black"
             borderRadius="full"
             paddingRight={20}
@@ -422,18 +432,20 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
             Next Step
           </Button>
         </Center>
-      </View>
-    );
 
-    return (
-      <FlatList
-        data={[{ key: "step1" }]}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.key}
-      />
+        {showMapModal && (
+          <MapSelect
+            setOpen={setShowMapModal}
+            setLocation={setLocation}
+            setRadius={setRadius}
+            setDecodedAddress={setLocationName}
+          />
+        )}
+      </View>
     );
   }
 
+  // Second Page of the form for image uploading & submission of the form
   if (step === 2) {
     const renderItem = ({ item, index }) => {
       return (
@@ -455,61 +467,60 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     };
 
     return (
-      <View
+      <ScrollView
         style={{
+          backgroundColor: "white",
           height: "100%",
         }}
       >
-        <ScrollView>
-          <Center
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10,
-              height: "100%",
+        <Center
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 10,
+            height: "100%",
+          }}
+        >
+          <FlatList
+            data={bountyForm.images}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+          />
+          <Button
+            onPress={handleMultipleImageUpload}
+            mt={10}
+            paddingRight={20}
+            paddingLeft={20}
+            bgColor="black"
+            borderRadius="full"
+            _text={{
+              fontFamily: "Inter_600SemiBold",
+              fontSize: 16,
             }}
           >
-            <FlatList
-              data={bountyForm.images}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-            />
-            <Button
-              onPress={handleMultipleImageUpload}
-              mt={10}
-              paddingRight={20}
-              paddingLeft={20}
-              bgColor="black"
-              borderRadius="full"
-              _text={{
-                fontFamily: "Inter_600SemiBold",
-                fontSize: 16,
-              }}
-            >
-              Upload Images
-            </Button>
-            <Button
-              onPress={handleSubmit}
-              mt={10}
-              paddingLeft={20}
-              paddingRight={20}
-              bgColor="blue.500"
-              borderRadius="full"
-              _text={{
-                fontFamily: "Inter_600SemiBold",
-                fontSize: 16,
-              }}
-            >
-              Submit Bounty
-            </Button>
-          </Center>
-        </ScrollView>
-      </View>
+            Upload Images
+          </Button>
+          <Button
+            onPress={handleSubmit}
+            mt={10}
+            paddingLeft={20}
+            paddingRight={20}
+            bgColor="blue.500"
+            borderRadius="full"
+            _text={{
+              fontFamily: "Inter_600SemiBold",
+              fontSize: 16,
+            }}
+          >
+            Submit Bounty
+          </Button>
+        </Center>
+      </ScrollView>
     );
   }
 };

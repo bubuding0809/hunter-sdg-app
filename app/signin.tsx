@@ -80,7 +80,7 @@ const Login: React.FC = () => {
         w="full"
         h="full"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        backgroundColor="#fff"
+        backgroundColor="white"
       >
         <Center>
           <Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -110,7 +110,7 @@ const Login: React.FC = () => {
               <FormControl>
                 {/* <FormControl.Label>Email ID</FormControl.Label> */}
                 <Input
-                  onChangeText={text => setEmail(text)}
+                  onChangeText={(text) => setEmail(text)}
                   height={10}
                   fontFamily={"Inter_400Regular"}
                   borderRadius={8}
@@ -123,7 +123,7 @@ const Login: React.FC = () => {
                 {/* <FormControl.Label>Password</FormControl.Label> */}
                 <Input
                   type="password"
-                  onChangeText={text => setPassword(text)}
+                  onChangeText={(text) => setPassword(text)}
                   placeholder="Enter your password"
                   height={10}
                   fontFamily={"Inter_400Regular"}
