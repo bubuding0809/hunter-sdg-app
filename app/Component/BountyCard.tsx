@@ -20,7 +20,6 @@ import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBo
 import ToggleSwitch from "./ToggleSwitch";
 import moment from "moment";
 import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
-import Geocoder from "react-native-geocoder";
 import * as Location from "expo-location";
 import { GeoPoint } from "firebase/firestore";
 import { LatLng } from "react-native-maps";
