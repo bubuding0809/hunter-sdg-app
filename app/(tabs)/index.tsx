@@ -141,7 +141,7 @@ const FeedPage = () => {
               <Modal visible={isModalVisible} animationType="slide">
                 <BountyCard
                   changeModalVisible={changeModalVisible}
-                  data={isModalData}
+                  bountyData={isModalData}
                 />
               </Modal>
             </Container>
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   name_text: {
     fontWeight: "bold",
     fontSize: 16,
-    fontFamily: "Inter_400Regular"
+    fontFamily: "Inter_600SemiBold"
   },
   description_text: {
     fontWeight: "normal",

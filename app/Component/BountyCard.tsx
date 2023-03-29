@@ -10,6 +10,8 @@ import ToggleSwitch from "./ToggleSwitch";
 import type {StatusBarStyle} from 'react-native';
 import useJoinBounty from "../../utils/scripts/hooks/mutations/useJoinBounty";
 import useGetUser, { UserQueryType } from "../../utils/scripts/hooks/queries/useGetUser";
+import { LatLng } from "react-native-maps";
+import * as Location from "expo-location"
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -42,19 +44,44 @@ function Carousel({data}:{data: BountyQueryType}){
 };
 type BountyCardProp = {
     changeModalVisible: (bool:boolean) => void,
-    data: BountyQueryType
+    bountyData: BountyQueryType
 }
 
-function BountyCard ({changeModalVisible,data}:BountyCardProp) {
+function BountyCard ({changeModalVisible,bountyData}:BountyCardProp) {
     const router = useRouter()
     const [IsDesc,setIsDesc] = useState(true);
     const [modalVisible,setModalVisible] = useState(false)
     const {mutate: joinBounty} = useJoinBounty()
-    // const { data, isLoading } = useFirebaseSession();
     const { data: sessionData, isLoading } = useFirebaseSession();
     const { data:userData, refetch} = useGetUser({userId:sessionData.uid});
+    const switchfunction = (val) => {
+        {
+          val == 1 ? setIsDesc(true) : setIsDesc(false);
+        }
+      };
     
+      const getAddress = async (location: LatLng) => {
+        const info = await Location.reverseGeocodeAsync(location);
+        return info[0].name;
+      };
     
+      const [reverseAddress, setReverseAddress] = useState("");
+    
+      React.useEffect(() => {
+        const reverseGeocodeBountyLocation = async () => {
+          if (bountyData) {
+            const geoLocation = {
+              latitude: bountyData.location.latitude,
+              longitude: bountyData.location.longitude,
+            };
+    
+            const address = await getAddress(geoLocation);
+            setReverseAddress(address);
+          }
+        };
+    
+        reverseGeocodeBountyLocation();
+      }, [bountyData]);
     return(
         <SafeAreaView style = {styles.topbox} >
             <StatusBar
@@ -67,7 +94,7 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                     </View>
                    <View style = {{backgroundColor:"#E5E5E5",height: "40%",width:"100%",bottom:0,position:"absolute"}}></View>
                     <Container style = {styles.imagebox}>
-                        <Image style = {styles.profilePhoto} source= {{ uri: data.images[0]}}/>
+                        <Image style = {styles.profilePhoto} source= {{ uri: bountyData.images[0]}}/>
                     </Container>
                 </Container>
                 <Container style = {styles.togglebox}>
@@ -75,7 +102,7 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                         selectionMode = {1}
                         option1 =   'DESCRIPTION'
                         option2 = {'PHOTOS'}
-                        onSelectSwitch = {() => setIsDesc(!IsDesc)}
+                        onSelectSwitch = {switchfunction}
                         selectionColor = {'#000000'}
                     />
                 </Container>
@@ -85,28 +112,28 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                             <View style = {{width:"100%",flexDirection: "row",
                             backgroundColor:"white",paddingHorizontal:5, marginTop:20, paddingRight:100}}>
                                 <View style = {{flex:1,flexDirection:"row",justifyContent: 'flex-start'}}>
-                                    <Text style={{fontWeight: "bold"}}> Age: </Text><Text> {data.age}</Text>
+                                    <Text style={{fontWeight: "bold"}}> Age: </Text><Text> {bountyData.age}</Text>
                                 </View>
                                 <View style = {{flex:1,flexDirection:"row",justifyContent: 'flex-end'}}>
-                                    <Text style={{fontWeight: "bold"}}> Gender: </Text><Text>{data.gender}</Text>
+                                    <Text style={{fontWeight: "bold"}}> Gender: </Text><Text>{bountyData.gender}</Text>
                                 </View>
                             
                             </View>
                             <View style = {{flexDirection:"row",width:"100%", backgroundColor:"white",paddingLeft:5}}>
                                 <Text style={{fontWeight: "bold"}}> Last Seen Time: </Text>
-                                <Text> data.lastseen </Text>
+                                <Text> {bountyData.lastSeen.toDate().toDateString()}</Text>
                             </View>
                             <View style = {{flexDirection:"row",width:"100%",  backgroundColor:"white",paddingLeft:5}}>
                                 <Text style={{fontWeight: "bold"}}> Last Seen Location: </Text>
-                                <Text> data.location</Text>
+                                <Text>{reverseAddress}</Text>
                             </View>
                             <View style = {{width:"100%", backgroundColor:"white",paddingLeft:5,}}>
                             <Text style={{fontWeight: "bold" }}> Appearance:</Text>
-                                <Text style={{paddingLeft:5,textAlign:"justify", paddingRight: 10}}>{data.appearance}</Text>
+                                <Text style={{paddingLeft:5,textAlign:"justify", paddingRight: 10}}>{bountyData.appearance}</Text>
                             </View>
                             <View style = {{width:"100%",  backgroundColor:"white",paddingLeft:5, marginBottom:20}}>
                                 <Text style={{fontWeight: "bold"}}> Additional Information</Text>
-                                <Text style={{paddingLeft:5,textAlign:"justify", paddingRight: 10}}>{data.additionalInfo}</Text>
+                                <Text style={{paddingLeft:5,textAlign:"justify", paddingRight: 10}}>{bountyData.additionalInfo}</Text>
                             </View>
                         </Container>
                             
@@ -114,7 +141,7 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                         ) : (
                             //add carousell function here
                             <Carousel
-                            data = {data}
+                            data = {bountyData}
                             />
                             
                         )}
@@ -182,7 +209,7 @@ function BountyCard ({changeModalVisible,data}:BountyCardProp) {
                         <View style ={styles.ImInContainer}>
                         <Button title="I'm In!" color='white' onPress={() => {
                             joinBounty({
-                                bountyId:data.id,
+                                bountyId:bountyData.id,
                                 userId: sessionData.uid
                             }, {
                                 onSuccess: () => {
@@ -318,8 +345,7 @@ const styles = StyleSheet.create({
         height:"100%",
         aspectRatio:1,
         //marginRight:30
-    }
-
+    },
 })
 
 export default BountyCard;
