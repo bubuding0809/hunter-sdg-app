@@ -34,6 +34,7 @@ import { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBountie
 import { faker } from "@faker-js/faker";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { formatDate, getDistance } from "../../utils/scripts/helpers";
+import { useRouter, Link } from "expo-router";
 
 // Initialize map settings
 const { width, height } = Dimensions.get("window");
@@ -63,6 +64,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
   hunterLocations,
   bountyData,
 }) => {
+  const router = useRouter();
   // session data
   const { data: sessionData } = useFirebaseSession();
 
@@ -398,7 +400,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
                     fontSize={"12px"}
                     lineHeight={"14.52px"}
                   >
-                    Last Seen Address
+                    Last seen address
                   </Text>
                   <Text
                     fontFamily={"Inter_500Medium"}
@@ -474,22 +476,35 @@ const BountyMap: React.FC<BountyMapProps> = ({
           </HStack>
 
           {/* Live updates button */}
-          <Button
-            flex={1}
-            bgColor="black"
-            borderTopRadius={0}
-            borderBottomRadius={30}
-            _text={{
-              fontFamily: "Inter_500Medium",
-              fontSize: "xl",
-              color: "white",
-            }}
-            _pressed={{
-              bgColor: "gray.800",
+          <Link
+            asChild={true}
+            href={{
+              pathname: `/bountyForum/${bountyData.id}`,
+              params: {
+                bountyName: bountyData.name,
+              },
             }}
           >
-            Live Updates
-          </Button>
+            <Button
+              flex={1}
+              bgColor="black"
+              borderTopRadius={0}
+              borderBottomRadius={30}
+              _text={{
+                fontFamily: "Inter_500Medium",
+                fontSize: "xl",
+                color: "white",
+              }}
+              _pressed={{
+                bgColor: "gray.800",
+              }}
+              onPress={() => {
+                router.push(`/bountyForum/${bountyData.id}`);
+              }}
+            >
+              Live Updates
+            </Button>
+          </Link>
         </VStack>
         {/* Move to current location floating action button */}
         <Fab
