@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Image } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import React, {
   useCallback,
   useEffect,
@@ -7,20 +7,32 @@ import React, {
   useState,
 } from "react";
 import MapView, {
+  PROVIDER_GOOGLE,
   LatLng,
   Marker,
-  PROVIDER_GOOGLE,
-  MapCircle,
-  Polyline,
   Circle,
   Heatmap,
 } from "react-native-maps";
 import { useLocation } from "../../context/LocationContext";
-import { Box, Button, Center, Fab, Flex, Icon, Text } from "native-base";
+import {
+  Box,
+  Button,
+  Center,
+  Fab,
+  Flex,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+  Image,
+} from "native-base";
+import * as Location from "expo-location";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
 import { faker } from "@faker-js/faker";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { formatDate, getDistance } from "../../utils/scripts/helpers";
 
 // Initialize map settings
 const { width, height } = Dimensions.get("window");
@@ -52,8 +64,18 @@ const BountyMap: React.FC<BountyMapProps> = ({
 }) => {
   // session data
   const { data: sessionData } = useFirebaseSession();
+
   // Ref to map to access methods
   const mapRef = useRef<MapView>(null);
+
+  // Ref to bottom sheet
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // Snap points for the bottom sheet
+  const snapPoints = useMemo(() => ["6%", "30%", "60%"], []);
+
+  // State to hold address of bounty location
+  const [bountyAddress, setBountyAddress] = useState("");
 
   // state to track user location
   const {
@@ -61,6 +83,20 @@ const BountyMap: React.FC<BountyMapProps> = ({
     locationLoading: currLocationLoading,
     heading: currHeading,
   } = useLocation();
+
+  // Effect to get geo decoded address of bounty location
+  useEffect(() => {
+    if (bountyData) {
+      (async () => {
+        const { latitude, longitude } = bountyData.location;
+        const address = await Location.reverseGeocodeAsync({
+          latitude: latitude,
+          longitude: longitude,
+        });
+        setBountyAddress(address[0].name);
+      })();
+    }
+  }, [bountyData]);
 
   // Move to current location on load
   useEffect(
@@ -83,6 +119,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
     }
   };
 
+  // Mock heat map data
   const heatMapPoints = useMemo(() => {
     return Array.from({ length: 5 })
       .map(() => {
@@ -112,6 +149,23 @@ const BountyMap: React.FC<BountyMapProps> = ({
       .flat();
   }, [bountyData]);
 
+  // Format distance to bounty
+  const distanceToBountyKm = useMemo(() => {
+    if (currLocation && bountyData.location) {
+      const pointOrigin: LatLng = {
+        latitude: currLocation.coords.latitude,
+        longitude: currLocation.coords.longitude,
+      };
+
+      const pointDestination: LatLng = {
+        latitude: bountyData.location.latitude,
+        longitude: bountyData.location.longitude,
+      };
+
+      return (getDistance(pointOrigin, pointDestination) / 1000).toFixed(2);
+    }
+  }, []);
+
   return (
     <Box display="relative">
       <MapView
@@ -130,6 +184,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
           >
             <Image
               source={require("../../assets/map_hunter.png")}
+              alt="hunter"
               style={{
                 backgroundColor: "white",
                 borderRadius: 100,
@@ -169,6 +224,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
                     borderWidth: 2,
                     borderColor: "white",
                   }}
+                  alt="Bounty image"
                 />
                 <Text fontFamily="Inter_500Medium">{bountyData.name}</Text>
               </Center>
@@ -196,9 +252,6 @@ const BountyMap: React.FC<BountyMapProps> = ({
                   latitude: hunterInfo.lat,
                   longitude: hunterInfo.long,
                 }}
-                onPress={() => {
-                  alert("Hunter location pressed");
-                }}
               >
                 <Image
                   source={require("../../assets/map_other_hunter.png")}
@@ -215,6 +268,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
                       },
                     ],
                   }}
+                  alt={"Other hunter"}
                 />
               </Marker>
             ))}
@@ -231,30 +285,228 @@ const BountyMap: React.FC<BountyMapProps> = ({
           }}
         />
       </MapView>
+
       {children}
 
-      {/* Move to current location floating action button */}
-      <Fab
-        renderInPortal={false}
-        shadow={2}
-        bgColor="black"
-        size={12}
-        icon={
-          <Icon
-            color="white"
-            as={MaterialCommunityIcons}
-            name="crosshairs-gps"
-            size="md"
-          />
-        }
-        onPress={() => {
-          currLocation &&
-            void moveTo({
-              latitude: currLocation.coords.latitude,
-              longitude: currLocation.coords.longitude,
-            });
+      {/* Bottom sheet */}
+      <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={snapPoints}
+        bottomInset={30}
+        detached={true}
+        style={{
+          marginHorizontal: 10,
         }}
-      />
+        backgroundStyle={{
+          borderRadius: 30,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+        }}
+      >
+        <VStack flex={1} flexDirection={"column"} borderRadius={30}>
+          {/* Bounty information */}
+          <VStack pb={2} px={8}>
+            <Text
+              fontFamily={"Inter_600SemiBold"}
+              fontSize="20px"
+              lineHeight={"19.36px"}
+              mt={2}
+              pb={4}
+            >
+              {bountyData.name}
+            </Text>
+            {/* Section 1 */}
+            <HStack alignItems="flex-start" justifyContent="space-between">
+              <HStack>
+                <Icon
+                  as={MaterialCommunityIcons}
+                  name="clock-outline"
+                  size={"xl"}
+                  color="black"
+                />
+                <VStack ml={4} mt={1.5}>
+                  <Text
+                    fontFamily={"Inter_200ExtraLight"}
+                    fontSize={"12px"}
+                    lineHeight={"14.52px"}
+                  >
+                    Last seen time
+                  </Text>
+                  <Text
+                    fontFamily={"Inter_500Medium"}
+                    fontSize="16px"
+                    lineHeight={"19.36px"}
+                    mt={2}
+                  >
+                    {formatDate(bountyData.lastSeen.toDate())}
+                  </Text>
+                  {/* Find distance between currlocation and bountyLocation */}
+                  {currLocation && (
+                    <Text
+                      fontFamily={"Inter_200ExtraLight"}
+                      fontSize={"12px"}
+                      lineHeight={"14.52px"}
+                      mt={2}
+                    >
+                      {distanceToBountyKm}
+                      km away
+                    </Text>
+                  )}
+                </VStack>
+              </HStack>
+              <Image
+                source={{
+                  uri: bountyData.images[0],
+                }}
+                alt={bountyData.name}
+                borderRadius="full"
+                width="81px"
+                height="81px"
+              />
+            </HStack>
+
+            {/* Section 2 */}
+            <HStack alignItems="flex-start" mt={2}>
+              <HStack>
+                <Icon
+                  as={MaterialCommunityIcons}
+                  name="crosshairs"
+                  size={"xl"}
+                  color="black"
+                />
+                <VStack ml={4} mt={1.5}>
+                  <Text
+                    fontFamily={"Inter_200ExtraLight"}
+                    fontSize={"12px"}
+                    lineHeight={"14.52px"}
+                  >
+                    Last Seen Address
+                  </Text>
+                  <Text
+                    fontFamily={"Inter_500Medium"}
+                    fontSize="16px"
+                    lineHeight={"19.36px"}
+                    mt={2}
+                  >
+                    {bountyAddress}
+                  </Text>
+                </VStack>
+              </HStack>
+            </HStack>
+
+            <VStack position="absolute" top={"72px"} left={"44px"} space={1}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Box
+                  key={i}
+                  height={2}
+                  width={1}
+                  bgColor="#FFCB40"
+                  borderRadius={10}
+                />
+              ))}
+            </VStack>
+          </VStack>
+
+          {/* Meta information */}
+          <HStack py={6} px={8} justifyContent="space-between">
+            <HStack>
+              <Image
+                source={{
+                  uri: "https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=778&q=80",
+                }}
+                width="55px"
+                height="55px"
+                borderRadius="xl"
+                alt={bountyData.name}
+              />
+              <VStack ml={4} justifyContent="center">
+                <Text
+                  fontFamily={"Inter_500Medium"}
+                  fontSize="16px"
+                  lineHeight={"19.36px"}
+                >
+                  Xueting
+                </Text>
+                <Text
+                  fontFamily={"Inter_200ExtraLight"}
+                  fontSize={"12px"}
+                  lineHeight={"14.52px"}
+                  mt={2}
+                >
+                  Daughter
+                </Text>
+              </VStack>
+            </HStack>
+            <Button
+              bgColor="black"
+              borderRadius="2xl"
+              width="55px"
+              height="55px"
+              _pressed={{
+                bgColor: "gray.800",
+              }}
+            >
+              <Icon
+                as={MaterialCommunityIcons}
+                name="phone"
+                size={"xl"}
+                color="white"
+              />
+            </Button>
+          </HStack>
+
+          {/* Live updates button */}
+          <Button
+            flex={1}
+            bgColor="black"
+            borderTopRadius={0}
+            borderBottomRadius={30}
+            _text={{
+              fontFamily: "Inter_500Medium",
+              fontSize: "xl",
+              color: "white",
+            }}
+            _pressed={{
+              bgColor: "gray.800",
+            }}
+          >
+            Live Updates
+          </Button>
+        </VStack>
+        {/* Move to current location floating action button */}
+        <Fab
+          isLoading={currLocationLoading}
+          renderInPortal={false}
+          shadow={2}
+          bgColor="black"
+          size={12}
+          position="absolute"
+          top={-80}
+          right={0}
+          icon={
+            <Icon
+              color="white"
+              as={MaterialCommunityIcons}
+              name="crosshairs-gps"
+              size="md"
+            />
+          }
+          _pressed={{
+            bgColor: "gray.800",
+          }}
+          onPress={() => {
+            currLocation &&
+              void moveTo({
+                latitude: currLocation.coords.latitude,
+                longitude: currLocation.coords.longitude,
+              });
+          }}
+        />
+      </BottomSheet>
     </Box>
   );
 };

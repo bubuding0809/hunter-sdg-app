@@ -1,5 +1,5 @@
-import { View, Image } from "react-native";
-import React, { useEffect, useState } from "react";
+import { View } from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Center,
   ScrollView,
@@ -27,7 +27,7 @@ import BountyMap from "../../components/Map/BountyMap";
 
 const ActivityPage = () => {
   const router = useRouter();
-  const { data: sessionData, isLoading: sessionLoading } = useFirebaseSession();
+  const { data: sessionData } = useFirebaseSession();
   const { location, heading } = useLocation();
 
   // Query hook to get the bounty data
@@ -38,6 +38,7 @@ const ActivityPage = () => {
   // Mutation to leave the bounty
   const { mutate: leaveBounty } = useLeaveBounty();
 
+  // State to store the live locations of the users in the bounty
   const [userLocations, setUserLocations] = useState<{
     [key: string]: {
       heading?: number;
@@ -45,7 +46,7 @@ const ActivityPage = () => {
       long: number;
     };
   }>({});
-
+  // State to prevent the user from updating the location in the database when they are leaving
   const [isLeaving, setIsLeaving] = useState(false);
 
   // Subscribe to the realtime database at the /bounties/test path
@@ -64,7 +65,7 @@ const ActivityPage = () => {
   // Update the location in the database when the location changes
   useEffect(() => {
     // Update the rtdb with the current location at /bounties/test/user1
-    if (location && bountyData) {
+    if (location && bountyData && !isLeaving) {
       const bountyRef = ref(
         rtdb,
         `bounties/${bountyData?.id}/${sessionData?.uid}`
@@ -126,121 +127,52 @@ const ActivityPage = () => {
   }
 
   return (
-    <BountyMap hunterLocations={userLocations} bountyData={bountyData}>
-      <Fab
-        renderInPortal={false}
-        top={4}
-        right={4}
-        w={10}
-        h={10}
-        shadow={2}
-        borderRadius="md"
-        bgColor="white"
-        icon={
-          <Icon
-            color="black"
-            as={MaterialCommunityIcons}
-            name="exit-run"
-            size="md"
-          />
-        }
-        onPress={() => {
-          setIsLeaving(true);
-          leaveBounty(
-            {
-              bountyId: bountyData?.id,
-              userId: sessionData?.uid,
-            },
-            {
-              onSuccess: data => {
-                router.push("(tabs)");
-                setIsLeaving(false);
+    <>
+      <BountyMap hunterLocations={userLocations} bountyData={bountyData}>
+        {/* Leave bounty button */}
+        <Fab
+          isLoading={isLeaving}
+          _loading={{
+            bgColor: "black",
+          }}
+          renderInPortal={false}
+          top={4}
+          right={4}
+          w={10}
+          h={10}
+          shadow={2}
+          borderRadius="md"
+          bgColor="white"
+          icon={
+            <Icon
+              color="black"
+              as={MaterialCommunityIcons}
+              name="exit-run"
+              size="md"
+            />
+          }
+          onPress={() => {
+            setIsLeaving(true);
+            leaveBounty(
+              {
+                bountyId: bountyData?.id,
+                userId: sessionData?.uid,
               },
-              onError: err => {
-                alert(err);
-              },
-            }
-          );
-        }}
-      />
-    </BountyMap>
+              {
+                onSuccess: data => {
+                  router.push("(tabs)");
+                  setIsLeaving(false);
+                },
+                onError: err => {
+                  alert(err);
+                },
+              }
+            );
+          }}
+        />
+      </BountyMap>
+    </>
   );
-
-  // return (
-  //   <Center
-  //     style={{
-  //       display: "flex",
-  //       flexDirection: "column",
-  //       justifyContent: "center",
-  //       alignItems: "center",
-  //       padding: 10,
-  //       backgroundColor: "#fff",
-  //       height: "100%",
-  //     }}
-  //   >
-  //     <Button
-  //       alignSelf="start"
-  //       mb={2}
-  //       bgColor="black"
-  //       borderRadius="full"
-  //       _text={{
-  //         fontFamily: "Inter_500Medium",
-  //       }}
-  //       onPress={() => {
-  //         setIsLeaving(true);
-  //         leaveBounty(
-  //           {
-  //             bountyId: bountyData?.id,
-  //             userId: sessionData?.uid,
-  //           },
-  //           {
-  //             onSuccess: data => {
-  //               router.push("(tabs)");
-  //               setIsLeaving(false);
-  //             },
-  //             onError: err => {
-  //               alert(err);
-  //             },
-  //           }
-  //         );
-  //       }}
-  //     >
-  //       {isLeaving ? "Leaving..." : "Leave Hunt"}
-  //     </Button>
-  //     <ScrollView width="full">
-  //       <VStack space={2}>
-  //         {Object.entries(userLocations ?? {}).map(([key, value]) => {
-  //           return (
-  //             <Flex
-  //               key={key}
-  //               direction="column"
-  //               borderWidth={1}
-  //               borderRadius={8}
-  //               p={2}
-  //               width="100%"
-  //             >
-  //               <Heading fontSize="md">UID: {key}</Heading>
-  //               <HStack space={4}>
-  //                 <Box>
-  //                   <Text>Location</Text>
-  //                   <Text color={"red.500"}>{value.lat ?? "No reading"}</Text>
-  //                   <Text color={"red.500"}>{value.long ?? "No reading"}</Text>
-  //                 </Box>
-  //                 <Divider orientation="vertical" />
-  //                 <Box>
-  //                   <Text>Magnetic heading:</Text>
-  //                   <Text color={"red.500"}>
-  //                     {value.heading ?? "No reading"}
-  //                   </Text>
-  //                 </Box>
-  //               </HStack>
-  //             </Flex>
-  //           );
-  //         })}
-  //       </VStack>
-  //     </ScrollView>
-  //   </Center>
-  // );
 };
 
 export default ActivityPage;
