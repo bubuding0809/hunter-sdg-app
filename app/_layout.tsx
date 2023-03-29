@@ -6,6 +6,8 @@ import { FirebaseAuthProvider } from "../context/FirebaseAuthContext";
 import { QueryClient, QueryClientProvider } from "react-query";
 import {
   useFonts,
+  Inter_200ExtraLight,
+  Inter_300Light,
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
@@ -14,6 +16,7 @@ import {
   Inter_900Black,
 } from "@expo-google-fonts/inter";
 import { LocationProvider } from "../context/LocationContext";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
@@ -28,6 +31,8 @@ const pathNames = {
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
+    Inter_200ExtraLight,
+    Inter_300Light,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
@@ -55,49 +60,51 @@ export default function Layout() {
 
   return (
     <NativeBaseProvider>
-      <QueryClientProvider client={queryClient}>
-        <LocationProvider>
-          <FirebaseAuthProvider>
-            <Stack
-              initialRouteName="home"
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: "#fff",
-                },
-                headerTintColor: "#252525",
-                headerBackTitleVisible: false,
-                headerTitleStyle: {
-                  fontFamily: "Inter_600SemiBold",
-                  color: "#000",
-                  fontSize: 26,
-                },
-              }}
-            >
-              <Stack.Screen
-                name="(tabs)"
-                options={{
-                  // set title to current tab
-                  title: pathNames[pathname],
-                  headerBackVisible: false,
-                  headerRight: () => (
-                    <Button
-                      onPress={handleLogout}
-                      p={1}
-                      backgroundColor="transparent"
-                      _text={{
-                        color: "black",
-                        fontFamily: "Inter_600SemiBold",
-                      }}
-                    >
-                      Log Out
-                    </Button>
-                  ),
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <QueryClientProvider client={queryClient}>
+          <LocationProvider>
+            <FirebaseAuthProvider>
+              <Stack
+                initialRouteName="home"
+                screenOptions={{
+                  headerStyle: {
+                    backgroundColor: "#fff",
+                  },
+                  headerTintColor: "#252525",
+                  headerBackTitleVisible: false,
+                  headerTitleStyle: {
+                    fontFamily: "Inter_600SemiBold",
+                    color: "#000",
+                    fontSize: 26,
+                  },
                 }}
-              />
-            </Stack>
-          </FirebaseAuthProvider>
-        </LocationProvider>
-      </QueryClientProvider>
+              >
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{
+                    // set title to current tab
+                    title: pathNames[pathname],
+                    headerBackVisible: false,
+                    headerRight: () => (
+                      <Button
+                        onPress={handleLogout}
+                        p={1}
+                        backgroundColor="transparent"
+                        _text={{
+                          color: "black",
+                          fontFamily: "Inter_600SemiBold",
+                        }}
+                      >
+                        Log Out
+                      </Button>
+                    ),
+                  }}
+                />
+              </Stack>
+            </FirebaseAuthProvider>
+          </LocationProvider>
+        </QueryClientProvider>
+      </GestureHandlerRootView>
     </NativeBaseProvider>
   );
 }

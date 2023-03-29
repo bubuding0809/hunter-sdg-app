@@ -40,19 +40,13 @@ const INITIAL_POSITION = {
   longitudeDelta: LONGITUDE_DELTA,
 };
 
-const MapSelect: React.FC<MapSelectProps> = ({
-  setOpen,
-  setLocation,
-  setRadius,
-}) => {
+const MapSelect: React.FC<MapSelectProps> = ({ setOpen, setLocation }) => {
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const mapRef = useRef<MapView>(null);
 
   const [onChangeValue, setOnChangeValue] = useState(200);
   const [decodedAddress, setDecodedAddress] = useState<string | null>(null);
   const { location, locationLoading, heading } = useLocation();
-
-  console.log("heading", heading);
 
   // Move to current location on load
   useEffect(
