@@ -26,7 +26,7 @@ import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import MapSelect from "../components/Map/MapSelect";
 import { getDownloadURL } from "firebase/storage";
-import useCreateBounty from "../utils/scripts/hooks/queries/mutations/useCreateBounty";
+import useCreateBounty from "../utils/scripts/hooks/mutations/useCreateBounty";
 import { useFirebaseSession } from "../context/FirebaseAuthContext";
 import { getFirestore, GeoPoint } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
@@ -71,7 +71,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
     setShow(true);
   };
 
-  const uploadImages = async (images) => {
+  const uploadImages = async images => {
     const uploadedImageUrls = [];
 
     // Creating a function to reference
@@ -139,7 +139,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
 
   // A way to check if the form is updated or
   const handleFormChange = (field, value) => {
-    setBountyForm((prev) => ({ ...prev, [field]: value }));
+    setBountyForm(prev => ({ ...prev, [field]: value }));
   };
 
   // Trying to debug the form changes for the mapchanges
@@ -230,8 +230,8 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
       return;
     }
     if (pickerResult.assets) {
-      const uploadedURIs = pickerResult.assets.map((assets) => assets.uri);
-      setBountyForm((prev) => ({
+      const uploadedURIs = pickerResult.assets.map(assets => assets.uri);
+      setBountyForm(prev => ({
         ...prev,
         images: [...prev.images, ...uploadedURIs],
       }));
@@ -276,7 +276,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
           <View style={{ flexDirection: "column" }}>
             <Input
               isRequired
-              onChangeText={(val) => handleFormChange("lostName", val)}
+              onChangeText={val => handleFormChange("lostName", val)}
               mx="10"
               marginBottom={5}
               fontFamily={"Inter_500Medium"}
@@ -290,7 +290,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
           </View>
           <View style={{ flexDirection: "row" }}>
             <Select
-              onValueChange={(val) => handleFormChange("category", val)}
+              onValueChange={val => handleFormChange("category", val)}
               minWidth="350"
               mx="10"
               marginBottom={5}
@@ -316,7 +316,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
                 fontSize={16}
                 bgColor="#F5F5F5"
                 keyboardType="number-pad"
-                onChangeText={(val) => handleFormChange("age", val)}
+                onChangeText={val => handleFormChange("age", val)}
                 mx="10"
                 marginBottom={5}
                 placeholder="Age"
@@ -333,7 +333,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
                 bgColor="#F5F5F5"
                 placeholder="Gender"
                 padding={4}
-                onValueChange={(val) => handleFormChange("gender", val)}
+                onValueChange={val => handleFormChange("gender", val)}
               >
                 <Select.Item label="Male" value="Male" />
                 <Select.Item label="Female" value="Female" />
@@ -392,7 +392,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
             placeholder="Appearance"
             w="95%"
             value={bountyForm.appearance}
-            onChangeText={(val) => handleFormChange("appearance", val)}
+            onChangeText={val => handleFormChange("appearance", val)}
           />
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <KeyboardAvoidingView
@@ -407,7 +407,7 @@ const NewBountyForm: React.FC<NewBountyFormProps> = () => {
                 fontFamily={"Inter_500Medium"}
                 fontSize={16}
                 bgColor="#F5F5F5"
-                onChangeText={(val) => handleFormChange("description", val)}
+                onChangeText={val => handleFormChange("description", val)}
                 placeholder="Additional Information"
                 autoCompleteType={undefined}
                 numberOfLines={4}
