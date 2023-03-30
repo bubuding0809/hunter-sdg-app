@@ -69,7 +69,7 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
   const { mutate: joinBounty } = useJoinBounty();
   const { data: sessionData, isLoading } = useFirebaseSession();
   const { data: userData, refetch } = useGetUser({ userId: sessionData.uid });
-  const switchfunction = val => {
+  const switchfunction = (val) => {
     {
       val == 1 ? setIsDesc(true) : setIsDesc(false);
     }
