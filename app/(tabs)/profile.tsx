@@ -98,26 +98,34 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
     reverseGeocodeBountyLocation();
   }, [bountyData]);
   return (
-    <SafeAreaView style={styles.topbox}>
-      <StatusBar barStyle="light-content" />
+    <SafeAreaView style={styles.topbox} edges={["left", "right"]}>
+      <StatusBar barStyle="dark-content" />
 
       <Container style={styles.picturebox}>
-        <View style={{ position: "absolute", left: 10, top: 40 }}>
-          <Button
-            title="BACK"
-            color="white"
-            onPress={() => changeModalVisible(false)}
-          ></Button>
-        </View>
         <View
           style={{
             backgroundColor: "#E5E5E5",
-            height: "40%",
+            height: "50%",
             width: "100%",
-            bottom: 0,
+            top: "50%",
             position: "absolute",
+            alignItems: "center",
           }}
-        ></View>
+        >
+          <View
+            style={{
+              position: "absolute",
+              bottom: 0,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontFamily: "Inter_600SemiBold", fontSize: 30 }}>
+              {" "}
+              Ng Jun Long
+            </Text>
+          </View>
+        </View>
         <Container style={styles.imagebox}>
           <Image
             style={styles.profilePhoto}
@@ -220,7 +228,7 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
             >
               <Text style={{ fontWeight: "bold" }}>
                 {" "}
-                Additional Information
+                Number Of Posted Bounties:
               </Text>
               <Text
                 style={{
@@ -229,7 +237,7 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
                   paddingRight: 10,
                 }}
               >
-                My grandfather might be
+                1
               </Text>
             </View>
           </Container>
@@ -239,168 +247,61 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
         )}
       </Container>
       <Container style={styles.buttonbox}>
-        <View>
-          <TouchableOpacity
-            disabled={userData?.bounties?.length > 0 ?? false}
-            style={{ borderWidth: 0, marginTop: 17 }}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text
-              style={{
-                fontSize: 25,
-                fontWeight: "bold",
-              }}
-            >
-              {userData?.bounties?.length > 0
-                ? "You are already in a hunt"
-                : "Hunt"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <Modal
-          visible={modalVisible}
-          animationType="none"
-          transparent={true}
-          onRequestClose={() => {
-            setModalVisible(false);
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              setModalVisible(false);
-            }}
+        <Pressable>
+          <View
             style={{
-              height: "100%",
-              marginTop: "auto",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-          ></TouchableOpacity>
-          <Modal
-            visible={modalVisible}
-            animationType="slide"
-            transparent={true}
-            onRequestClose={() => {
-              setModalVisible(false);
+              borderRadius: 40,
+              backgroundColor: "black",
+              alignItems: "center",
+              width: WIDTH * 0.8,
+              padding: 18,
+              top: "10%",
             }}
           >
-            <TouchableOpacity
-              onPress={() => {
-                setModalVisible(false);
-              }}
+            <Link
+              href="bountyForm"
               style={{
-                height: "100%",
-                marginTop: "auto",
-                backgroundColor: "rgba(0, 0, 0, 0.0)",
-              }}
-            ></TouchableOpacity>
-            <View
-              style={{
-                height: "50%",
-                marginTop: "auto",
-                backgroundColor: "white",
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
+                color: "white",
+                fontFamily: "Inter_600SemiBold",
+                fontSize: 14,
+                alignItems: "center",
+                //backgroundColor:"black"
               }}
             >
-              <Center>
-                <Text
-                  style={{ fontSize: 30, fontWeight: "bold", marginTop: 40 }}
-                >
-                  Join search
-                </Text>
-                <Text style={{ fontSize: 20, color: "grey", marginTop: 20 }}>
-                  Please note that you can only join 1
-                </Text>
-                <Text style={{ fontSize: 20, color: "grey", marginTop: 0 }}>
-                  search party at a time
-                </Text>
-              </Center>
-              <View style={styles.ImInContainer}>
-                <Button
-                  title="I'm In!"
-                  color="white"
-                  onPress={() => {
-                    joinBounty(
-                      {
-                        bountyId: bountyData.id,
-                        userId: sessionData.uid,
-                      },
-                      {
-                        onSuccess: () => {
-                          router.push("(tabs)/activity");
-                        },
-                        onSettled(data, error, variables, context) {},
-                        onError: () => {},
-                      }
-                    );
-                  }}
-                />
-              </View>
-
-              <View style={styles.CancelContainer}>
-                <Button
-                  title="Cancel"
-                  color="black"
-                  onPress={() => {
-                    setModalVisible(false);
-                  }}
-                />
-              </View>
-            </View>
-          </Modal>
-        </Modal>
+              NEW BOUNTY
+            </Link>
+          </View>
+        </Pressable>
       </Container>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  ImInContainer: {
-    position: "absolute",
-    left: 50,
-    right: 50,
-    marginTop: 250,
-    backgroundColor: "black",
-    borderTopWidth: 1,
-    borderColor: "black",
-    padding: 10,
-    borderRadius: 40,
-  },
-  CancelContainer: {
-    position: "absolute",
-    left: 120,
-    right: 120,
-    bottom: 60,
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 40,
-  },
   topbox: {
     paddingVertical: 0,
     maxHeight: "100%",
     flex: 1,
     display: "flex",
     maxWidth: WIDTH,
+    backgroundColor: "red",
   },
   picturebox: {
     maxWidth: "100%",
     flex: 4,
     backgroundColor: "black",
-    justifyContent: "center",
     alignItems: "center",
+    // paddingTop: -40
   },
   imagebox: {
-    height: 150,
     aspectRatio: 1,
     backgroundColor: "white",
     borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
     //paddingTop:70,
-    marginTop: 70,
+    marginTop: 30,
   },
   profilePhoto: {
-    height: 200,
+    height: 150,
     aspectRatio: 1,
     borderRadius: 150,
     borderWidth: 3,
