@@ -124,6 +124,16 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
               {" "}
               Ng Jun Long
             </Text>
+            <Text
+              style={{
+                fontFamily: "Inter_600SemiBold",
+                fontSize: 16,
+                margin: 5,
+              }}
+            >
+              {" "}
+              Family: Ng{" "}
+            </Text>
           </View>
         </View>
         <Container style={styles.imagebox}>
