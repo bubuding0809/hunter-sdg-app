@@ -47,96 +47,103 @@ const FeedPage = () => {
   const [isModalData, setModalData] = useState(null);
 
   return (
-    <FlatList
-      contentContainerStyle={{
-        flexGrow: 1,
-        alignItems: "center",
-        backgroundColor: "white",
-      }}
-      data={bountyData}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            // Refetch bounties data
-            setRefreshing(true);
-            refetch()
-              .then(res => setRefreshing(false))
-              .catch(err => {
-                setRefreshing(false);
-                alert("Error refreshing bounties");
-              });
-          }}
-        />
-      }
-      renderItem={({ item }) => (
-        <Container style={[styles.bountyBox, styles.shadowProp]}>
-          <Pressable
-            onPress={() => {
-              changeModalVisible(true);
-              setModalData(item);
+    <SafeAreaView
+      edges={["left", "right"]}
+      style={{ flex: 1, backgroundColor: "white" }}
+    >
+      <FlatList
+        contentContainerStyle={{
+          flexGrow: 1,
+          backgroundColor: "white",
+        }}
+        style={{ backgroundColor: "white" }}
+        data={bountyData}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              // Refetch bounties data
+              setRefreshing(true);
+              refetch()
+                .then((res) => setRefreshing(false))
+                .catch((err) => {
+                  setRefreshing(false);
+                  alert("Error refreshing bounties");
+                });
             }}
-            style={styles.pressable}
-          >
-            <View style={styles.imagebox}>
-              <Image style={styles.avatar} source={{ uri: item.images[0] }} />
-            </View>
+          />
+        }
+        renderItem={({ item }) => (
+          <Center>
+            <Pressable
+              onPress={() => {
+                changeModalVisible(true);
+                setModalData(item);
+              }}
+              style={styles.pressable}
+            >
+              <View style={styles.imagebox}>
+                <Image style={styles.avatar} source={{ uri: item.images[0] }} />
+              </View>
 
-            {item.category === "pet" ? (
-              //pet
-              <View style={styles.leftbox}>
-                <Text style={styles.name_text}>{item.name}</Text>
-                <View style={styles.descriptionbox}>
-                  <Text style={styles.description_text}>
-                    Breed:{item.breed}
-                  </Text>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text style={styles.description_text}>Age:{item.age}</Text>
+              {item.category === "pet" ? (
+                //pet
+                <View style={styles.leftbox}>
+                  <Text style={styles.name_text}>{item.name}</Text>
+                  <View style={styles.descriptionbox}>
                     <Text style={styles.description_text}>
-                      Gender:{item.gender}
+                      Breed:{item.breed}
                     </Text>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text style={styles.description_text}>
+                        Age:{item.age}
+                      </Text>
+                      <Text style={styles.description_text}>
+                        Gender:{item.gender}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            ) : (
-              //non pet
-              <View style={styles.leftbox}>
-                <Text style={styles.name_text}>{item.name}</Text>
-                <View style={styles.descriptionbox}>
-                  <Text style={styles.description_text}>{item.category}</Text>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text style={styles.description_text}>
-                      Age: {item.age}{" "}
-                    </Text>
-                    <Text style={styles.description_text}>
-                      Gender: {item.gender}{" "}
-                    </Text>
+              ) : (
+                //non pet
+                <View style={styles.leftbox}>
+                  <Text style={styles.name_text}>{item.name}</Text>
+                  <View style={styles.descriptionbox}>
+                    <Text style={styles.description_text}>{item.category}</Text>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text style={styles.description_text}>
+                        Age: {item.age}{" "}
+                      </Text>
+                      <Text style={styles.description_text}>
+                        Gender: {item.gender}{" "}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            )}
+              )}
 
-            <View style={styles.rightbox}>
-              {/* ."ctrl space" to see all available options */}
-              <Text style={styles.timestamp}>
-                {moment(item.createdAt.toDate(), "MMDDYYYY").fromNow()}
-              </Text>
-              {/* //Need to add in geolocation  */}
-              <Text style={styles.location}>
-                {item.createdAt.toDate().toDateString()}
-              </Text>
-            </View>
-          </Pressable>
-          <Modal visible={isModalVisible} animationType="slide">
-            <BountyCard
-              changeModalVisible={changeModalVisible}
-              bountyData={isModalData}
-            />
-          </Modal>
-        </Container>
-      )}
-    />
+              <View style={styles.rightbox}>
+                {/* ."ctrl space" to see all available options */}
+                <Text style={styles.timestamp}>
+                  {moment(item.createdAt.toDate(), "MMDDYYYY").fromNow()}
+                </Text>
+                {/* //Need to add in geolocation  */}
+                <Text style={styles.location}>
+                  {item.createdAt.toDate().toDateString()}
+                </Text>
+              </View>
+            </Pressable>
+            <Modal visible={isModalVisible} animationType="slide">
+              <BountyCard
+                changeModalVisible={changeModalVisible}
+                bountyData={isModalData}
+              />
+            </Modal>
+          </Center>
+        )}
+      />
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({
@@ -163,19 +170,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
     fontFamily: "Inter_400Regular",
   },
-  description_box: {
-    width: "70%",
-    height: "100%",
-  },
-  bountyBox: {
-    width: "100%",
-    height: 100,
-    flexDirection: "row",
-    marginVertical: 10,
-    backgroundColor: "white",
-    justifyContent: "center",
-    borderRadius: 10,
-  },
   avatar: {
     aspectRatio: 1,
     width: "100%",
@@ -192,7 +186,6 @@ const styles = StyleSheet.create({
     position: "relative",
     flex: 2,
     paddingHorizontal: 5,
-    justifyContent: "center",
   },
   leftbox: {
     position: "relative",
@@ -200,7 +193,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingVertical: 15,
     paddingLeft: 5,
-    //borderBottomWidth: 2
+    borderBottomWidth: 1,
+    borderColor: "#E8E8E8",
   },
   rightbox: {
     position: "relative",
@@ -209,14 +203,16 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingRight: 5,
     paddingBottom: 25,
-    //borderBottomWidth: 2
+    borderBottomWidth: 1,
+    borderColor: "#E8E8E8",
   },
   pressable: {
-    borderColor: "grey",
-    width: "100%",
-    height: "100%",
     flexDirection: "row",
     borderRadius: 5,
+    backgroundColor: "transparent",
+    width: WIDTH * 0.9,
+    height: 100,
+    marginVertical: 5,
   },
   shadowProp: {
     shadowColor: "#171717",

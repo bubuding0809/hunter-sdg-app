@@ -72,7 +72,7 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
       enabled: !!sessionData?.uid,
     }
   );
-  const switchfunction = val => {
+  const switchfunction = (val) => {
     {
       val == 1 ? setIsDesc(true) : setIsDesc(false);
     }
@@ -385,21 +385,18 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     flex: 4,
     backgroundColor: "black",
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
   },
   imagebox: {
-    height: 150,
     aspectRatio: 1,
     backgroundColor: "white",
     borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
     //paddingTop:70,
-    marginTop: 70,
+    marginTop: 30,
   },
   profilePhoto: {
-    height: 200,
+    height: 150,
     aspectRatio: 1,
     borderRadius: 150,
     borderWidth: 3,
