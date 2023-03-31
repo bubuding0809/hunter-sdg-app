@@ -79,7 +79,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   // Snap points for the bottom sheet
-  const snapPoints = useMemo(() => ["6%", "30%", "60%"], []);
+  const snapPoints = useMemo(() => ["5%", "30%", "60%"], []);
 
   // State to hold address of bounty location
   const [bountyAddress, setBountyAddress] = useState("");
@@ -127,34 +127,34 @@ const BountyMap: React.FC<BountyMapProps> = ({
   };
 
   // // Mock heat map data
-  // const heatMapPoints = useMemo(() => {
-  //   return Array.from({ length: 5 })
-  //     .map(() => {
-  //       const [latitude, longitude] = faker.address.nearbyGPSCoordinate(
-  //         [bountyData.location.latitude, bountyData.location.longitude],
-  //         0.5,
-  //         true
-  //       );
-  //       return Array.from({
-  //         length: faker.datatype.number({
-  //           min: 1000,
-  //           max: 5000,
-  //         }),
-  //       }).map(() => {
-  //         const point = faker.address.nearbyGPSCoordinate(
-  //           [parseFloat(latitude), parseFloat(longitude)],
-  //           0.1,
-  //           true
-  //         );
+  const heatMapPoints = useMemo(() => {
+    return Array.from({ length: 5 })
+      .map(() => {
+        const [latitude, longitude] = faker.address.nearbyGPSCoordinate(
+          [bountyData.location.latitude, bountyData.location.longitude],
+          0.5,
+          true
+        );
+        return Array.from({
+          length: faker.datatype.number({
+            min: 1000,
+            max: 5000,
+          }),
+        }).map(() => {
+          const point = faker.address.nearbyGPSCoordinate(
+            [parseFloat(latitude), parseFloat(longitude)],
+            0.1,
+            true
+          );
 
-  //         return {
-  //           latitude: parseFloat(point[0]),
-  //           longitude: parseFloat(point[1]),
-  //         };
-  //       });
-  //     })
-  //     .flat();
-  // }, [bountyData]);
+          return {
+            latitude: parseFloat(point[0]),
+            longitude: parseFloat(point[1]),
+          };
+        });
+      })
+      .flat();
+  }, [bountyData]);
 
   // Format distance to bounty
   const distanceToBountyKm = useMemo(() => {
@@ -278,7 +278,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
             ))}
 
         {/* Display a heatmap */}
-        {/* <Heatmap
+        <Heatmap
           points={heatMapPoints}
           opacity={1}
           radius={50}
@@ -287,7 +287,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
             colors: ["#0000ff", "#00ffff", "#00ff00", "#ffff00", "#ff0000"],
             startPoints: [0.2, 0.4, 0.6, 0.8, 1],
           }}
-        /> */}
+        />
       </MapView>
 
       {children}
