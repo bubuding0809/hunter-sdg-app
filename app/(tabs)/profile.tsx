@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     // paddingTop: -40
   },
   profilePhoto: {
-    marginTop: 140,
+    marginTop: 100,
     height: 150,
     aspectRatio: 1,
     borderRadius: 150,
