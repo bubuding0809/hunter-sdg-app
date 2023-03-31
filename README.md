@@ -37,6 +37,8 @@ Hunter is an innovative solution for finding lost elderly, children, and pets us
 1. **Node.js** - Download and install [Node.js]
 2. **Yarn** - Download and install [Yarn]
 3. **Expo Go** - Download and install [Expo go] on your mobile device
+4. **XCode** - Download and install [XCode] on your Mac for iOS simulator
+5. **Android Studio** - Download and install [Android Studio] on your Windows for Android simulator
 
 ## Usage
 
@@ -107,6 +109,8 @@ Hunter is an innovative solution for finding lost elderly, children, and pets us
 [node.js]: https://nodejs.org/en/download/
 [yarn]: https://classic.yarnpkg.com/en/docs/install/#mac-stable
 [expo]: https://expo.dev/
+[xcode]: https://apps.apple.com/us/app/xcode/id497799835?mt=12
+[android studio]: https://developer.android.com/studio
 [firebase setup]: https://firebase.google.com/docs/web/setup
 [google maps api]: https://developers.google.com/maps/documentation/javascript/get-api-key
 [ding ruoqian]: https://github.com/bubuding0809
