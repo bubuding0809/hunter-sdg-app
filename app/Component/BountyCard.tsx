@@ -130,9 +130,7 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
       </Container>
       <Container style={styles.togglebox}>
         <ToggleSwitch
-          selectionMode={1}
-          option1="DESCRIPTION"
-          option2={"PHOTOS"}
+          options={["Description", "Photos"]}
           onSelectSwitch={switchfunction}
           selectionColor={"#000000"}
         />

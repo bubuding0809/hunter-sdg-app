@@ -1,24 +1,10 @@
-import MapView, {
-  LatLng,
-  Marker,
-  PROVIDER_GOOGLE,
-  MapCircle,
-  Polyline,
-} from "react-native-maps";
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  Text,
-  StyleProp,
-  ViewStyle,
-} from "react-native";
+import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { StyleSheet, View, Dimensions, ViewStyle } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import InputAutocomplete from "./InputAutocomplete";
-import { Box, Button, Heading, HStack, Icon, Fab, Spinner } from "native-base";
+import { Button } from "native-base";
 import * as Location from "expo-location";
 import { useLocation } from "../../context/LocationContext";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 // https://docs.expo.dev/versions/latest/sdk/map-view/
 // https://www.npmjs.com/package/react-native-google-places-autocomplete

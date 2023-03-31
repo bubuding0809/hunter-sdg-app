@@ -70,8 +70,8 @@ export default function Layout() {
                   headerStyle: {
                     backgroundColor: "#fff",
                   },
-                  headerTintColor: "#252525",
                   headerBackTitleVisible: false,
+                  headerTintColor: "#252525",
                   headerTitleStyle: {
                     fontFamily: "Inter_600SemiBold",
                     color: "#000",
@@ -85,6 +85,15 @@ export default function Layout() {
                     // set title to current tab
                     title: pathNames[pathname],
                     headerBackVisible: false,
+                    headerTitleStyle: {
+                      fontFamily: "Inter_600SemiBold",
+                      color: pathname === "/profile" ? "#fff" : "#000",
+                      fontSize: 26,
+                    },
+                    headerStyle: {
+                      backgroundColor:
+                        pathname === "/profile" ? "black" : "#fff",
+                    },
                     headerRight: () => (
                       <Button
                         onPress={handleLogout}

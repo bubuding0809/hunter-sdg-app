@@ -1,84 +1,67 @@
-import React, {useState} from 'react';
-
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { Box } from "native-base";
+import React, { useState } from "react";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { Text } from "native-base";
 
 interface Props {
-    selectionMode: any
-    option1: string
-    option2: string
-    onSelectSwitch: any
-    selectionColor: string
+  options: string[];
+  onSelectSwitch: any;
+  selectionColor: string;
 }
 
-const ToggleSwitch:React.FC<Props> = (
-    {selectionMode,
-    option1,
-    option2,
-    onSelectSwitch,
-    selectionColor}
-) =>{
-    const [getSelectionMode, setSelectionMode] = useState(selectionMode);
+const ToggleSwitch: React.FC<Props> = ({
+  options,
+  onSelectSwitch,
+  selectionColor,
+}) => {
+  const [selectionMode, setSelectionMode] = useState(1);
 
-    const updatedSwitchData = val => {
-      {setSelectionMode(val);
+  const updatedSwitchData = val => {
+    {
+      setSelectionMode(val);
       onSelectSwitch(val);
-        
-        
-      }};
-    return(
-        <View>
-      <View
-        style={{
-          height: 50,
-          width: 320,
-          backgroundColor: 'white',
-          borderRadius: 25,
-          borderWidth: 1,
-          borderColor: selectionColor,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          padding: 2,
-        }}>
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => updatedSwitchData(1)}
-          style={{
-            flex: 1,
+    }
+  };
 
-            backgroundColor: getSelectionMode == 1 ? selectionColor : 'white',
-            borderRadius: 25,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text
-            style={{
-              color: getSelectionMode == 1 ? 'white' : selectionColor,
-            }}>
-            {option1}
-          </Text>
-        </TouchableOpacity>
+  return (
+    <Box
+      style={{
+        height: 50,
+        width: "85%",
+        flexDirection: "row",
+        justifyContent: "center",
+        padding: 2,
+      }}
+      bgColor="gray.100"
+      borderWidth={1}
+      borderRadius="full"
+      borderColor="gray.200"
+    >
+      {options.map((option, index) => (
         <TouchableOpacity
+          key={option}
           activeOpacity={1}
-          onPress={() => updatedSwitchData(2)}
+          onPress={() => updatedSwitchData(index + 1)}
           style={{
             flex: 1,
-            backgroundColor: getSelectionMode == 2 ? selectionColor : 'white',
+            backgroundColor:
+              selectionMode == index + 1 ? "white" : "transparent",
             borderRadius: 25,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <Text
-            style={{
-              color: getSelectionMode == 2 ? 'white' : selectionColor,
-            }}>
-            {option2}
+            color={selectionMode == index + 1 ? "black" : "gray.500"}
+            fontFamily="Inter_500Medium"
+            fontSize="16px"
+          >
+            {option}
           </Text>
         </TouchableOpacity>
-      </View>
-    </View>
-    );
+      ))}
+    </Box>
+  );
 };
-
-
 
 export default ToggleSwitch;
