@@ -26,7 +26,6 @@ const firebaseConfig = {
   storageBucket: FIREBASE_PROJECT_BUCKET,
   messagingSenderId: FIREBASE_PROJECT_SENDER_ID,
   appId: FIREBASE_APP_ID,
-  // measurementId: FIREBASE_MEASUREMENT_ID,
 };
 
 let app;

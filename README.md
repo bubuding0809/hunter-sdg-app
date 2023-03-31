@@ -42,54 +42,53 @@ Hunter is an innovative solution for finding lost elderly, children, and pets us
 
 1. Clone the repo
 
-```bash
-git clone https://github.com/bubuding0809/hunter-sdg-app.git
-```
+   ```bash
+   git clone https://github.com/bubuding0809/hunter-sdg-app.git
+   ```
 
 2. Navigate to the project directory
 
-```bash
-cd hunter-sdg-app
-```
+   ```bash
+   cd hunter-sdg-app
+   ```
 
 3. Install dependencies
 
-```bash
-yarn install
-```
+   ```bash
+   yarn install
+   ```
 
 4. Configure environment variables
 
-```bash
-cp .env.example .env
-```
+   ```bash
+   cp .env.example .env
+   ```
 
 5. Fill in the environment variables in the `.env` file
 
-```
-# Firebase
-FIREBASE_API_KEY =
-FIREBASE_AUTH_DOMAIN =
-FIREBASE_PROJECT_ID =
-FIREBASE_PROJECT_BUCKET =
-FIREBASE_PROJECT_SENDER_ID =
-FIREBASE_APP_ID =
-FIREBASE_MEASUREMENT_ID =
+   ```
+   # Firebase
+   FIREBASE_API_KEY =
+   FIREBASE_AUTH_DOMAIN =
+   FIREBASE_PROJECT_ID =
+   FIREBASE_PROJECT_BUCKET =
+   FIREBASE_PROJECT_SENDER_ID =
+   FIREBASE_APP_ID =
 
-# Google Maps
-GOOGLE_MAPS_API_KEY =
-```
+   # Google Maps
+   GOOGLE_MAPS_API_KEY =
+   ```
 
 - Firebase API key can be found in the Firebase console under Project Settings > General > Your apps > Firebase SDK snippet > Config. Read more about [Firebase setup].
 - Google Maps API key can be found in the Google Cloud Platform console under API & Services > Credentials > API keys. Read more about [Google Maps API].
 
-1. Start the app
+6. Start the app
 
-```bash
-> npx expo start
-```
+   ```bash
+   > npx expo start
+   ```
 
-5. Scan the QR code with your mobile device
+7. Scan the QR code with your mobile device
 
    Install the [Expo Go] app on your iOS or Android phone and connect to the same wireless network as your computer. On Android, use the Expo Go app to scan the QR code from your terminal to open your project. On iOS, use the built-in QR code scanner of the default iOS Camera app.
 
