@@ -13,10 +13,10 @@ Hunter is an innovative solution for finding lost elderly, children, and pets us
     gap: 10px;
   "
 >
-  <img src="media/hunter_landing.png" alt="Map" width="24%" style="border-radius: 10px" />
-  <img src="media/hunter_login.png" alt="Profile" width="24%" style="border-radius: 10px"/>
-  <img src="media/hunter_activity.png" alt="Activity" width="24%" style="border-radius: 10px"/>
-  <img src="media/hunter_forum.png" alt="Forum" width="24%" style="border-radius: 10px"/>
+  <img src="media/hunter_landing.png" alt="Map" width="24%" />
+  <img src="media/hunter_login.png" alt="Profile" width="24%"/>
+  <img src="media/hunter_activity.png" alt="Activity" width="24%"/>
+  <img src="media/hunter_forum.png" alt="Forum" width="24%"/>
 </div>
 
 ## Tech Stack
@@ -43,25 +43,25 @@ Hunter is an innovative solution for finding lost elderly, children, and pets us
 1. Clone the repo
 
 ```bash
-> git clone https://github.com/bubuding0809/hunter-sdg-app.git
+git clone https://github.com/bubuding0809/hunter-sdg-app.git
 ```
 
 2. Navigate to the project directory
 
 ```bash
-> cd hunter-sdg-app
+cd hunter-sdg-app
 ```
 
 3. Install dependencies
 
 ```bash
-> yarn install
+yarn install
 ```
 
 4. Configure environment variables
 
 ```bash
-> cp .env.example .env
+cp .env.example .env
 ```
 
 5. Fill in the environment variables in the `.env` file
