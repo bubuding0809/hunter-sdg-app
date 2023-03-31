@@ -31,10 +31,13 @@ import * as Location from "expo-location";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
-import { faker } from "@faker-js/faker";
+import { Faker, faker } from "@faker-js/faker";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { formatDate, getDistance } from "../../utils/scripts/helpers";
 import { useRouter, Link } from "expo-router";
+
+const PROFILE_IMAGE =
+  "https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=778&q=80";
 
 // Initialize map settings
 const { width, height } = Dimensions.get("window");
@@ -59,6 +62,7 @@ interface BountyMapProps {
   };
   children?: React.ReactNode;
 }
+
 const BountyMap: React.FC<BountyMapProps> = ({
   children,
   hunterLocations,
@@ -122,35 +126,35 @@ const BountyMap: React.FC<BountyMapProps> = ({
     }
   };
 
-  // Mock heat map data
-  const heatMapPoints = useMemo(() => {
-    return Array.from({ length: 5 })
-      .map(() => {
-        const [latitude, longitude] = faker.address.nearbyGPSCoordinate(
-          [bountyData.location.latitude, bountyData.location.longitude],
-          0.5,
-          true
-        );
-        return Array.from({
-          length: faker.datatype.number({
-            min: 1000,
-            max: 5000,
-          }),
-        }).map(() => {
-          const point = faker.address.nearbyGPSCoordinate(
-            [parseFloat(latitude), parseFloat(longitude)],
-            0.1,
-            true
-          );
+  // // Mock heat map data
+  // const heatMapPoints = useMemo(() => {
+  //   return Array.from({ length: 5 })
+  //     .map(() => {
+  //       const [latitude, longitude] = faker.address.nearbyGPSCoordinate(
+  //         [bountyData.location.latitude, bountyData.location.longitude],
+  //         0.5,
+  //         true
+  //       );
+  //       return Array.from({
+  //         length: faker.datatype.number({
+  //           min: 1000,
+  //           max: 5000,
+  //         }),
+  //       }).map(() => {
+  //         const point = faker.address.nearbyGPSCoordinate(
+  //           [parseFloat(latitude), parseFloat(longitude)],
+  //           0.1,
+  //           true
+  //         );
 
-          return {
-            latitude: parseFloat(point[0]),
-            longitude: parseFloat(point[1]),
-          };
-        });
-      })
-      .flat();
-  }, [bountyData]);
+  //         return {
+  //           latitude: parseFloat(point[0]),
+  //           longitude: parseFloat(point[1]),
+  //         };
+  //       });
+  //     })
+  //     .flat();
+  // }, [bountyData]);
 
   // Format distance to bounty
   const distanceToBountyKm = useMemo(() => {
@@ -274,7 +278,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
             ))}
 
         {/* Display a heatmap */}
-        <Heatmap
+        {/* <Heatmap
           points={heatMapPoints}
           opacity={1}
           radius={50}
@@ -283,7 +287,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
             colors: ["#0000ff", "#00ffff", "#00ff00", "#ffff00", "#ff0000"],
             startPoints: [0.2, 0.4, 0.6, 0.8, 1],
           }}
-        />
+        /> */}
       </MapView>
 
       {children}
@@ -432,7 +436,7 @@ const BountyMap: React.FC<BountyMapProps> = ({
             <HStack>
               <Image
                 source={{
-                  uri: "https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=778&q=80",
+                  uri: PROFILE_IMAGE,
                 }}
                 width="55px"
                 height="55px"
@@ -476,35 +480,30 @@ const BountyMap: React.FC<BountyMapProps> = ({
           </HStack>
 
           {/* Live updates button */}
-          <Link
-            asChild={true}
-            href={{
-              pathname: `/bountyForum/${bountyData.id}`,
-              params: {
-                bountyName: bountyData.name,
-              },
+          <Button
+            flex={1}
+            bgColor="black"
+            borderTopRadius={0}
+            borderBottomRadius={30}
+            _text={{
+              fontFamily: "Inter_500Medium",
+              fontSize: "xl",
+              color: "white",
+            }}
+            _pressed={{
+              bgColor: "gray.800",
+            }}
+            onPress={() => {
+              router.push({
+                pathname: `/bountyForum/${bountyData.id}`,
+                params: {
+                  bountyName: bountyData.name,
+                },
+              });
             }}
           >
-            <Button
-              flex={1}
-              bgColor="black"
-              borderTopRadius={0}
-              borderBottomRadius={30}
-              _text={{
-                fontFamily: "Inter_500Medium",
-                fontSize: "xl",
-                color: "white",
-              }}
-              _pressed={{
-                bgColor: "gray.800",
-              }}
-              onPress={() => {
-                router.push(`/bountyForum/${bountyData.id}`);
-              }}
-            >
-              Live Updates
-            </Button>
-          </Link>
+            Live Updates
+          </Button>
         </VStack>
         {/* Move to current location floating action button */}
         <Fab

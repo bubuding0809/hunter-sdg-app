@@ -26,10 +26,9 @@ import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBo
 import BountyCard from "../Component/BountyCard";
 import moment from "moment";
 
-
 // Temporary bounty card to display data
-const HEIGHT = Dimensions.get('window').height;
-const WIDTH = Dimensions.get('window').width;
+const HEIGHT = Dimensions.get("window").height;
+const WIDTH = Dimensions.get("window").width;
 const FeedPage = () => {
   const router = useRouter();
   const { data: sessionData, isLoading } = useFirebaseSession();
@@ -48,132 +47,121 @@ const FeedPage = () => {
   const [isModalData, setModalData] = useState(null);
 
   return (
-    <View style={{ backgroundColor: "white" }}>
-      <SafeAreaView edges={["left", "right"]}>
-        <FlatList
-          contentContainerStyle={{
-            flexGrow: 1,
-            alignItems: "center",
-            backgroundColor: "white",
+    <FlatList
+      contentContainerStyle={{
+        flexGrow: 1,
+        alignItems: "center",
+        backgroundColor: "white",
+      }}
+      data={bountyData}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            // Refetch bounties data
+            setRefreshing(true);
+            refetch()
+              .then(res => setRefreshing(false))
+              .catch(err => {
+                setRefreshing(false);
+                alert("Error refreshing bounties");
+              });
           }}
-          data={bountyData}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => {
-                // Refetch bounties data
-                setRefreshing(true);
-                refetch()
-                  .then((res) => setRefreshing(false))
-                  .catch((err) => {
-                    setRefreshing(false);
-                    alert("Error refreshing bounties");
-                  });
-              }}
-            />
-          }
-          renderItem={({ item }) => (
-            <Container style={[styles.bountyBox, styles.shadowProp]}>
-              <Pressable
-                onPress={() => {
-                  changeModalVisible(true);
-                  setModalData(item);
-                }}
-                style={styles.pressable}
-              >
-                <View style={styles.imagebox}>
-                  <Image
-                    style={styles.avatar}
-                    source={{ uri: item.images[0] }}
-                  />
-                </View>
-
-                {item.category === "pet" ? (
-                  //pet
-                  <View style={styles.leftbox}>
-                    <Text style={styles.name_text}>{item.name}</Text>
-                    <View style={styles.descriptionbox}>
-                      <Text style={styles.description_text}>
-                        Breed:{item.breed}
-                      </Text>
-                      <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.description_text}>
-                          Age:{item.age}
-                        </Text>
-                        <Text style={styles.description_text}>
-                          Gender:{item.gender}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                ) : (
-                  //non pet
-                  <View style={styles.leftbox}>
-                    <Text style={styles.name_text}>{item.name}</Text>
-                    <View style={styles.descriptionbox}>
-                      <Text style={styles.description_text}>
-                        {item.category}
-                      </Text>
-                      <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.description_text}>
-                          Age: {item.age}{" "}
-                        </Text>
-                        <Text style={styles.description_text}>
-                          Gender: {item.gender}{" "}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                )}
-
-                <View style={styles.rightbox}>
-                  {/* ."ctrl space" to see all available options */}
-                  <Text style={styles.timestamp}>
-                    {moment(item.createdAt.toDate(), "MMDDYYYY").fromNow()}
-                  </Text>
-                  {/* //Need to add in geolocation  */}
-                  <Text style={styles.location}>
-                    {item.createdAt.toDate().toDateString()}
-                  </Text>
-                </View>
-              </Pressable>
-              <Modal visible={isModalVisible} animationType="slide">
-                <BountyCard
-                  changeModalVisible={changeModalVisible}
-                  bountyData={isModalData}
-                />
-              </Modal>
-            </Container>
-          )}
         />
-      </SafeAreaView>
-    </View>
+      }
+      renderItem={({ item }) => (
+        <Container style={[styles.bountyBox, styles.shadowProp]}>
+          <Pressable
+            onPress={() => {
+              changeModalVisible(true);
+              setModalData(item);
+            }}
+            style={styles.pressable}
+          >
+            <View style={styles.imagebox}>
+              <Image style={styles.avatar} source={{ uri: item.images[0] }} />
+            </View>
+
+            {item.category === "pet" ? (
+              //pet
+              <View style={styles.leftbox}>
+                <Text style={styles.name_text}>{item.name}</Text>
+                <View style={styles.descriptionbox}>
+                  <Text style={styles.description_text}>
+                    Breed:{item.breed}
+                  </Text>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text style={styles.description_text}>Age:{item.age}</Text>
+                    <Text style={styles.description_text}>
+                      Gender:{item.gender}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ) : (
+              //non pet
+              <View style={styles.leftbox}>
+                <Text style={styles.name_text}>{item.name}</Text>
+                <View style={styles.descriptionbox}>
+                  <Text style={styles.description_text}>{item.category}</Text>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text style={styles.description_text}>
+                      Age: {item.age}{" "}
+                    </Text>
+                    <Text style={styles.description_text}>
+                      Gender: {item.gender}{" "}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            <View style={styles.rightbox}>
+              {/* ."ctrl space" to see all available options */}
+              <Text style={styles.timestamp}>
+                {moment(item.createdAt.toDate(), "MMDDYYYY").fromNow()}
+              </Text>
+              {/* //Need to add in geolocation  */}
+              <Text style={styles.location}>
+                {item.createdAt.toDate().toDateString()}
+              </Text>
+            </View>
+          </Pressable>
+          <Modal visible={isModalVisible} animationType="slide">
+            <BountyCard
+              changeModalVisible={changeModalVisible}
+              bountyData={isModalData}
+            />
+          </Modal>
+        </Container>
+      )}
+    />
   );
 };
 const styles = StyleSheet.create({
   name_text: {
     fontWeight: "bold",
     fontSize: 16,
-    fontFamily: "Inter_600SemiBold"
+    fontFamily: "Inter_600SemiBold",
   },
   description_text: {
     fontWeight: "normal",
     fontSize: 14,
     paddingHorizontal: 3,
-    fontFamily: "Inter_400Regular"
+    fontFamily: "Inter_400Regular",
   },
   timestamp: {
     fontWeight: "normal",
     fontSize: 10,
     textAlign: "right",
-    fontFamily: "Inter_400Regular"
+    fontFamily: "Inter_400Regular",
   },
   location: {
     fontWeight: "normal",
     fontSize: 10,
     textAlign: "right",
-    fontFamily: "Inter_400Regular"
+    fontFamily: "Inter_400Regular",
   },
   description_box: {
     width: "70%",

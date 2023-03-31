@@ -15,14 +15,10 @@ import {
   StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
 import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
 import ToggleSwitch from "./ToggleSwitch";
-import type { StatusBarStyle } from "react-native";
 import useJoinBounty from "../../utils/scripts/hooks/mutations/useJoinBounty";
-import useGetUser, {
-  UserQueryType,
-} from "../../utils/scripts/hooks/queries/useGetUser";
+import useGetUser from "../../utils/scripts/hooks/queries/useGetUser";
 import { LatLng } from "react-native-maps";
 import * as Location from "expo-location";
 
@@ -68,7 +64,14 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
   const [modalVisible, setModalVisible] = useState(false);
   const { mutate: joinBounty } = useJoinBounty();
   const { data: sessionData, isLoading } = useFirebaseSession();
-  const { data: userData, refetch } = useGetUser({ userId: sessionData.uid });
+  const { data: userData } = useGetUser(
+    {
+      userId: sessionData?.uid ?? "",
+    },
+    {
+      enabled: !!sessionData?.uid,
+    }
+  );
   const switchfunction = val => {
     {
       val == 1 ? setIsDesc(true) : setIsDesc(false);

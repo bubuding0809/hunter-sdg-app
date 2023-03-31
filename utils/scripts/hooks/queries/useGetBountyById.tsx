@@ -14,27 +14,16 @@ type QueryOptions = {
 };
 
 // Use react-query to get the bounty data
-const useGetBounty = (
+const useGetBountyById = (
   queryParams: {
-    userId: string;
+    bountyId: string;
   },
   queryOptions?: QueryOptions
 ) => {
   // Async function to get the user data from firebase
   const getBounty = async () => {
     try {
-      const user = await getDoc(doc(db, "User", queryParams.userId));
-      const userBounty = user.data()?.bounties[0] as
-        | DocumentReference<DocumentData>
-        | undefined;
-
-      // If the user has no bounty, return null
-      if (!userBounty) {
-        return null;
-      }
-
-      // Else return the bounty data with the id
-      const bounty = await getDoc(userBounty);
+      const bounty = await getDoc(doc(db, "Bounty", queryParams.bountyId));
       const res = {
         ...bounty.data(),
         id: bounty.id,
@@ -47,10 +36,10 @@ const useGetBounty = (
   };
 
   return useQuery({
-    queryKey: ["getBounty", queryParams.userId],
+    queryKey: ["getBounty", queryParams.bountyId],
     queryFn: getBounty,
     ...queryOptions,
   });
 };
 
-export default useGetBounty;
+export default useGetBountyById;

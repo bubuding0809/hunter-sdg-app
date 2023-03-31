@@ -1,26 +1,12 @@
-import { View } from "react-native";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Center,
-  ScrollView,
-  VStack,
-  Text,
-  Box,
-  Flex,
-  HStack,
-  Heading,
-  Divider,
-  Button,
-  Fab,
-  Icon,
-} from "native-base";
-import { Link, Stack, usePathname, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Center, Text, Fab, Icon } from "native-base";
+import { useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { useLocation } from "../../context/LocationContext";
 import { rtdb } from "../../firebaseConfig";
 import { ref, onValue, set } from "firebase/database";
 import type { Unsubscribe } from "firebase/database";
-import useGetBounty from "../../utils/scripts/hooks/queries/useGetBounty";
+import useGetBounty from "../../utils/scripts/hooks/queries/useGetBountyByUserId";
 import useLeaveBounty from "../../utils/scripts/hooks/mutations/useLeaveBounty";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import BountyMap from "../../components/Map/BountyMap";
