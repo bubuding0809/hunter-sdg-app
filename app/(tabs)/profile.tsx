@@ -18,7 +18,7 @@ import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import { StyleSheet, View, Dimensions, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
-import ToggleSwitch from "../Component/ToggleSwitch";
+import ToggleSwitch from "../../components/Home/ToggleSwitch";
 import useJoinBounty from "../../utils/scripts/hooks/mutations/useJoinBounty";
 import useGetUser from "../../utils/scripts/hooks/queries/useGetUser";
 import useGetBountyByUserId from "../../utils/scripts/hooks/queries/useGetBountyByUserId";

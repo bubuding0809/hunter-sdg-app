@@ -23,7 +23,7 @@ import { Link, Stack, usePathname, useRouter } from "expo-router";
 import { useFirebaseSession } from "../../context/FirebaseAuthContext";
 import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
 import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
-import BountyCard from "../Component/BountyCard";
+import BountyCard from "../../components/Home/BountyCard";
 import moment from "moment";
 
 // Temporary bounty card to display data
