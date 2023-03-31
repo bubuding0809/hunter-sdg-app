@@ -241,8 +241,8 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     height: 200,
     backgroundColor: "black",
-    justifyContent: "center",
     alignItems: "center",
+    // paddingTop: -40
   },
   profilePhoto: {
     marginTop: 140,
