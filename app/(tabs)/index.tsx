@@ -117,14 +117,14 @@ const FeedPage = () => {
   const [isModalData, setModalData] = useState(null);
 
   return (
-    <View style={{ backgroundColor: "white" }}>
-      <SafeAreaView edges={["left", "right"]}>
+    
+      <SafeAreaView edges={["left", "right"]} style = {{flex: 1, backgroundColor:"white"}}>
         <FlatList
           contentContainerStyle={{
             flexGrow: 1,
-            alignItems: "center",
             backgroundColor: "white",
           }}
+          style = {{backgroundColor:"white"}}
           data={bountyData}
           showsVerticalScrollIndicator={false}
           refreshControl={
@@ -143,7 +143,7 @@ const FeedPage = () => {
             />
           }
           renderItem={({ item }) => (
-            <Container style={[styles.bountyBox, styles.shadowProp]}>
+            <Center>
               <Pressable
                 onPress={() => {
                   changeModalVisible(true);
@@ -213,11 +213,11 @@ const FeedPage = () => {
                   bountyData={isModalData}
                 />
               </Modal>
-            </Container>
+            </Center>
           )}
         />
       </SafeAreaView>
-    </View>
+
   );
 };
 const styles = StyleSheet.create({
@@ -244,19 +244,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
     fontFamily: "Inter_400Regular"
   },
-  description_box: {
-    width: "70%",
-    height: "100%",
-  },
-  bountyBox: {
-    width: "100%",
-    height: 100,
-    flexDirection: "row",
-    marginVertical: 10,
-    backgroundColor: "white",
-    justifyContent: "center",
-    borderRadius: 10,
-  },
   avatar: {
     aspectRatio: 1,
     width: "100%",
@@ -273,7 +260,7 @@ const styles = StyleSheet.create({
     position: "relative",
     flex: 2,
     paddingHorizontal: 5,
-    justifyContent: "center",
+
   },
   leftbox: {
     position: "relative",
@@ -281,7 +268,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingVertical: 15,
     paddingLeft: 5,
-    //borderBottomWidth: 2
+    borderBottomWidth:1,
+    borderColor:"#E8E8E8",
   },
   rightbox: {
     position: "relative",
@@ -290,14 +278,16 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingRight: 5,
     paddingBottom: 25,
-    //borderBottomWidth: 2
+    borderBottomWidth: 1,
+    borderColor:"#E8E8E8"
   },
   pressable: {
-    borderColor: "grey",
-    width: "100%",
-    height: "100%",
     flexDirection: "row",
     borderRadius: 5,
+    backgroundColor:"transparent",
+    width: WIDTH * 0.90,
+    height: 100,
+    marginVertical: 5,
   },
   shadowProp: {
     shadowColor: "#171717",

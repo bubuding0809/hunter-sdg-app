@@ -24,6 +24,8 @@ import * as Location from "expo-location";
 import { GeoPoint } from "firebase/firestore";
 import { LatLng } from "react-native-maps";
 
+
+
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
@@ -93,76 +95,100 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
   }, [bountyData]);
 
   return (
-    console.log(reverseAddress),
-    (
-      <SafeAreaView style={styles.topbox}>
-        <StatusBar barStyle="light-content" />
-        <Container style={styles.picturebox}>
-          <View style={{ position: "absolute", left: 10, top: 40 }}>
-            <Button
-              title="BACK"
-              color="white"
-              onPress={() => changeModalVisible(false)}
-            ></Button>
-          </View>
+    <SafeAreaView style={styles.topbox} edges={["left", "right"]}>
+      <StatusBar barStyle="light-content" />
+
+      <Container style={styles.picturebox}>
+        <View style={{ position: "absolute", left: 10, top: 40 }}>
+          <Button
+            title="BACK"
+            color="white"
+            onPress={() => changeModalVisible(false)}
+          ></Button>
+        </View>
+        <View
+          style={{
+            backgroundColor: "#E5E5E5",
+            height: "40%",
+            width: "100%",
+            top: "60%",
+            position: "absolute",
+            alignItems: "center",
+          }}
+        >
           <View
             style={{
-              backgroundColor: "#E5E5E5",
-              height: "40%",
-              width: "100%",
-              bottom: 0,
               position: "absolute",
+              bottom: 0,
+              justifyContent: "center",
+              alignItems: "center",
             }}
-          ></View>
-          <Container style={styles.imagebox}>
-            <Image
-              style={styles.profilePhoto}
-              source={{ uri: bountyData.images[0] }}
-            />
-          </Container>
-        </Container>
-        <Container style={styles.togglebox}>
-          <ToggleSwitch
-            selectionMode={1}
-            option1="DESCRIPTION"
-            option2={"PHOTOS"}
-            onSelectSwitch={switchfunction}
-            selectionColor={"#000000"}
+          >
+            <Text style={{ fontFamily: "Inter_600SemiBold", fontSize: 30 }}>
+              {" "}
+              {bountyData.name}
+            </Text>
+            <Text
+              style={{
+                fontFamily: "Inter_600SemiBold",
+                fontSize: 16,
+                margin: 5,
+              }}
+            >
+              {" "}
+              Posted{" "}
+              {moment(bountyData.createdAt.toDate(), "MMDDYYYY").fromNow()}{" "}
+            </Text>
+          </View>
+        </View>
+        <Container style={styles.imagebox}>
+          <Image
+            style={styles.profilePhoto}
+            source={{ uri: bountyData.images[0] }}
           />
         </Container>
-        <Container style={styles.bottombox}>
-          {IsDesc ? (
-            <Container style={styles.description_box}>
+      </Container>
+      <Container style={styles.togglebox}>
+        <ToggleSwitch
+          selectionMode={1}
+          option1="DESCRIPTION"
+          option2={"PHOTOS"}
+          onSelectSwitch={switchfunction}
+          selectionColor={"#000000"}
+        />
+      </Container>
+      <Container style={styles.bottombox}>
+        {IsDesc ? (
+          <Container style={styles.description_box}>
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                backgroundColor: "white",
+                paddingHorizontal: 5,
+                marginTop: 20,
+                paddingRight: 100,
+              }}
+            >
               <View
                 style={{
-                  width: "100%",
+                  flex: 1,
                   flexDirection: "row",
-                  backgroundColor: "white",
-                  paddingHorizontal: 5,
-                  marginTop: 20,
-                  paddingRight: 100,
+                  justifyContent: "flex-start",
                 }}
               >
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                  }}
-                >
-                  <Text style={{fontFamily:"Inter_700Bold" }}> Age: </Text>
-                  <Text style={{ fontFamily:"Inter_400Regular" }}> {bountyData.age}</Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <Text style={{ fontFamily:"Inter_700Bold"}}> Gender: </Text>
-                  <Text style={{ fontFamily:"Inter_400Regular" }}>{bountyData.gender}</Text>
-                </View>
+                <Text style={{ fontWeight: "bold" }}> Age: </Text>
+                <Text> {bountyData.age}</Text>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Text style={{ fontWeight: "bold" }}> Gender: </Text>
+                <Text>{bountyData.gender}</Text>
               </View>
               <View
                 style={{
@@ -231,6 +257,7 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
                   {bountyData.additionalInfo}
                 </Text>
               </View>
+              </View>
             </Container>
           ) : (
             //add carousell function here
@@ -248,7 +275,7 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
         </Container>
       </SafeAreaView>
     )
-  );
+  
 }
 
 const styles = StyleSheet.create({
@@ -263,21 +290,18 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     flex: 4,
     backgroundColor: "black",
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
   },
   imagebox: {
-    height: 150,
     aspectRatio: 1,
     backgroundColor: "white",
     borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
     //paddingTop:70,
-    marginTop: 70,
+    marginTop: 30,
   },
   profilePhoto: {
-    height: 200,
+    height: 150,
     aspectRatio: 1,
     borderRadius: 150,
     borderWidth: 3,
