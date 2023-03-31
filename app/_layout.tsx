@@ -30,7 +30,7 @@ export const unstable_settings = {
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
+    shouldPlaySound: true,
     shouldSetBadge: true,
   }),
 });
@@ -116,9 +116,6 @@ export default function Layout() {
   >();
   const notificationListener = useRef(null);
   const responseListener = useRef(null);
-
-  console.log("notification", notification);
-  console.log("expoPushToken", expoPushToken);
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
