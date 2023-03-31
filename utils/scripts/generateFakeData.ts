@@ -129,8 +129,8 @@ export const generateBounty = ({
       : undefined;
 
   const coordinates = faker.address.nearbyGPSCoordinate(
-    [1.3707654763250605, 103.84643473592251],
-    10000,
+    [1.4555, 103.814074],
+    5,
     true
   );
 

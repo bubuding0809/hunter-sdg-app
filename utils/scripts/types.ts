@@ -16,7 +16,7 @@ export type Bounty = {
   category: "child" | "elderly" | "adult" | "pet";
   gender: "male" | "female" | "other";
   images: string[];
-  hunters: string[];
+  hunters: DocumentReference<DocumentData>[];
   radius: number;
   description?: string;
   additionalInfo?: string;

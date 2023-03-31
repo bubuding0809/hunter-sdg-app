@@ -15,16 +15,12 @@ import {
   StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useBountiesQuery from "../../utils/scripts/hooks/queries/useGetBounties";
 import type { BountyQueryType } from "../../utils/scripts/hooks/queries/useGetBounties";
 import ToggleSwitch from "./ToggleSwitch";
-import moment from "moment";
-import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
-import * as Location from "expo-location";
-import { GeoPoint } from "firebase/firestore";
+import useJoinBounty from "../../utils/scripts/hooks/mutations/useJoinBounty";
+import useGetUser from "../../utils/scripts/hooks/queries/useGetUser";
 import { LatLng } from "react-native-maps";
-
-
+import * as Location from "expo-location";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -63,8 +59,19 @@ type BountyCardProp = {
 };
 
 function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
+  const router = useRouter();
   const [IsDesc, setIsDesc] = useState(true);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const { mutate: joinBounty } = useJoinBounty();
+  const { data: sessionData, isLoading } = useFirebaseSession();
+  const { data: userData } = useGetUser(
+    {
+      userId: sessionData?.uid ?? "",
+    },
+    {
+      enabled: !!sessionData?.uid,
+    }
+  );
   const switchfunction = (val) => {
     {
       val == 1 ? setIsDesc(true) : setIsDesc(false);
@@ -93,9 +100,8 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
 
     reverseGeocodeBountyLocation();
   }, [bountyData]);
-
   return (
-    <SafeAreaView style={styles.topbox} edges={["left", "right"]}>
+    <SafeAreaView style={styles.topbox}>
       <StatusBar barStyle="light-content" />
 
       <Container style={styles.picturebox}>
@@ -111,36 +117,10 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
             backgroundColor: "#E5E5E5",
             height: "40%",
             width: "100%",
-            top: "60%",
+            bottom: 0,
             position: "absolute",
-            alignItems: "center",
           }}
-        >
-          <View
-            style={{
-              position: "absolute",
-              bottom: 0,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ fontFamily: "Inter_600SemiBold", fontSize: 30 }}>
-              {" "}
-              {bountyData.name}
-            </Text>
-            <Text
-              style={{
-                fontFamily: "Inter_600SemiBold",
-                fontSize: 16,
-                margin: 5,
-              }}
-            >
-              {" "}
-              Posted{" "}
-              {moment(bountyData.createdAt.toDate(), "MMDDYYYY").fromNow()}{" "}
-            </Text>
-          </View>
-        </View>
+        ></View>
         <Container style={styles.imagebox}>
           <Image
             style={styles.profilePhoto}
@@ -150,9 +130,7 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
       </Container>
       <Container style={styles.togglebox}>
         <ToggleSwitch
-          selectionMode={1}
-          option1="DESCRIPTION"
-          option2={"PHOTOS"}
+          options={["Description", "Photos"]}
           onSelectSwitch={switchfunction}
           selectionColor={"#000000"}
         />
@@ -190,95 +168,212 @@ function BountyCard({ changeModalVisible, bountyData }: BountyCardProp) {
                 <Text style={{ fontWeight: "bold" }}> Gender: </Text>
                 <Text>{bountyData.gender}</Text>
               </View>
-              <View
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                backgroundColor: "white",
+                paddingLeft: 5,
+              }}
+            >
+              <Text style={{ fontWeight: "bold" }}> Last Seen Time: </Text>
+              <Text> {bountyData.lastSeen.toDate().toDateString()}</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                backgroundColor: "white",
+                paddingLeft: 5,
+              }}
+            >
+              <Text style={{ fontWeight: "bold" }}> Last Seen Location: </Text>
+              <Text>{reverseAddress}</Text>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                backgroundColor: "white",
+                paddingLeft: 5,
+              }}
+            >
+              <Text style={{ fontWeight: "bold" }}> Appearance:</Text>
+              <Text
                 style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  backgroundColor: "white",
                   paddingLeft: 5,
+                  textAlign: "justify",
+                  paddingRight: 10,
                 }}
               >
-                <Text style={{ fontFamily:"Inter_700Bold" }}> Last Seen Time: </Text>
-                <Text style={{ fontFamily:"Inter_400Regular" }}> {bountyData.lastSeen.toDate().toDateString()} </Text>
-              </View>
-              <View
+                {bountyData.appearance}
+              </Text>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                backgroundColor: "white",
+                paddingLeft: 5,
+                marginBottom: 20,
+              }}
+            >
+              <Text style={{ fontWeight: "bold" }}>
+                {" "}
+                Additional Information
+              </Text>
+              <Text
                 style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  backgroundColor: "white",
                   paddingLeft: 5,
+                  textAlign: "justify",
+                  paddingRight: 10,
                 }}
               >
-                <Text style={{ fontFamily:"Inter_700Bold" }}>
-                  {" "}
-                  Last Seen Location:{" "}
-                </Text>
-                <Text style={{ fontFamily:"Inter_400Regular" }}>{reverseAddress}</Text>
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  backgroundColor: "white",
-                  paddingLeft: 5,
-                }}
-              >
-                <Text style={{ fontFamily:"Inter_700Bold" }}> Appearance:</Text>
+                {bountyData.additionalInfo}
+              </Text>
+            </View>
+          </Container>
+        ) : (
+          //add carousell function here
+          <Carousel data={bountyData} />
+        )}
+      </Container>
+      <Container style={styles.buttonbox}>
+        <View>
+          <TouchableOpacity
+            disabled={userData?.bounties?.length > 0 ?? false}
+            style={{ borderWidth: 0, marginTop: 17 }}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text
+              style={{
+                fontSize: 25,
+                fontWeight: "bold",
+              }}
+            >
+              {userData?.bounties?.length > 0
+                ? "You are already in a hunt"
+                : "Hunt"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Modal
+          visible={modalVisible}
+          animationType="none"
+          transparent={true}
+          onRequestClose={() => {
+            setModalVisible(false);
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              setModalVisible(false);
+            }}
+            style={{
+              height: "100%",
+              marginTop: "auto",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          ></TouchableOpacity>
+          <Modal
+            visible={modalVisible}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => {
+              setModalVisible(false);
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                setModalVisible(false);
+              }}
+              style={{
+                height: "100%",
+                marginTop: "auto",
+                backgroundColor: "rgba(0, 0, 0, 0.0)",
+              }}
+            ></TouchableOpacity>
+            <View
+              style={{
+                height: "50%",
+                marginTop: "auto",
+                backgroundColor: "white",
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+              }}
+            >
+              <Center>
                 <Text
-                  style={{
-                    paddingLeft: 5,
-                    textAlign: "justify",
-                    paddingRight: 10,
-                    fontFamily:"Inter_400Regular"
-                  }}
+                  style={{ fontSize: 30, fontWeight: "bold", marginTop: 40 }}
                 >
-                  {bountyData.appearance}
+                  Join search
                 </Text>
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  backgroundColor: "white",
-                  paddingLeft: 5,
-                  marginBottom: 20,
-                }}
-              >
-                <Text style={{ fontFamily:"Inter_700Bold" }}>
-                  {" "}
-                  Additional Information
+                <Text style={{ fontSize: 20, color: "grey", marginTop: 20 }}>
+                  Please note that you can only join 1
                 </Text>
-                <Text
-                  style={{
-                    paddingLeft: 5,
-                    textAlign: "justify",
-                    paddingRight: 10,
-                    fontFamily:"Inter_400Regular"
+                <Text style={{ fontSize: 20, color: "grey", marginTop: 0 }}>
+                  search party at a time
+                </Text>
+              </Center>
+              <View style={styles.ImInContainer}>
+                <Button
+                  title="I'm In!"
+                  color="white"
+                  onPress={() => {
+                    joinBounty(
+                      {
+                        bountyId: bountyData.id,
+                        userId: sessionData.uid,
+                      },
+                      {
+                        onSuccess: () => {
+                          router.push("(tabs)/activity");
+                        },
+                        onSettled(data, error, variables, context) {},
+                        onError: () => {},
+                      }
+                    );
                   }}
-                >
-                  {bountyData.additionalInfo}
-                </Text>
+                />
               </View>
+
+              <View style={styles.CancelContainer}>
+                <Button
+                  title="Cancel"
+                  color="black"
+                  onPress={() => {
+                    setModalVisible(false);
+                  }}
+                />
               </View>
-            </Container>
-          ) : (
-            //add carousell function here
-            <Carousel data={bountyData} />
-          )}
-        </Container>
-        <Container style={styles.buttonbox}>
-          <View>
-            <Button
-              title="HUNT"
-              color="black"
-              onPress={() => changeModalVisible(false)}
-            ></Button>
-          </View>
-        </Container>
-      </SafeAreaView>
-    )
-  
+            </View>
+          </Modal>
+        </Modal>
+      </Container>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
+  ImInContainer: {
+    position: "absolute",
+    left: 50,
+    right: 50,
+    marginTop: 250,
+    backgroundColor: "black",
+    borderTopWidth: 1,
+    borderColor: "black",
+    padding: 10,
+    borderRadius: 40,
+  },
+  CancelContainer: {
+    position: "absolute",
+    left: 120,
+    right: 120,
+    bottom: 60,
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 40,
+  },
   topbox: {
     paddingVertical: 0,
     maxHeight: "100%",

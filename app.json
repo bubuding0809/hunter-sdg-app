@@ -20,6 +20,9 @@
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": ["**/*"],
+    "notification": {
+      "icon": "./assets/hunter_logo.png"
+    },
     "ios": {
       "supportsTablet": true
     },

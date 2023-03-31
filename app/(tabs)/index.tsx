@@ -27,75 +27,6 @@ import BountyCard from "../Component/BountyCard";
 import moment from "moment";
 
 // Temporary bounty card to display data
-const bountyCard: React.FC<BountyQueryType> = (bountyItem) => {
-  return (
-    <Center
-      w="full"
-      bg="white"
-      borderWidth={1}
-      rounded="md"
-      shadow={3}
-      flexDirection="row"
-      justifyContent="flex-start"
-      alignItems="flex-start"
-      p={3}
-    >
-      {/* Image */}
-      <Image
-        source={{
-          uri: bountyItem.images[0],
-        }}
-        style={{ width: 50, height: 50 }}
-        borderRadius={10}
-      />
-      <Box
-        style={{
-          marginLeft: 10,
-        }}
-        flexShrink={1}
-      >
-        <Text fontSize="xl">{bountyItem.name}</Text>
-        <Text fontSize="md" numberOfLines={2}>
-          {bountyItem.appearance}
-        </Text>
-        <Divider my={2} />
-        <Text fontSize="md" numberOfLines={2}>
-          {bountyItem.additionalInfo?.length > 0
-            ? bountyItem.additionalInfo
-            : "No additional info"}
-        </Text>
-        <Divider my={2} />
-        <Text fontSize="md" textAlign="left">
-          Last seen: {bountyItem.lastSeen.toDate().toString()}
-        </Text>
-      </Box>
-      <Divider orientation="vertical" mx={2} />
-      <Flex direction="column" h="full" grow={1}>
-        <Text fontSize="md" textAlign="right">
-          type: {bountyItem.category}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          breed: {bountyItem.breed ?? "unknown"}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          age: {bountyItem.age ?? "unknown"}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          $$$ {bountyItem.reward ?? "unknown"}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          Sex: {bountyItem.gender}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          Lat: {bountyItem.location.toJSON().latitude}
-        </Text>
-        <Text fontSize="md" textAlign="right">
-          Long: {bountyItem.location.toJSON().longitude}
-        </Text>
-      </Flex>
-    </Center>
-  );
-};
 const HEIGHT = Dimensions.get("window").height;
 const WIDTH = Dimensions.get("window").width;
 const FeedPage = () => {
@@ -106,7 +37,6 @@ const FeedPage = () => {
   const { data: bountyData, refetch } = useBountiesQuery();
   // bountyData.map(bountyItem => bountyItem.createdAt.toDate())
 
-  // Pull to refresh state
   const [refreshing, setRefreshing] = useState(false);
 
   const [isModalVisible, setModalVisible] = useState(false);
@@ -117,132 +47,128 @@ const FeedPage = () => {
   const [isModalData, setModalData] = useState(null);
 
   return (
-    
-      <SafeAreaView edges={["left", "right"]} style = {{flex: 1, backgroundColor:"white"}}>
-        <FlatList
-          contentContainerStyle={{
-            flexGrow: 1,
-            backgroundColor: "white",
-          }}
-          style = {{backgroundColor:"white"}}
-          data={bountyData}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => {
-                // Refetch bounties data
-                setRefreshing(true);
-                refetch()
-                  .then((res) => setRefreshing(false))
-                  .catch((err) => {
-                    setRefreshing(false);
-                    alert("Error refreshing bounties");
-                  });
+    <SafeAreaView
+      edges={["left", "right"]}
+      style={{ flex: 1, backgroundColor: "white" }}
+    >
+      <FlatList
+        contentContainerStyle={{
+          flexGrow: 1,
+          backgroundColor: "white",
+        }}
+        style={{ backgroundColor: "white" }}
+        data={bountyData}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              // Refetch bounties data
+              setRefreshing(true);
+              refetch()
+                .then((res) => setRefreshing(false))
+                .catch((err) => {
+                  setRefreshing(false);
+                  alert("Error refreshing bounties");
+                });
+            }}
+          />
+        }
+        renderItem={({ item }) => (
+          <Center>
+            <Pressable
+              onPress={() => {
+                changeModalVisible(true);
+                setModalData(item);
               }}
-            />
-          }
-          renderItem={({ item }) => (
-            <Center>
-              <Pressable
-                onPress={() => {
-                  changeModalVisible(true);
-                  setModalData(item);
-                }}
-                style={styles.pressable}
-              >
-                <View style={styles.imagebox}>
-                  <Image
-                    style={styles.avatar}
-                    source={{ uri: item.images[0] }}
-                  />
-                </View>
+              style={styles.pressable}
+            >
+              <View style={styles.imagebox}>
+                <Image style={styles.avatar} source={{ uri: item.images[0] }} />
+              </View>
 
-                {item.category === "pet" ? (
-                  //pet
-                  <View style={styles.leftbox}>
-                    <Text style={styles.name_text}>{item.name}</Text>
-                    <View style={styles.descriptionbox}>
+              {item.category === "pet" ? (
+                //pet
+                <View style={styles.leftbox}>
+                  <Text style={styles.name_text}>{item.name}</Text>
+                  <View style={styles.descriptionbox}>
+                    <Text style={styles.description_text}>
+                      Breed:{item.breed}
+                    </Text>
+                    <View style={{ flexDirection: "row" }}>
                       <Text style={styles.description_text}>
-                        Breed:{item.breed}
+                        Age:{item.age}
                       </Text>
-                      <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.description_text}>
-                          Age:{item.age}
-                        </Text>
-                        <Text style={styles.description_text}>
-                          Gender:{item.gender}
-                        </Text>
-                      </View>
+                      <Text style={styles.description_text}>
+                        Gender:{item.gender}
+                      </Text>
                     </View>
                   </View>
-                ) : (
-                  //non pet
-                  <View style={styles.leftbox}>
-                    <Text style={styles.name_text}>{item.name}</Text>
-                    <View style={styles.descriptionbox}>
+                </View>
+              ) : (
+                //non pet
+                <View style={styles.leftbox}>
+                  <Text style={styles.name_text}>{item.name}</Text>
+                  <View style={styles.descriptionbox}>
+                    <Text style={styles.description_text}>{item.category}</Text>
+                    <View style={{ flexDirection: "row" }}>
                       <Text style={styles.description_text}>
-                        {item.category}
+                        Age: {item.age}{" "}
                       </Text>
-                      <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.description_text}>
-                          Age: {item.age}{" "}
-                        </Text>
-                        <Text style={styles.description_text}>
-                          Gender: {item.gender}{" "}
-                        </Text>
-                      </View>
+                      <Text style={styles.description_text}>
+                        Gender: {item.gender}{" "}
+                      </Text>
                     </View>
                   </View>
-                )}
-
-                <View style={styles.rightbox}>
-                  {/* ."ctrl space" to see all available options */}
-                  <Text style={styles.timestamp}>
-                    {moment(item.createdAt.toDate(), "MMDDYYYY").fromNow()}
-                  </Text>
-                  {/* //Need to add in geolocation  */}
-                  <Text style={styles.location}>
-                    {item.createdAt.toDate().toDateString()}
-                  </Text>
                 </View>
-              </Pressable>
-              <Modal visible={isModalVisible} animationType="slide">
-                <BountyCard
-                  changeModalVisible={changeModalVisible}
-                  bountyData={isModalData}
-                />
-              </Modal>
-            </Center>
-          )}
-        />
-      </SafeAreaView>
+              )}
 
+              <View style={styles.rightbox}>
+                {/* ."ctrl space" to see all available options */}
+                <Text style={styles.timestamp}>
+                  {moment(item.createdAt.toDate(), "MMDDYYYY").fromNow()}
+                </Text>
+                {/* //Need to add in geolocation  */}
+                <Text style={styles.location}>
+                  {item.createdAt.toDate().toDateString()}
+                </Text>
+              </View>
+            </Pressable>
+            <Modal visible={isModalVisible} animationType="slide">
+              <BountyCard
+                changeModalVisible={changeModalVisible}
+                bountyData={isModalData}
+              />
+            </Modal>
+          </Center>
+        )}
+      />
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({
   name_text: {
     fontWeight: "bold",
     fontSize: 16,
-    fontFamily: "Inter_400Regular"
+    fontFamily: "Inter_600SemiBold",
   },
   description_text: {
     fontWeight: "normal",
     fontSize: 14,
     paddingHorizontal: 3,
-    fontFamily: "Inter_400Regular"
+    fontFamily: "Inter_400Regular",
   },
   timestamp: {
     fontWeight: "normal",
     fontSize: 10,
     textAlign: "right",
-    fontFamily: "Inter_400Regular"
+    fontFamily: "Inter_400Regular",
   },
   location: {
     fontWeight: "normal",
     fontSize: 10,
     textAlign: "right",
-    fontFamily: "Inter_400Regular"
+    fontFamily: "Inter_400Regular",
   },
   avatar: {
     aspectRatio: 1,
@@ -260,7 +186,6 @@ const styles = StyleSheet.create({
     position: "relative",
     flex: 2,
     paddingHorizontal: 5,
-
   },
   leftbox: {
     position: "relative",
@@ -268,8 +193,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingVertical: 15,
     paddingLeft: 5,
-    borderBottomWidth:1,
-    borderColor:"#E8E8E8",
+    borderBottomWidth: 1,
+    borderColor: "#E8E8E8",
   },
   rightbox: {
     position: "relative",
@@ -279,13 +204,13 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     paddingBottom: 25,
     borderBottomWidth: 1,
-    borderColor:"#E8E8E8"
+    borderColor: "#E8E8E8",
   },
   pressable: {
     flexDirection: "row",
     borderRadius: 5,
-    backgroundColor:"transparent",
-    width: WIDTH * 0.90,
+    backgroundColor: "transparent",
+    width: WIDTH * 0.9,
     height: 100,
     marginVertical: 5,
   },
